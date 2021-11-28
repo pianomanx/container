@@ -2,7 +2,6 @@ FROM ghcr.io/linuxserver/baseimage-alpine:3.14
 
 # set version label
 ARG VERSION
-
 # set environment variables
 ENV HOME="/config"
 
@@ -52,4 +51,5 @@ COPY ./apps/docker-overseer/root/ /
 
 # ports and volumes
 EXPOSE 5055
+
 VOLUME /config
