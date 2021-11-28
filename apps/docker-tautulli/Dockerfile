@@ -1,10 +1,7 @@
 FROM ghcr.io/linuxserver/baseimage-alpine:3.15
 
-# set version label
-ARG BUILD_DATE
 ARG VERSION
 ARG TAUTULLI_RELEASE
-
 
 # Inform app this is a docker env
 ENV TAUTULLI_DOCKER=True
@@ -31,10 +28,7 @@ RUN \
 	pycryptodomex && \
  echo "**** install app ****" && \
  mkdir -p /app/tautulli && \
- if [ -z ${TAUTULLI_RELEASE+x} ]; then \
-	TAUTULLI_RELEASE=$(curl -sX GET "https://api.github.com/repos/Tautulli/Tautulli/releases/latest" \
-	| jq -r '. | .tag_name'); \
- fi && \
+ TAUTULLI_RELEASE=$(curl -sX GET "https://api.github.com/repos/Tautulli/Tautulli/releases/latest" | jq -r '. | .tag_name') && \
  curl -o \
  /tmp/tautulli.tar.gz -L \
 	"https://github.com/Tautulli/Tautulli/archive/${TAUTULLI_RELEASE}.tar.gz" && \
