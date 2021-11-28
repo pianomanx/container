@@ -2,7 +2,6 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
 
 # set version label
 ARG VERSION
-ARG JELLYFIN_RELEASE
 
 # environment settings
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -18,16 +17,11 @@ RUN \
   echo 'deb [arch=amd64] https://repo.jellyfin.org/ubuntu focal main' > /etc/apt/sources.list.d/jellyfin.list && \
   curl -s https://repositories.intel.com/graphics/intel-graphics.key | apt-key add - && \
   echo 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main' > /etc/apt/sources.list.d/intel-graphics.list && \
-  if [ -z ${JELLYFIN_RELEASE+x} ]; then \
-    JELLYFIN="jellyfin-server"; \
-  else \
-    JELLYFIN="jellyfin-server=${JELLYFIN_RELEASE}"; \
-  fi && \
   apt-get update && \
   apt-get install -y --no-install-recommends \
     at \
     intel-media-va-driver-non-free \
-    ${JELLYFIN} \
+    jellyfin-server=${VERSION} \
     jellyfin-ffmpeg \
     jellyfin-web \
     libfontconfig1 \
