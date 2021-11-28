@@ -1,6 +1,6 @@
 # Buildstage
 ARG VERSION
-FROM ghcr.io/linuxserver/baseimage-alpine:3.15 as buildstage
+FROM ghcr.io/linuxserver/baseimage-alpine:3.14 as buildstage
 
 RUN \
   echo "**** install build packages ****" && \
@@ -50,7 +50,7 @@ RUN \
 
 # Runtime Stage
 ARG VERSION
-FROM ghcr.io/linuxserver/baseimage-alpine:3.15
+FROM ghcr.io/linuxserver/baseimage-alpine:3.14
 
 RUN \
   echo "**** install build packages ****" && \
@@ -62,6 +62,7 @@ RUN \
     libxml2-dev \
     libxslt-dev \
     make \
+    unrar \
     openssl-dev \
     python3-dev && \
   echo "**** install packages ****" && \
