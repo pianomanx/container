@@ -20,9 +20,24 @@ env:
 
 # Detect which folders in project-root (which contain the containers) contain changes
 jobs:
+  get-version:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.CR_PAT }}
+        fetch-depth: 1
+    - name: Fetch new Versions
+      run: |
+        if test -f "./.github/version.sh"; then
+           bash "./.github/version.sh"
+        fi
+
   changes:
     name: Get changes
     runs-on: ubuntu-20.04
+    needs:
+    - get-version
     outputs:
       matrix: "{\"container\": ${{ steps.reduce.outputs.containers }} }"
     steps:
@@ -47,6 +62,7 @@ jobs:
     runs-on: ubuntu-20.04
     needs:
     - changes
+    - get-version
     strategy:
       matrix: ${{ fromJson(needs.changes.outputs.matrix) }}
       fail-fast: false
