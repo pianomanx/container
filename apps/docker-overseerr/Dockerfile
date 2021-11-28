@@ -18,10 +18,10 @@ RUN \
   echo "**** install runtime packages ****" && \
   apk add --no-cache \
     yarn && \
-  export COMMIT_TAG="${VERSION}" && \
+  export COMMIT_TAG="v${VERSION}" && \
   curl -o \
     /tmp/overseerr.tar.gz -L \
-    "https://github.com/sct/overseerr/archive/${VERSION}.tar.gz" && \
+    "https://github.com/sct/overseerr/archive/v${VERSION}.tar.gz" && \
   mkdir -p /app/overseerr && \
   tar xzf \
     /tmp/overseerr.tar.gz -C \
