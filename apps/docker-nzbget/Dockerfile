@@ -18,10 +18,9 @@ RUN \
     ncurses-dev \
     openssl-dev && \
   echo "**** build nzbget ****" && \
-  if [ -z ${NZBGET_RELEASE+x} ]; then \
-    NZBGET_RELEASE=$(curl -sX GET "https://api.github.com/repos/nzbget/nzbget/releases/latest" \
-      | awk '/tag_name/{print $4;exit}' FS='[""]'); \
-  fi && \
+  NZBGET_RELEASE=$(curl -sX GET "https://api.github.com/repos/nzbget/nzbget/releases/latest" \
+      | awk '/tag_name/{print $4;exit}' FS='[""]')
+  && \
   mkdir -p /app/nzbget && \
   git clone https://github.com/nzbget/nzbget.git nzbget && \
   cd nzbget/ && \
@@ -57,7 +56,6 @@ RUN \
 # Runtime Stage
 ARG VERSION
 FROM ghcr.io/linuxserver/baseimage-alpine:3.15
-
 
 RUN \
   echo "**** install build packages ****" && \
