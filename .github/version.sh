@@ -1,4 +1,18 @@
 #!/bin/bash
+####################################
+# All rights reserved.              #
+# started from Zero                 #
+# Docker owned dockserver           #
+# Docker Maintainer dockserver      #
+#####################################
+#####################################
+# THIS DOCKER IS UNDER LICENSE      #
+# NO CUSTOMIZING IS ALLOWED         #
+# NO REBRANDING IS ALLOWED          #
+# NO CODE MIRRORING IS ALLOWED      #
+#####################################
+# shellcheck disable=SC2086
+# shellcheck disable=SC2046
 
 find ./base -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read app; do
    if test -f "./base/${app}/latest-overlay.sh"; then
@@ -9,7 +23,7 @@ find ./base -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read ap
       fi
    fi
  done
-
+sleep 5
 find ./base -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read app; do
    if test -f "./base/${app}/latest-version.sh"; then
       version=$(bash "./base/${app}/latest-version.sh")
@@ -19,7 +33,7 @@ find ./base -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read ap
       fi
    fi
 done
-
+sleep 5
 find ./apps -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read app; do
    if test -f "./apps/${app}/latest-version.sh"; then
       version=$(bash "./apps/${app}/latest-version.sh")
@@ -29,7 +43,7 @@ find ./apps -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read ap
       fi
    fi
 done
-
+sleep 5
 if [[ -n $(git status --porcelain) ]]; then
    git config user.name "$GITHUB_ACTOR"
    git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
