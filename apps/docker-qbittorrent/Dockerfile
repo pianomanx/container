@@ -39,7 +39,7 @@ RUN \
     /var/tmp/*
 
 # add local files
-COPY ./apps/docker-qbitorrent/root/ /
+COPY ./apps/docker-qbittorrent/root/ /
 
 # ports and volumes
 EXPOSE 6881 6881/udp 8080
