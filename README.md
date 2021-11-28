@@ -19,7 +19,7 @@ This repository is heavily based on
 
 And the best is 
 
-# Fuck you SBOX stealing code to get your product up and running is a bitch move
+# Fuck XOXO SBOX stealing code to get your product up and running is a bitch move
 
 
 ---
@@ -52,10 +52,6 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </td>
 </tr>
 </table>
-
-
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
-# container
