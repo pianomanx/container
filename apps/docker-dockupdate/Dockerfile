@@ -12,5 +12,5 @@ RUN \
     apk add --no-cache \
         bash
 
-COPY ./apps/dockupdate/root/start.sh /start.sh
+COPY ./apps/docker-dockupdate/root/start.sh /start.sh
 ENTRYPOINT [ "/bin/bash", "/start.sh" ]
