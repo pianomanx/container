@@ -2,7 +2,6 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
 
 # set version label
 ARG VERSION
-ARG QBITTORRENT_VERSION
 
 # environment settings
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -23,15 +22,11 @@ RUN \
   echo "deb-src http://ppa.launchpad.net/qbittorrent-team/qbittorrent-stable/ubuntu focal main" >> /etc/apt/sources.list.d/qbitorrent.list && \
   echo "deb https://dl.cloudsmith.io/public/qbittorrent-cli/qbittorrent-cli/deb/ubuntu focal main" >> /etc/apt/sources.list.d/qbitorrent.list && \
   echo "**** install packages ****" && \
-  if [ -z ${QBITTORRENT_VERSION+x} ]; then \
-    QBITTORRENT_VERSION=$(curl -sX GET http://ppa.launchpad.net/qbittorrent-team/qbittorrent-stable/ubuntu/dists/focal/main/binary-amd64/Packages.gz | gunzip -c \
-    |grep -A 7 -m 1 "Package: qbittorrent-nox" | awk -F ": " '/Version/{print $2;exit}');\
-  fi && \
   apt-get update && \
   apt-get install -y \
     p7zip-full \
     qbittorrent-cli \
-    qbittorrent-nox=${QBITTORRENT_VERSION} \
+    qbittorrent-nox=${VERSION} \
     unrar \
     geoip-bin \
     unzip && \
