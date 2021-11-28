@@ -2,7 +2,6 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
 
 # set version label
 ARG VERSION
-ARG PROWLARR_RELEASE
 
 # environment settings
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -18,10 +17,7 @@ RUN \
     sqlite3 && \
   echo "**** install prowlarr ****" && \
   mkdir -p /app/prowlarr/bin && \
-  if [ -z ${PROWLARR_RELEASE+x} ]; then \
-    PROWLARR_RELEASE=$(curl -sL "https://prowlarr.servarr.com/v1/update/${PROWLARR_BRANCH}/changes?runtime=netcore&os=linux" \
-    | jq -r '.[0].version'); \
-  fi && \
+  PROWLARR_RELEASE=$(curl -sL "https://prowlarr.servarr.com/v1/update/${PROWLARR_BRANCH}/changes?runtime=netcore&os=linux" | jq -r '.[0].version') && \
   curl -o \
     /tmp/prowlarr.tar.gz -L \
     "https://prowlarr.servarr.com/v1/update/${PROWLARR_BRANCH}/updatefile?version=${PROWLARR_RELEASE}&os=linux&runtime=netcore&arch=x64" && \
