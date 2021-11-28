@@ -61,9 +61,9 @@ RUN \
   && printf "umask %d" "${UMASK}" >> /etc/bash.bashrc \
   && update-ca-certificates
 
-USER kah
+USER abc
 
 EXPOSE 34400
 
-COPY ./apps/xteve/entrypoint.sh /entrypoint.sh
+COPY ./apps/docker-xteve/entrypoint.sh /entrypoint.sh
 CMD ["/entrypoint.sh"]
