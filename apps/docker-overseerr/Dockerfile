@@ -1,9 +1,7 @@
 FROM ghcr.io/linuxserver/baseimage-alpine:3.15
 
 # set version label
-ARG BUILD_DATE
 ARG VERSION
-ARG OVERSEERR_VERSION
 
 # set environment variables
 ENV HOME="/config"
@@ -20,14 +18,10 @@ RUN \
   echo "**** install runtime packages ****" && \
   apk add --no-cache \
     yarn && \
-  if [ -z ${OVERSEERR_VERSION+x} ]; then \
-    OVERSEERR_VERSION=$(curl -sX GET "https://api.github.com/repos/sct/overseerr/releases/latest" \
-    | awk '/tag_name/{print $4;exit}' FS='[""]'); \
-  fi && \
-  export COMMIT_TAG="${OVERSEERR_VERSION}" && \
+  export COMMIT_TAG="${VERSION}" && \
   curl -o \
     /tmp/overseerr.tar.gz -L \
-    "https://github.com/sct/overseerr/archive/${OVERSEERR_VERSION}.tar.gz" && \
+    "https://github.com/sct/overseerr/archive/${VERSION}.tar.gz" && \
   mkdir -p /app/overseerr && \
   tar xzf \
     /tmp/overseerr.tar.gz -C \
@@ -40,7 +34,8 @@ RUN \
   yarn cache clean && \
   rm -rf \
     /app/overseerr/src \
-    /app/overseerr/server && \
+    /app/overseerr/server \
+    /app/overseerr/Dockerfile && \
   echo "{\"commitTag\": \"${COMMIT_TAG}\"}" > committag.json && \
   rm -rf /app/overseerr/config && \
   ln -s /config /app/overseerr/config && \
