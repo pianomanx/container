@@ -1,7 +1,7 @@
 # hadolint ignore=DL3006,DL3007
 ARG VERSION
 
-FROM eafxx/alpine-python:${VERSION}
+FROM eafxx/alpine-python
 
 ENV \
   APP_DIR=traktarr \
