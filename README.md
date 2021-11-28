@@ -1,15 +1,30 @@
 # Container Images
 
+---
+
 ## WIP 
 
 Not all Containers are running smoothly 
-Not all code os working 
+Not all code is working 
+
+---
+
+# NOTE 
+
+This repository is heavily based on 
+*Linuxserver.io* images and *k8s-at-home* idea
+
+
+---
 
 And the best is 
 
-## Fuck you SBOX stealing code to get your product up and running is a bitch move
+# Fuck you SBOX stealing code to get your product up and running is a bitch move
 
-## Contributors ✨
+
+---
+
+# Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
