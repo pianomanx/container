@@ -37,7 +37,9 @@ RUN \
 		-L "${i}"; \
  done && \
  dpkg -i /opencl-intel/*.deb && \
- rm -rf /opencl-intel && \
+ rm -rf /opencl-intel
+
+RUN \
  echo "**** install plex ****" && \
   curl -o \
 	/tmp/plexmediaserver.deb -L \
