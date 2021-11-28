@@ -1,5 +1,13 @@
 # Container Images
 
+## WIP 
+
+Not all Containers are running smoothly 
+Not all code os working 
+
+And the best is 
+
+## Fuck you SBOX stealing code to get your product up and running is a bitch move
 
 ## Contributors ✨
 
