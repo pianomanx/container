@@ -1,0 +1,39 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+#####################################
+# All rights reserved.              #
+# started from Zero                 #
+# Docker owned dockserver           #
+# Docker Maintainer dockserver      #
+#####################################
+#####################################
+# THIS DOCKER IS UNDER LICENSE      #
+# NO CUSTOMIZING IS ALLOWED         #
+# NO REBRANDING IS ALLOWED          #
+# NO CODE MIRRORING IS ALLOWED      #
+#####################################
+# shellcheck disable=SC2086
+# shellcheck disable=SC2006
+
+SDISCORD=/app/scripts/discord.sh
+
+if [[ ! -d "/app/scripts" ]]; then
+   mkdir -p /app/scripts
+fi
+if [[ -f "${SDISCORD}" ]]; then
+   mv "${SDISCORD}" /dev/null
+fi
+if [[ ! -f "${SDISCORD}" ]]; then
+   curl --silent -fsSL https://raw.githubusercontent.com/ChaoticWeg/discord.sh/master/discord.sh -o "${SDISCORD}"
+   chmod 777 "${SDISCORD}"
+fi
+
+   $(command -v mkdir) -p /system/{uploader,servicekeys,vfsforget}
+   $(command -v mkdir) -p /system/uploader/vfsforget 1>/dev/null 2>&1
+   $(command -v chown) -cR 1000:1000 /system/ 1>/dev/null 2>&1
+   $(command -v chown) -cR 1000:1000 /app 1>/dev/null 2>&1
+   $(command -v chown) -cR 1000:1000 /root 1>/dev/null 2>&1
+   $(command -v chown) -cR 1000:1000 /mnt/downloads 1>/dev/null 2>&1
+   $(command -v chmod) -cR 777 /app 1>/dev/null 2>&1
+   $(command -v chmod) -cR 777 /system 1>/dev/null 2>&1
+#E-O-F#

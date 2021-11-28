@@ -1,0 +1,56 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+# Copyright (c) 2020, MrDoob
+# All rights reserved.
+## function source end
+function log() {
+     echo "[UPLOADER] ${1}"
+}
+UAGENT=${UAGENT:-null}
+if [[ ${UAGENT} == 'null' ]]; then
+   UAGENT=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+   USERAGENT=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+else
+   UAGENT=${UAGENT}
+   USERAGENT=${USERAGENT}
+fi
+## Create folders
+mkdir -p /system/uploader/{vfsforget,logs,.keys}
+mkdir -p /app/uploader/{pid,logs}
+
+sample=/app/uploader/.sample.uploader.env
+uploaderenv=/system/uploader/uploader.env
+if [[ -f ${uploaderenv} ]]; then
+   source $uploaderenv
+   echo -e "#-------------------------------------------------------
+#   UPLOADER ENVIROMENTS
+#-------------------------------------------------------
+
+## USER VALUES
+PUID=${PUID:-1000}
+PGID=${PGID:-1000}
+TIMEZONE=${TZ:-UTC}
+
+## RCLONE - SETTINGS
+BANDWITHLIMIT=${BANDWITHLIMIT:-null}
+LOG_LEVEL=${LOG_LEVEL:-INFO}
+TRANSFERS=${TRANSFERS:-4}
+USERAGENT=${USERAGENT}
+
+## USER - SETTINGS
+ADDITIONAL_IGNORES=${ADDITIONAL_IGNORES:-null}
+DRIVEUSEDSPACE=${DRIVEUSEDSPACE:-null}
+MIN_AGE_UPLOAD=${MIN_AGE_UPLOAD:-5}
+
+## DISCORD - SETTINGS
+DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL:-null}
+DISCORD_EMBED_TITEL=${DISCORD_EMBED_TITEL:-UPLOAD_COMPLETED}
+DISCORD_ICON_OVERRIDE=${DISCORD_ICON_OVERRIDE:-https://i.imgur.com/MZYwA1I.png}
+DISCORD_NAME_OVERRIDE=${DISCORD_NAME_OVERRIDE:-UPLOADED}
+#-------------------------------------------------------
+#   UPLOADER ENVIROMENTS
+#-------------------------------------------------------" >$uploaderenv
+else
+   cp ${sample} ${uploaderenv}
+fi
+#"

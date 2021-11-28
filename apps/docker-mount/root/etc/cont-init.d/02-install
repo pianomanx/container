@@ -1,0 +1,68 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+#####################################
+# All rights reserved.              #
+# started from Zero                 #
+# Docker owned dockserver           #
+# Docker Maintainer dockserver      #
+#####################################
+#####################################
+# THIS DOCKER IS UNDER LICENSE      #
+# NO CUSTOMIZING IS ALLOWED         #
+# NO REBRANDING IS ALLOWED          #
+# NO CODE MIRRORING IS ALLOWED      #
+#####################################
+function log() {
+     echo "[MOUNT] ${1}"
+}
+log "**** update system ****"
+apk --quiet --no-cache --no-progress update
+apk --quiet --no-cache --no-progress upgrade
+apk --quiet --no-cache --no-progress fix
+
+INSTALL="/app/requirements.txt"
+while IFS=$'|' read -r -a myArray; do
+      apk add --quiet --no-cache --no-progress ${myArray[0]}
+done < $INSTALL
+
+apk del --quiet --no-cache nginx
+rm -rf /var/cache/apk/*
+rm -rf /etc/nginx/nginx.conf
+
+pids="$(pgrep 'nginx')"
+if [ "$pids" != "" ]; then
+     kill -15 $pids
+fi
+
+ARCH="$(command arch)"
+if [ "${ARCH}" = "x86_64" ]; then
+     ARCH="amd64"
+elif [ "${ARCH}" = "aarch64" ]; then
+     ARCH="arm64"
+elif [ "${ARCH}" = "armv7l" ]; then
+     ARCH="armhf"
+else
+     echo "**** Unsupported Linux architecture ${ARCH} found, exiting... ****"
+     exit 1
+fi
+
+## VERSION=1.55.1
+VERSION=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
+log "-> Configure RCLONE || start <- [RCLONE]"
+log "-> please hold the line ...... <- [RCLONE]"
+curl -o /tmp/rclone.zip -SL https://github.com/rclone/rclone/releases/download/v${VERSION}/rclone-v${VERSION}-linux-${ARCH}.zip
+cd /tmp/ && unzip -q /tmp/rclone.zip
+mv /tmp/rclone-*-linux-${ARCH}/rclone /usr/local/bin/
+rm -rf /var/cache/apk/* /tmp/*
+
+if [[ ! -d "/app/language" ]]; then mkdir -p /app/language && git -C /app clone https://github.com/dockserver/language.git; fi
+
+rm -rf /var/run/s6/etc/cont-init.d/10-adduser
+rm -rf /var/run/s6/etc/cont-init.d/90-custom-folders
+rm -rf /var/run/s6/etc/cont-init.d/99-custom-files
+rm -rf /etc/cont-init.d/10-adduser
+rm -rf /etc/cont-init.d/90-custom-folders
+rm -rf /etc/cont-init.d/99-custom-files
+
+##    && VERSION="$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')" \
+#<EOF>#
