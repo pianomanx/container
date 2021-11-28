@@ -47,7 +47,7 @@ RUN \
     /tmp/*
 
 # copy local files
-COPY ./apps/docker-overseer/root/ /
+COPY ./apps/docker-overseerr/root/ /
 
 # ports and volumes
 EXPOSE 5055
