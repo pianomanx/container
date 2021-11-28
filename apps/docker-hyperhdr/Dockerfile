@@ -1,5 +1,5 @@
 # hadolint ignore=DL3007
-FROM ghcr.io/linuxserver/baseimage-ubuntu:latest as builder
+FROM ghcr.io/linuxserver/baseimage-ubuntu:focal as builder
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
