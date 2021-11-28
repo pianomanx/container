@@ -2,9 +2,6 @@
 ARG VERSION
 FROM ghcr.io/linuxserver/baseimage-alpine:3.15 as buildstage
 
-# set NZBGET version
-ARG NZBGET_RELEASE
-
 RUN \
   echo "**** install build packages ****" && \
   apk add \
@@ -16,15 +13,13 @@ RUN \
     libxslt-dev \
     make \
     ncurses-dev \
-    openssl-dev && \
-  echo "**** build nzbget ****" && \
-  NZBGET_RELEASE=$(curl -sX GET "https://api.github.com/repos/nzbget/nzbget/releases/latest" \
-      | awk '/tag_name/{print $4;exit}' FS='[""]')
-  && \
+    openssl-dev
+
+RUN \
   mkdir -p /app/nzbget && \
   git clone https://github.com/nzbget/nzbget.git nzbget && \
   cd nzbget/ && \
-  git checkout ${NZBGET_RELEASE} && \
+  git checkout v${NZBGET_RELEASE} && \
   git cherry-pick -n fa57474d && \
   ./configure \
     bindir='${exec_prefix}' && \
