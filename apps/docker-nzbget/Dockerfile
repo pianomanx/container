@@ -19,7 +19,7 @@ RUN \
   mkdir -p /app/nzbget && \
   git clone https://github.com/nzbget/nzbget.git nzbget && \
   cd nzbget/ && \
-  git checkout v${NZBGET_RELEASE} && \
+  git checkout ${VERSION} && \
   git cherry-pick -n fa57474d && \
   ./configure \
     bindir='${exec_prefix}' && \
@@ -34,7 +34,7 @@ RUN \
     -e "s#^SevenZipCmd=.*#SevenZipCmd=$\{AppDir\}/7za#g" \
     -e "s#^CertStore=.*#CertStore=$\{AppDir\}/cacert.pem#g" \
     -e "s#^CertCheck=.*#CertCheck=yes#g" \
-    -e "s#^DestDir=.*#DestDir=$\{MainDir\}/downloads/nzbget#g" \
+    -e "s#^DestDir=.*#DestDir=$\{MainDir\}/downloads/nzb#g" \
     -e "s#^InterDir=.*#InterDir=$\{MainDir\}/intermediate#g" \
     -e "s#^LogFile=.*#LogFile=$\{MainDir\}/nzbget.log#g" \
     -e "s#^AuthorizedIP=.*#AuthorizedIP=127.0.0.1#g" \
