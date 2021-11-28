@@ -19,7 +19,7 @@ RUN \
   mkdir -p /app/nzbget && \
   git clone https://github.com/nzbget/nzbget.git nzbget && \
   cd nzbget/ && \
-  git checkout v${VERSION} && \
+  git checkout ${VERSION} && \
   git cherry-pick -n fa57474d && \
   ./configure \
     bindir='${exec_prefix}' && \
