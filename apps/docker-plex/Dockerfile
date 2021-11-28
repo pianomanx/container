@@ -2,7 +2,6 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
 
 # set version label
 ARG VERSION
-ARG PLEX_RELEASE
 
 #Add needed nvidia environment variables for https://github.com/NVIDIA/nvidia-docker
 ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility"
@@ -40,13 +39,9 @@ RUN \
  dpkg -i /opencl-intel/*.deb && \
  rm -rf /opencl-intel && \
  echo "**** install plex ****" && \
- if [ -z ${PLEX_RELEASE+x} ]; then \
-	PLEX_RELEASE=$(curl -sX GET 'https://plex.tv/api/downloads/5.json' \
-	| jq -r '.computer.Linux.version'); \
- fi && \
- curl -o \
+  curl -o \
 	/tmp/plexmediaserver.deb -L \
-	"${PLEX_DOWNLOAD}/${PLEX_RELEASE}/debian/plexmediaserver_${PLEX_RELEASE}_${PLEX_ARCH}.deb" && \
+	"${PLEX_DOWNLOAD}/${VERSION}/debian/plexmediaserver_${VERSION}_${PLEX_ARCH}.deb" && \
  dpkg -i /tmp/plexmediaserver.deb && \
  echo "**** ensure abc user's home folder is /app ****" && \
  usermod -d /app abc && \
