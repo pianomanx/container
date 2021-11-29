@@ -1,9 +1,16 @@
 name: Add contributors
 on:
-  push:
-    branches: 
-      - master
   workflow_dispatch:
+  push:
+    branches:
+    - master
+    paths:
+    - 'base/**'
+    - 'apps/**'
+  pull_request:
+    paths:
+    - 'base/**'
+    - 'apps/**'
 
 jobs:
   add-contributors:
