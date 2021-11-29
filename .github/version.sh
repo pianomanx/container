@@ -46,9 +46,9 @@ done
 sleep 5
 if [[ -n $(git status --porcelain) ]]; then
    git config user.name "$GITHUB_ACTOR"
-   git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+   git config user.email "bot@users.noreply.github.com"
    git add -A
-   git commit -sam "charges: add new release versions" || exit 0
+   git commit -sam "[Auto Generation] Adding new release version" || exit 0
    git push
 fi
 
