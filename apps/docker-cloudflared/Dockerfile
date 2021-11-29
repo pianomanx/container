@@ -11,11 +11,12 @@ ENV GO111MODULE=on \
     GOARCH=${TARGETARCH} \
     GOARM=${TARGETVARIANT}
 
-RUN apk add --no-cache git make
+RUN apk add --no-cache git make curl jq
 
 WORKDIR /go/src/github.com/cloudflare/cloudflared/
 
-RUN git clone --depth 1 -b ${VERSION} https://github.com/cloudflare/cloudflared.git . && \
+RUN VERSION=$(curl -sL "https://api.github.com/repos/cloudflare/cloudflared/tags" | jq -r ".[0] .name") && \
+    git clone --depth 1 -b ${VERSION} https://github.com/cloudflare/cloudflared.git . && \
     make cloudflared
 
 FROM gcr.io/distroless/static:nonroot
