@@ -1,32 +1,44 @@
-FROM golang:1.15-alpine as build
-
+ARG GOLANG_VERSION=1.17.2
+ARG ALPINE_VERSION=3.14
 ARG VERSION
-ARG TARGETOS
-ARG TARGETARCH
-ARG TARGETVARIANT=""
 
-ENV GO111MODULE=on \
-    CGO_ENABLED=0 \
-    GOOS=${TARGETOS} \
-    GOARCH=${TARGETARCH} \
-    GOARM=${TARGETVARIANT}
+FROM golang:${GOLANG_VERSION}-alpine${ALPINE_VERSION} as gobuild
+ARG GOLANG_VERSION
+ARG ALPINE_VERSION
+ARG UPSTREAM_RELEASE_TAG
 
-RUN apk add --no-cache git make curl jq
+WORKDIR /tmp
 
-WORKDIR /go/src/github.com/cloudflare/cloudflared/
+RUN apk add --no-cache gcc build-base curl tar && \
+    mkdir release && \
+    curl -L "https://github.com/cloudflare/cloudflared/archive/refs/tags/${VERSION}.tar.gz" | tar xvz --strip 1 -C ./release
 
-RUN VERSION=$(curl -sL "https://api.github.com/repos/cloudflare/cloudflared/tags" | jq -r ".[0] .name") && \
-    git clone --depth 1 -b ${VERSION} https://github.com/cloudflare/cloudflared.git . && \
-    make cloudflared
+WORKDIR /tmp/release/cmd/cloudflared
 
-FROM gcr.io/distroless/static:nonroot
+RUN go build ./
 
-WORKDIR /
+FROM alpine:${ALPINE_VERSION}
 
-COPY --from=build --chown=nonroot /go/src/github.com/cloudflare/cloudflared/cloudflared /usr/local/bin/
+ARG GOLANG_VERSION
+ARG ALPINE_VERSION
 
-USER nonroot:nonroot
+ENV UPSTREAM1 https://1.1.1.1/dns-query
+ENV UPSTREAM2 https://1.0.0.1/dns-query
+ENV PORT 5054
+ENV ADDRESS 0.0.0.0
+ENV METRICS 127.0.0.1:8080
+ENV MAX_UPSTREAM_CONNS 0
 
-ENTRYPOINT ["cloudflared", "--no-autoupdate"]
+RUN adduser -S cloudflared; \
+    apk add --no-cache ca-certificates bind-tools libcap tzdata; \
+    rm -rf /var/cache/apk/*;
 
-CMD ["version"]
+COPY --from=gobuild /tmp/release/cmd/cloudflared/cloudflared /usr/local/bin/cloudflared
+
+RUN setcap CAP_NET_BIND_SERVICE+eip /usr/local/bin/cloudflared
+
+HEALTHCHECK --interval=5s --timeout=3s --start-period=5s CMD nslookup -po=${PORT} cloudflare.com 127.0.0.1 || exit 1
+
+USER cloudflared
+
+CMD ["/bin/sh", "-c", "/usr/local/bin/cloudflared proxy-dns --address ${ADDRESS} --port ${PORT} --metrics ${METRICS} --upstream ${UPSTREAM1} --upstream ${UPSTREAM2} --max-upstream-conns ${MAX_UPSTREAM_CONNS}"]
