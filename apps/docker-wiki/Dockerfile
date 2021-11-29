@@ -10,22 +10,26 @@
 # NO REBRANDING IS ALLOWED          #
 # NO CODE MIRRORING IS ALLOWED      #
 #####################################
-ARG VERSION
-
 FROM alpine:3.15.0 as buildstage
-RUN \
-   echo "**** install packages ****" && \
-   apk add --update --no-cache git && \
-   mkdir -p /tmp && git clone --quiet https://github.com/dockserver/dockserver.git /tmp && \
-
-FROM ghcr.io/squidfunk/mkdocs-material:${VERSION}
-
 LABEL maintainer=dockserver
 
-COPY --from=buildstage /tmp/wiki /docs
+RUN \
+   echo "**** install packages ****" && \
+   apk add --update --no-cache git
 
-RUN python3 -m pip install --upgrade pip && \
-    python3 -m pip install --no-warn-script-location --upgrade --force-reinstall --no-deps --user -r /docs/requirements.txt
+RUN \
+   echo "**** clone repositories ****" && \
+   mkdir -p /app && \
+   git clone --quiet https://github.com/dockserver/dockserver.git /app
+
+FROM ghcr.io/squidfunk/mkdocs-material:latest
+
+COPY --from=buildstage /app/wiki /docs
+
+RUN \
+   echo "**** install packages ****" && \
+   python3 -m pip install --upgrade pip && \
+   python3 -m pip install --no-warn-script-location --upgrade --force-reinstall --no-deps --user -r /docs/requirements.txt
 
 RUN rm -rf /tmp/* && rm -rf /var/cache/apk/* && rm -rf /root/.cache
 
