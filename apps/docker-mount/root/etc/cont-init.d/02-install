@@ -29,11 +29,6 @@ apk del --quiet --no-cache nginx
 rm -rf /var/cache/apk/*
 rm -rf /etc/nginx/nginx.conf
 
-pids="$(pgrep 'nginx')"
-if [ "$pids" != "" ]; then
-     kill -15 $pids
-fi
-
 ARCH="$(command arch)"
 if [ "${ARCH}" = "x86_64" ]; then
      ARCH="amd64"
@@ -48,21 +43,10 @@ fi
 
 ## VERSION=1.55.1
 VERSION=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
-log "-> Configure RCLONE || start <- [RCLONE]"
-log "-> please hold the line ...... <- [RCLONE]"
 curl -o /tmp/rclone.zip -SL https://github.com/rclone/rclone/releases/download/v${VERSION}/rclone-v${VERSION}-linux-${ARCH}.zip
 cd /tmp/ && unzip -q /tmp/rclone.zip
 mv /tmp/rclone-*-linux-${ARCH}/rclone /usr/local/bin/
 rm -rf /var/cache/apk/* /tmp/*
 
 if [[ ! -d "/app/language" ]]; then mkdir -p /app/language && git -C /app clone https://github.com/dockserver/language.git; fi
-
-rm -rf /var/run/s6/etc/cont-init.d/10-adduser
-rm -rf /var/run/s6/etc/cont-init.d/90-custom-folders
-rm -rf /var/run/s6/etc/cont-init.d/99-custom-files
-rm -rf /etc/cont-init.d/10-adduser
-rm -rf /etc/cont-init.d/90-custom-folders
-rm -rf /etc/cont-init.d/99-custom-files
-
-##    && VERSION="$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')" \
 #<EOF>#
