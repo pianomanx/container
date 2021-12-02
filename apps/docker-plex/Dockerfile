@@ -26,7 +26,8 @@ RUN \
 	ocl-icd-libopencl1 \
 	udev \
 	unrar \
-	wget && \
+	wget \
+        i965-va-driver && \
  COMP_RT_RELEASE=$(curl -sX GET "https://api.github.com/repos/intel/compute-runtime/releases/latest" | jq -r '.tag_name') && \
  COMP_RT_URLS=$(curl -sX GET "https://api.github.com/repos/intel/compute-runtime/releases/tags/${COMP_RT_RELEASE}" | jq -r '.body' | grep wget | sed 's|wget ||g') && \
  mkdir -p /opencl-intel && \
