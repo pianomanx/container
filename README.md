@@ -7,6 +7,8 @@
 Not all Containers are running smoothly 
 Not all code is working 
 
+I don't accept any pull request
+
 ---
 
 # NOTE 
