@@ -10,23 +10,37 @@ ENV MULTITAUTULLI_DOCKER=True
 RUN \
  echo "**** install build packages ****" && \
  apk add --no-cache git && \
- echo "**** install build virtual dependencies packages ****" && \
  apk add --no-cache --virtual=build-dependencies \
-	curl \
-	py3-pip && \
+	g++ \
+	gcc \
+	make \
+	py3-pip \
+	python3-dev && \
  echo "**** install packages ****" && \
  apk add --no-cache \
+ 	curl \
+	jq \
+	py3-openssl \
+	py3-setuptools \
 	python3 \
-	python3-venv \
-	python3-all-dev && \
-  echo "**** install multi tautulli app ****" && \
+	python3-venv
+
+RUN \
+  echo "**** clone multi tautulli app ****" && \
   git clone --quiet https://github.com/zSeriesGuy/Tautulli.git /opt/tautulli && \
      addgroup tautulli && adduser --system --no-create-home tautulli --ingroup tautulli && \
-     chown tautulli:tautulli -R /opt/Tautulli \
-     cd /opt/tautulli && \
-        python3 -m venv /opt/tautulli && \
-        source /opt/tautulli/bin/activate && \
-        pip3 install -r /opt/tautulli/requirements.txt && \
+     chown tautulli:tautulli -R /opt/Tautulli
+
+RUN \
+  echo "**** install multi tautulli app ****" && \
+  cd /opt/tautulli && \
+     python3 -m venv /opt/tautulli && \
+     source /opt/tautulli/bin/activate && \
+     python3 -m pip install --upgrade pip setuptools pip-tools && \
+     pip3 install -r /opt/tautulli/requirements.txt && \
+     pip install PyJWT==1.7.0
+
+RUN \
   echo "**** cleanup ****" && \
     apk del --purge \
         build-dependencies && \
