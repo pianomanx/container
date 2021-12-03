@@ -23,7 +23,7 @@ RUN \
 	py3-openssl \
 	py3-setuptools \
 	python3 \
-	python3-venv
+	py3-virtualenv
 
 RUN \
   echo "**** clone multi tautulli app ****" && \
