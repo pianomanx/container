@@ -52,7 +52,7 @@ COPY ./apps/docker-multitautulli/root/ /
 
 RUN \
   echo "**** Starting Multi Tautulli ****" && \
-      cp /root/opt/init.systemd /lib/systemd/system/tautulli.service && \
+      ln -s /opt/init.systemd /lib/systemd/system/tautulli.service && \
       systemctl daemon-reload && sudo systemctl enable tautulli.service && \
       systemctl start tautulli.service
 
