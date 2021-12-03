@@ -32,14 +32,15 @@ RUN \
         build-dependencies && \
   rm -rf \
       /root/.cache \
-      /tmp/* \
+      /tmp/*
+
+COPY ./apps/docker-multitautulli/root/ /
+
+RUN \
   echo "**** Starting Multi Tautulli ****" && \
-      ln -s /opt/tautulli/init-scripts/init.systemd /lib/systemd/system/tautulli.service && \
+      cp /root/opt/init.systemd /lib/systemd/system/tautulli.service && \
       systemctl daemon-reload && sudo systemctl enable tautulli.service && \
       systemctl start tautulli.service
-
-# add local files
-COPY ./apps/docker-multitautulli/root/ /
 
 # ports and volumes
 VOLUME /config /logs
