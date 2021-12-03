@@ -36,7 +36,7 @@ while true; do
          sleep 120 && continue
       else
          $(command -v find) ${NZBBACKUPFOLDER}/* -type d -mmin +${NZBBACKUPTIME} -exec rm -rf {} \; >/dev/null 2>&1
-         $(command -v find) ${ZBDOWNLOADFOLDER}/* -type f -mmin +${NZBDOWNLOADTIME} -exec rm -rf {} \; >/dev/null 2>&1
+         $(command -v find) ${NZBDOWNLOADFOLDER}/* -type f -mmin +${NZBDOWNLOADTIME} -exec rm -rf {} \; >/dev/null 2>&1
          sleep 120 && break
       fi
    else
