@@ -44,6 +44,9 @@ RUN \
 	/root/.cache \
 	/tmp/*
 
+# add local files
+COPY ./apps/docker-multitautulli/root/ /
+
 # ports and volumes
 VOLUME /config
 EXPOSE 8181
