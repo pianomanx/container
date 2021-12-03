@@ -29,7 +29,7 @@ RUN \
   echo "**** clone multi tautulli app ****" && \
   git clone --quiet https://github.com/zSeriesGuy/Tautulli.git /opt/tautulli && \
      addgroup tautulli && adduser --system --no-create-home tautulli --ingroup tautulli && \
-     chown tautulli:tautulli -R /opt/Tautulli
+     chown tautulli:tautulli -R /opt/tautulli
 
 RUN \
   echo "**** install multi tautulli app ****" && \
