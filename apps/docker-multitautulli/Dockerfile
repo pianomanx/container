@@ -15,8 +15,8 @@ RUN \
  echo "**** install packages ****" && \
  apk add --no-cache \
 	python3 \
-	python3-venv \
-	python3-all-dev
+	py3-virtualenv \
+	python3-dev
 RUN \
   echo "**** clone multi tautulli app ****" && \
   git clone --quiet https://github.com/zSeriesGuy/Tautulli.git /opt/tautulli && \
