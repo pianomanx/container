@@ -13,17 +13,15 @@ on:
     - 'base/**'
     - 'apps/**'
 
-
 env:
-  # How long to sleep before running the tests (gives the application time to start)
   GOSS_SLEEP: 30
+  MOBY: "moby/buildkit:latest"
 
-# Detect which folders in project-root (which contain the containers) contain changes
 jobs:
   get-version:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v2.4.0
       with:
         token: ${{ secrets.CR_PAT }}
         fetch-depth: 1
@@ -42,7 +40,7 @@ jobs:
       matrix: "{\"container\": ${{ steps.reduce.outputs.containers }} }"
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.4.0
     - uses: dorny/paths-filter@v2
       id: filter
       with:
@@ -69,99 +67,97 @@ jobs:
     if: "!contains(github.event.head_commit.message, '[ci-skip]')"
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.4.0
 
-    # Define if tests and push should be run against which versions/platforms
     - name: Prepare
       id: prep
       run: |
         if test -f "./apps/${{ matrix.container }}/Dockerfile"; then
-          CATEGORY="apps"
+           CATEGORY="apps"
         else
-          CATEGORY="base"
+           CATEGORY="base"
         fi
         echo ::set-output name=category::${CATEGORY}
-        VERSION=$(cat ./${CATEGORY}/${{ matrix.container }}/VERSION)
+           VERSION=$(cat ./${CATEGORY}/${{ matrix.container }}/VERSION)
         echo ::set-output name=version::${VERSION}
-        PLATFORM=$(cat ./${CATEGORY}/${{ matrix.container }}/PLATFORM)
+           PLATFORM=$(cat ./${CATEGORY}/${{ matrix.container }}/PLATFORM)
         echo ::set-output name=platform::${PLATFORM}
-        if test -f "./${CATEGORY}/${{ matrix.container }}/goss.yaml"; then
-          echo ::set-output name=goss::true
-        else
-          echo ::set-output name=goss::false
-        fi
+        CREATED=$(date +'%Y-%m-%dT%H:%M:%SZ')
+        echo ::set-output name=created::${CREATED}
+
         if [ "${{github.event_name}}" == "pull_request" ]; then
-          echo ::set-output name=push::false
-          echo ::set-output name=cache_from::"type=local,src=/tmp/.buildx-cache"
-          echo ::set-output name=cache_to::""
+           echo ::set-output name=push::false
+           echo ::set-output name=cache_from::"type=local,src=/tmp/.buildx-cache"
+           echo ::set-output name=cache_to::""
         else
-          echo ::set-output name=push::true
-          echo ::set-output name=cache_from::"type=local,src=/tmp/.buildx-cache"
-          echo ::set-output name=cache_to::"type=local,dest=/tmp/.buildx-cache,mode=max"
+           echo ::set-output name=push::true
+           echo ::set-output name=cache_from::"type=local,src=/tmp/.buildx-cache"
+           echo ::set-output name=cache_to::"type=local,dest=/tmp/.buildx-cache,mode=max"
         fi
 
     - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
+      uses: docker/setup-qemu-action@v1.2.0
       with:
-        platforms: amd64,arm64
+        platforms: ${{ steps.prep.outputs.platform }}
 
     - name: Login to GHCR
-      uses: docker/login-action@v1
+      uses: docker/login-action@v1.10.0
       if: github.event_name != 'pull_request'
       with:
-        registry: ghcr.io
+        registry: ${{ secrets.DOCKER_REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.CR_PAT }}
 
     # Install and configure Buildx
     - name: Set up Docker Buildx
       id: buildx
-      uses: docker/setup-buildx-action@v1
+      uses: docker/setup-buildx-action@v1.6.0
       with:
         install: true
         version: latest
-        driver-opts: image=moby/buildkit:latest
+        driver-opts: |
+          image=${{ env.MOBY }}
+          network=host
+        config: .github/buildkitd.toml
 
     - name: Cache Docker layers
-      uses: actions/cache@v2
+      uses: actions/cache@v2.1.7
       with:
         path: /tmp/.buildx-cache
         key: ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
         restore-keys: |
           ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
 
-    # Install the GOSS testing framework
     - name: Set up goss/dgoss
-      uses: e1himself/goss-installation-action@v1.0.4
+      uses: e1himself/goss-installation-action@v1.0.3
       if: ${{ steps.prep.outputs.goss == 'true' }}
       with:
         version: 'v0.3.16'
 
-    # Creates a local build to run tests on
     - name: Build and Load local test-container
-      if: ${{ steps.prep.outputs.goss == 'true' }}
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v2.7.0
       with:
         build-args: VERSION=${{ steps.prep.outputs.version }}
         context: .
         file: ./${{ steps.prep.outputs.category }}/${{ matrix.container }}/Dockerfile
         load: true
         tags: |
-          ghcr.io/${{ github.repository_owner }}/${{ matrix.container }}:test
+          ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:test
         cache-from: ${{ steps.prep.outputs.cache_from }}
         cache-to: ${{ steps.prep.outputs.cache_to }}
 
-    # Run GOSS tests if included with the container
-    - name: Run GOSS tests
-      if: ${{ steps.prep.outputs.goss == 'true' }}
+    - name: Run Docker tests
       env:
         GOSS_FILE: ./${{ steps.prep.outputs.category }}/${{ matrix.container }}/goss.yaml
       run: |
-        dgoss run ghcr.io/${{ github.repository_owner }}/${{ matrix.container }}:test
+        if test -f "./${CATEGORY}/${{ matrix.container }}/goss.yaml"; then
+           dgoss run ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:test
+        else
+           docker run --rm ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:test
+        fi
 
-    # Push if not a PR, otherwise just test the build process for all requested platforms
-    - name: Build and Push
-      uses: docker/build-push-action@v2
+    - name: Build and Push Image
+      uses: docker/build-push-action@v2.7.0
       with:
         build-args: VERSION=${{ steps.prep.outputs.version }}
         context: .
@@ -169,9 +165,20 @@ jobs:
         file: ./${{ steps.prep.outputs.category }}/${{ matrix.container }}/Dockerfile
         push: ${{ steps.prep.outputs.push }}
         tags: |
-          ghcr.io/${{ github.repository_owner }}/${{ matrix.container }}:latest
-          ghcr.io/${{ github.repository_owner }}/${{ matrix.container }}:v${{ steps.prep.outputs.version }}
+          ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:latest
+          ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:v${{ steps.prep.outputs.version }}
         cache-from: ${{ steps.prep.outputs.cache_from }}
         cache-to: ${{ steps.prep.outputs.cache_to }}
+        labels: |
+          org.opencontainers.image.title=${{ matrix.container }}
+          org.opencontainers.image.version=${{ steps.prep.outputs.version }}
+          org.opencontainers.image.maintainer=${{ github.repository_owner }}
+          org.opencontainers.image.created=${{ steps.prep.outputs.created }}
 
+    - name: Move cache
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv ${{ steps.prep.outputs.cache_from }} ${{ steps.prep.outputs.cache_to }}
 
+    - name: Image digest
+      run: echo ${{ steps.docker_build.outputs.digest }}

@@ -1,5 +1,5 @@
 #!/usr/bin/with-contenv bash
 
 exec \
-   s6-setuidgid abc python3 /app/tautulli/bin/python3 /app/tautulli/Tautulli.py \
-   --datadir /config --quiet --daemon --nolaunch
+   s6-setuidgid abc python3 /app/tautulli/Tautulli.py \
+   --datadir /config
