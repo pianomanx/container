@@ -7,11 +7,6 @@ on:
     paths:
      - 'base/**'
      - 'apps/**'
-    branches-ignore:
-     - 'dependabot/**'
-     - 'dev'
-     - 'all-contributors/**'
-     - 'mergify/**'
   pull_request:
     paths:
      - 'base/**'
