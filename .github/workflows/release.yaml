@@ -21,7 +21,7 @@ env:
 # Detect which folders in project-root (which contain the containers) contain changes
 jobs:
   get-version:
-    runs-on: self-hosted
+    runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
       with:
@@ -35,7 +35,7 @@ jobs:
 
   changes:
     name: Get changes
-    runs-on: self-hosted
+    runs-on: ubuntu-20.04
     needs:
     - get-version
     outputs:
@@ -59,7 +59,7 @@ jobs:
 
   build:
     name: Build
-    runs-on: self-hosted
+    runs-on: ubuntu-20.04
     needs:
     - changes
     - get-version
