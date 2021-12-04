@@ -3,14 +3,19 @@ on:
   workflow_dispatch:
   push:
     branches:
-    - master
+     - master
     paths:
-    - 'base/**'
-    - 'apps/**'
+     - 'base/**'
+     - 'apps/**'
+    branches-ignore:
+     - 'dependabot/**'
+     - 'dev'
+     - 'all-contributors/**'
+     - 'mergify/**'
   pull_request:
     paths:
-    - 'base/**'
-    - 'apps/**'
+     - 'base/**'
+     - 'apps/**'
 
 jobs:
   addcon:
