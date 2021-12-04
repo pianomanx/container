@@ -148,7 +148,7 @@ jobs:
 
     - name: Run Docker tests
       env:
-        GOSS_WAIT_OPTS: : ./${{ steps.prep.outputs.category }}/${{ matrix.container }}/goss_wait.yaml
+        GOSS_WAIT_OPTS: ./${{ steps.prep.outputs.category }}/${{ matrix.container }}/goss_wait.yaml
         GOSS_FILE: ./${{ steps.prep.outputs.category }}/${{ matrix.container }}/goss.yaml
       run: |
         if test -f "./${CATEGORY}/${{ matrix.container }}/goss.yaml"; then
