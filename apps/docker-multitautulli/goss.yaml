@@ -1,0 +1,6 @@
+---
+file:
+  /config/config.ini:
+    exists: true
+  /config/tautulli.db:
+    exists: true
