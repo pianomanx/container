@@ -115,10 +115,7 @@ jobs:
       with:
         install: true
         version: latest
-        driver-opts: |
-          image=${{ env.MOBY }}
-          network=host
-        config: .github/buildkitd.toml
+        driver-opts: image=${{ env.MOBY }}
 
     - name: Cache Docker layers
       uses: actions/cache@v2.1.7
@@ -146,11 +143,6 @@ jobs:
           org.opencontainers.image.version=${{ steps.prep.outputs.version }}
           org.opencontainers.image.maintainer=${{ github.repository_owner }}
           org.opencontainers.image.created=${{ steps.prep.outputs.created }}
-
-    - name: Move cache
-      run: |
-        rm -rf /tmp/.buildx-cache
-        mv ${{ steps.prep.outputs.cache_from }} ${{ steps.prep.outputs.cache_to }}
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
