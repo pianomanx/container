@@ -6,7 +6,7 @@ ENV REL=bionic
 ENV ARCH=amd64
 # install packages
 RUN \
- apk --quiet --no-cache --no-progress bash curl tzdata xz
+ apk add --no-cache bash curl tzdata xz
 
 # grab base tarball
 RUN \
