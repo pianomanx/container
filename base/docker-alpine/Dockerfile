@@ -25,7 +25,8 @@ RUN \
 	bash \
 	curl \
 	tzdata \
-	xz
+	xz \
+        jq
 
 # fetch builder script from gliderlabs
 RUN \
@@ -45,14 +46,16 @@ RUN \
 FROM scratch
 COPY --from=rootfs-stage /root-out/ /
 ARG VERSION
-
-# set version for s6 overlay
-ARG OVERLAY_VERSION="v2.2.0.3"
 ARG OVERLAY_ARCH="amd64"
 
-# add s6 overlay
-ADD https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}-installer /tmp/
-RUN chmod +x /tmp/s6-overlay-${OVERLAY_ARCH}-installer && /tmp/s6-overlay-${OVERLAY_ARCH}-installer / && rm /tmp/s6-overlay-${OVERLAY_ARCH}-installer
+# set version for s6 overlay
+RUN set -x && apk add --no-cache curl coreutils tzdata shadow curl tar \
+  && OVERLAY_VERSION=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') && \
+  && curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz | tar xvzf - -C / \
+  apk del --no-cache curl \
+  apk del --purge \
+  rm -rf /tmp/*
+
 COPY ./base/docker-alpine/patch/ /tmp/patch
 
 # environment variables
