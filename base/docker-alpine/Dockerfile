@@ -44,13 +44,12 @@ FROM scratch
 COPY --from=rootfs-stage /root-out/ /
 ARG VERSION
 
-# set version for s6 overlay
-ARG OVERLAY_VERSION=$(curl -sX GET "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
+# set arch s6 overlay
 ARG OVERLAY_ARCH="amd64"
 
 # add s6 overlay
-RUN OVERLAY_VERSION=$(curl -sX GET "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
-ADD https://github.com/just-containers/s6-overlay/releases/download/v"${OVERLAY_VERSION}"/s6-overlay-${OVERLAY_ARCH}-installer /tmp/
+RUN OVERLAY_VERSION=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name')
+ADD https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}-installer /tmp/
 RUN chmod +x /tmp/s6-overlay-${OVERLAY_ARCH}-installer && /tmp/s6-overlay-${OVERLAY_ARCH}-installer / && rm /tmp/s6-overlay-${OVERLAY_ARCH}-installer
 COPY ./base/docker-alpine/patch/ /tmp/patch
 
