@@ -1,11 +1,10 @@
 ARG VERSION
-FROM alpine:${VERSION} as rootfs-stage
+FROM alpine:3.14 as rootfs-stage
 
 # environment
 ENV REL=v${VERSION}
 ENV ARCH=x86_64
 ENV MIRROR=http://dl-cdn.alpinelinux.org/alpine
-ENV OVERLAY_VERSION=v${OVERLAY_VERSION}
 
 ENV PACKAGES=alpine-baselayout,\
 alpine-keys,\
@@ -41,13 +40,12 @@ FROM scratch
 COPY --from=rootfs-stage /root-out/ /
 ARG VERSION
 
-# set arch s6 overlay
+# set version for s6 overlay
+ARG OVERLAY_VERSION="v2.2.0.3"
 ARG OVERLAY_ARCH="amd64"
 
 # add s6 overlay
-RUN OVERLAY_VERSION=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name')
-RUN echo "${OVERLAY_VERSION}"
-ADD https://github.com/just-containers/s6-overlay/releases/download/$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name')/s6-overlay-${OVERLAY_ARCH}-installer /tmp/
+ADD https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}-installer /tmp/
 RUN chmod +x /tmp/s6-overlay-${OVERLAY_ARCH}-installer && /tmp/s6-overlay-${OVERLAY_ARCH}-installer / && rm /tmp/s6-overlay-${OVERLAY_ARCH}-installer
 COPY ./base/docker-alpine/patch/ /tmp/patch
 
