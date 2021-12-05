@@ -11,15 +11,7 @@
 # NO CODE MIRRORING IS ALLOWED      #
 #####################################
 ARG VERSION
-FROM ghcr.io/linuxserver/baseimage-alpine:${VERSION}
-LABEL maintainer=dockserver
-
-RUN \
-  echo "**** install build packages ****" && \
-  apk --quiet --no-cache --no-progress add bash curl bc findutils coreutils && \
-  rm -rf /var/cache/apk/*
-
+FROM ghcr.io/dockserver/docker-alpine:v${VERSION}
 VOLUME [ "/system" ]
 COPY ./apps/docker-mount/root/ /
-# Setup EntryPoint
 ENTRYPOINT [ "/init" ]

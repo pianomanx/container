@@ -1,5 +1,5 @@
 ARG VERSION
-FROM ghcr.io/linuxserver/baseimage-alpine:${VERSION} as guacbuilder
+FROM ghcr.io/dockserver/docker-alpine:latest as guacbuilder
 
 ARG GUACD_VERSION=1.1.0
 
@@ -21,9 +21,7 @@ RUN \
 	cunit-dev \
 	autoconf \
 	automake \
-	alpine-sdk
-
-RUN \
+	alpine-sdk && \
  echo "**** compile guacamole ****" && \
  mkdir /buildout && \
  mkdir /tmp/guac && \
@@ -61,7 +59,7 @@ RUN \
  make DESTDIR=/buildout install
 
 ARG VERSION
-FROM ghcr.io/linuxserver/baseimage-alpine:${VERSION} as nodebuilder
+FROM ghcr.io/dockserver/docker-alpine:latest as nodebuilder
 ARG GCLIENT_RELEASE
 
 RUN \
@@ -74,9 +72,7 @@ RUN \
 	make \
 	nodejs \
 	npm \
-	python3 
-	
-RUN \
+	python3 && \
  echo "**** grab source ****" && \
  mkdir -p /gclient && \
  if [ -z ${GCLIENT_RELEASE+x} ]; then \

@@ -1,27 +1,23 @@
-FROM ghcr.io/linuxserver/baseimage-ubuntu:bionic
+FROM ghcr.io/dockserver/docker-ubuntu-focal:latest
 
-# set version label
-ARG BUILD_DATE
 ARG VERSION
-
-# environment variables
 ARG DEBIAN_FRONTEND="noninteractive"
 ENV PYTHON_EGG_CACHE="/config/plugins/.python-eggs"
 
 # install software
 RUN \
  echo "**** add repositories ****" && \
- apt-get update && \
- apt-get install -y \
+ apt-get update -yqq && \
+ apt-get install -yqq \
 	gnupg && \
  apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C5E6A5ED249AD24C && \
- echo "deb http://ppa.launchpad.net/deluge-team/stable/ubuntu bionic main" >> \
+ echo "deb http://ppa.launchpad.net/deluge-team/stable/ubuntu focal main" >> \
 	/etc/apt/sources.list.d/deluge.list && \
- echo "deb-src http://ppa.launchpad.net/deluge-team/stable/ubuntu bionic main" >> \
+ echo "deb-src http://ppa.launchpad.net/deluge-team/stable/ubuntu focal main" >> \
 	/etc/apt/sources.list.d/deluge.list && \
  echo "**** install packages ****" && \
- apt-get update && \
- apt-get install -y \
+ apt-get update -yqq && \
+ apt-get install -yqq \
 	deluged \
 	deluge-console \
 	deluge-web \

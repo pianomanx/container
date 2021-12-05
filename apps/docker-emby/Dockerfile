@@ -1,7 +1,6 @@
 FROM ghcr.io/linuxserver/baseimage-ubuntu:bionic as buildstage
 
-# build args
-ARG EMBY_RELEASE
+ARG VERSION
 ENV DEBIAN_FRONTEND="noninteractive" 
 
 RUN \
@@ -14,10 +13,7 @@ RUN \
  echo "**** install emby ****" && \
  mkdir -p \
 	/app/emby && \
- if [ -z ${EMBY_RELEASE+x} ]; then \
-	EMBY_RELEASE=$(curl -s https://api.github.com/repos/MediaBrowser/Emby.Releases/releases/latest \
-	| jq -r '. | .tag_name'); \
- fi && \
+ EMBY_RELEASE=$(curl -s https://api.github.com/repos/MediaBrowser/Emby.Releases/releases/latest | jq -r '. | .tag_name') && \
  curl -o \
 	/tmp/emby.rpm -L \
 	"https://github.com/MediaBrowser/Emby.Releases/releases/download/${EMBY_RELEASE}/emby-server-rpm_${EMBY_RELEASE}_x86_64.rpm" && \
@@ -32,16 +28,11 @@ RUN \
 	/tmp/opt/emby-server/etc \
 	/tmp/opt/emby-server/extra/lib/*
 
-# runtime stage
-FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
+FROM ghcr.io/dockserver/docker-ubuntu-focal:latest
 
-# set version label
 ARG VERSION
-
-# add needed nvidia environment variables for https://github.com/NVIDIA/nvidia-docker
 ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility"
 
-# install packages
 RUN \
  echo "**** install packages ****" && \
  apt-get update && \
@@ -53,10 +44,8 @@ RUN \
 	/var/lib/apt/lists/* \
 	/var/tmp/*
 
-# add local files
 COPY --from=buildstage /app/emby /app/emby
 COPY ./apps/docker-emby/root/ /
 
-# ports and volumes
 EXPOSE 8096 8920
 VOLUME /config

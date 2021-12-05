@@ -1,10 +1,6 @@
-FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
+FROM ghcr.io/dockserver/docker-ubuntu-focal:latest
 
-# set version label
 ARG VERSION
-ARG READARR_RELEASE
-
-# environment settings
 ARG DEBIAN_FRONTEND="noninteractive"
 ARG READARR_BRANCH="nightly"
 ENV XDG_CONFIG_HOME="/config/xdg"
@@ -17,18 +13,15 @@ RUN \
     libicu66 \
     sqlite3 && \
   echo "**** install readarr ****" && \
-  mkdir -p /app/readarr/bin && \
-  if [ -z ${READARR_RELEASE+x} ]; then \
-    READARR_RELEASE=$(curl -sL "https://readarr.servarr.com/v1/update/${READARR_BRANCH}/changes?runtime=netcore&os=linux" \
-    | jq -r '.[0].version'); \
-  fi && \
+    mkdir -p /app/readarr/bin && \
+    READARR_RELEASE=$(curl -sL "https://readarr.servarr.com/v1/update/${READARR_BRANCH}/changes?runtime=netcore&os=linux" | jq -r '.[0].version') && \
   curl -o \
   /tmp/readarr.tar.gz -L \
     "https://readarr.servarr.com/v1/update/${READARR_BRANCH}/updatefile?version=${READARR_RELEASE}&os=linux&runtime=netcore&arch=x64" && \
   tar ixzf \
   /tmp/readarr.tar.gz -C \
     /app/readarr/bin --strip-components=1 && \
-  echo "UpdateMethod=docker\nBranch=${READARR_BRANCH}\nPackageVersion=${VERSION}\nPackageAuthor=dockserver.io" > /app/readarr/package_info && \
+  echo "UpdateMethod=docker\nBranch=${READARR_BRANCH}\nPackageVersion=${VERSION}\nPackageAuthor=[dockserver.io](https://dockserver.io/)" > /app/readarr/package_info && \
   echo "**** cleanup ****" && \
   rm -rf \
     /app/readarr/bin/Readarr.Update \
@@ -36,9 +29,7 @@ RUN \
     /var/lib/apt/lists/* \
     /var/tmp/*
 
-# copy local files
 COPY ./apps/docker-readarr/root/ /
 
-# ports and volumes
 EXPOSE 8787
 VOLUME /config

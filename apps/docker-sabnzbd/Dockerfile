@@ -2,9 +2,6 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
 
 # set version label
 ARG VERSION
-ARG SABNZBD_VERSION
-
-# environment settings
 ARG DEBIAN_FRONTEND="noninteractive"
 ENV HOME="/config" \
 PYTHONIOENCODING=utf-8
@@ -22,7 +19,7 @@ RUN \
   echo "deb-src http://ppa.launchpad.net/jcfp/sab-addons/ubuntu focal main" >> /etc/apt/sources.list.d/sabnzbd.list && \
   echo "**** install packages ****" && \
   apt-get update && \
-  apt-get install -y \
+  apt-get install -yqq \
     libffi-dev \
     libssl-dev \
     p7zip-full \
@@ -33,10 +30,7 @@ RUN \
     python3-pip \
     python3-setuptools \
     unrar && \
-  if [ -z ${SABNZBD_VERSION+x} ]; then \
-    SABNZBD_VERSION=$(curl -s https://api.github.com/repos/sabnzbd/sabnzbd/releases/latest \
-      | awk '/tag_name/{print $4;exit}' FS='[""]'); \
-  fi && \
+    SABNZBD_VERSION=$(curl -s https://api.github.com/repos/sabnzbd/sabnzbd/releases/latest | awk '/tag_name/{print $4;exit}' FS='[""]') && \
   mkdir -p /app/sabnzbd && \
   curl -o \
     /tmp/sabnzbd.tar.gz -L \

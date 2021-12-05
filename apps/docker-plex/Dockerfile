@@ -1,12 +1,7 @@
-FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
-
-# set version label
+FROM ghcr.io/dockserver/docker-ubuntu-focal:latest
 ARG VERSION
 
-#Add needed nvidia environment variables for https://github.com/NVIDIA/nvidia-docker
 ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility"
-
-# global environment settings
 ENV DEBIAN_FRONTEND="noninteractive" \
 PLEX_DOWNLOAD="https://downloads.plex.tv/plex-media-server-new" \
 PLEX_ARCH="amd64" \
@@ -38,9 +33,7 @@ RUN \
 		-L "${i}"; \
  done && \
  dpkg -i /opencl-intel/*.deb && \
- rm -rf /opencl-intel
-
-RUN \
+ rm -rf /opencl-intel && \
  echo "**** install plex ****" && \
   curl -o \
 	/tmp/plexmediaserver.deb -L \

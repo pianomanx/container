@@ -1,15 +1,11 @@
-FROM ghcr.io/linuxserver/baseimage-ubuntu:bionic
+FROM ghcr.io/dockserver/docker-ubuntu-focal:latest
 
-# set version label
 ARG VERSION
-ARG EMBYSTAT_RELEASE
-
-# environment settings
 ENV HOME="/config"
 
 RUN \
- apt-get update && \
- apt-get install -y \
+ apt-get update -yqq && \
+ apt-get install -yqq \
 	jq \
 	libicu60 \
 	libssl1.0 \
@@ -17,10 +13,7 @@ RUN \
  echo "**** install embystat ****" && \
  mkdir -p \
 	/opt/embystat && \
- if [ -z ${EMBYSTAT_RELEASE+x} ]; then \
-	EMBYSTAT_RELEASE=$(curl -sX GET "https://api.github.com/repos/mregni/EmbyStat/releases" \
-	| jq -r 'first(.[] | .tag_name)'); \
- fi && \
+ EMBYSTAT_RELEASE=$(curl -sX GET "https://api.github.com/repos/mregni/EmbyStat/releases" | jq -r 'first(.[] | .tag_name)') && \
  curl -o \
  /tmp/embystat.zip -L \
 	"https://github.com/mregni/EmbyStat/releases/download/${EMBYSTAT_RELEASE}/EmbyStat-ubuntu-x64-v${EMBYSTAT_RELEASE}.zip" && \
@@ -34,7 +27,7 @@ RUN \
 	/var/tmp/*
 
 # add local files
-COPY ./apps/docker-embystat/root /
+COPY ./apps/docker-embystat/root/ /
 
 # ports and volumes
 EXPOSE 6555

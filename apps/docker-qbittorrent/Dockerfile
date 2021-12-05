@@ -1,9 +1,6 @@
-FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
+FROM ghcr.io/dockserver/docker-ubuntu-focal:latest
 
-# set version label
-ARG QBVERSION
-
-# environment settings
+ARG VERSION
 ARG DEBIAN_FRONTEND="noninteractive"
 ENV HOME="/config" \
 XDG_CONFIG_HOME="/config" \
@@ -38,9 +35,7 @@ RUN \
     /var/lib/apt/lists/* \
     /var/tmp/*
 
-# add local files
 COPY ./apps/docker-qbittorrent/root/ /
 
-# ports and volumes
 EXPOSE 6881 6881/udp 8080
 VOLUME /config

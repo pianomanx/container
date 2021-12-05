@@ -1,9 +1,6 @@
 FROM ghcr.io/linuxserver/baseimage-alpine-nginx:3.15
 
-# set version label
-ARG BUILD_DATE
 ARG VERSION
-ARG LIBRESPEED_RELEASE
 
 RUN \
  echo "**** install packages ****" && \
@@ -15,25 +12,14 @@ RUN \
 	php7-pdo_pgsql \
 	php7-pdo_sqlite && \
  echo "**** install librespeed ****" && \
- if [ -z ${LIBRESPEED_RELEASE+x} ]; then \
-	LIBRESPEED_RELEASE=$(curl -sX GET "https://api.github.com/repos/librespeed/speedtest/releases/latest" \
-	| awk '/tag_name/{print $4;exit}' FS='[""]'); \
- fi && \
- mkdir -p \
-	/usr/share/webapps/librespeed && \
- curl -o \
-	/tmp/librespeed.tar.gz -L \
-	"https://github.com/librespeed/speedtest/archive/${LIBRESPEED_RELEASE}.tar.gz" && \
- tar xf \
-	/tmp/librespeed.tar.gz -C \
-	/usr/share/webapps/librespeed --strip-components=1 && \
+   LIBRESPEED_RELEASE=$(curl -sX GET "https://api.github.com/repos/librespeed/speedtest/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]') && \
+   mkdir -p /usr/share/webapps/librespeed && \
+   curl -o /tmp/librespeed.tar.gz -L "https://github.com/librespeed/speedtest/archive/${LIBRESPEED_RELEASE}.tar.gz" && \
+   tar xf /tmp/librespeed.tar.gz -C /usr/share/webapps/librespeed --strip-components=1 && \
  echo "**** cleanup ****" && \
- rm -rf \
-	/tmp/*
+   rm -rf /tmp/*
 
-# add local files
 COPY ./apps/docker-librespeed/root/ /
 
-# ports and volumes
 EXPOSE 80
 VOLUME /config

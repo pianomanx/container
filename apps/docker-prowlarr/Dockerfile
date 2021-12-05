@@ -1,16 +1,13 @@
-FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
+FROM ghcr.io/dockserver/docker-ubuntu-focal:latest
 
-# set version label
 ARG VERSION
-
-# environment settings
 ARG DEBIAN_FRONTEND="noninteractive"
 ARG PROWLARR_BRANCH="nightly"
 ENV XDG_CONFIG_HOME="/config/xdg"
 
 RUN \
   echo "**** install packages ****" && \
-  apt-get update && \
+  apt-get update -yqq && \
   apt-get install --no-install-recommends -y \
     jq \
     libicu66 \
@@ -32,9 +29,6 @@ RUN \
     /var/lib/apt/lists/* \
     /var/tmp/*
 
-# copy local files
 COPY ./apps/docker-prowlarr/root/ /
-
-# ports and volumes
 EXPOSE 9696
 VOLUME /config

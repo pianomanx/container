@@ -1,5 +1,5 @@
 # hadolint ignore=DL3007
-FROM ghcr.io/linuxserver/baseimage-ubuntu:focal as builder
+FROM ghcr.io/dockserver/docker-ubuntu-focal:latest as builder
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -28,8 +28,6 @@ RUN \
 
 # hadolint ignore=DL3002
 USER abc
-
-# add local files
 COPY ./apps/docker-hyperhdr/root/ /
 
 EXPOSE 8090 19444 19445

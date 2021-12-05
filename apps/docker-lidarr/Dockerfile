@@ -1,27 +1,20 @@
-FROM ghcr.io/linuxserver/baseimage-ubuntu:bionic
+FROM ghcr.io/dockserver/docker-ubuntu-focal:latest
 
-# set version label
 ARG VERSION
-ARG LIDARR_RELEASE
-
-# environment settings
 ARG DEBIAN_FRONTEND="noninteractive"
 ARG LIDARR_BRANCH="master"
 ENV XDG_CONFIG_HOME="/config/xdg"
 
 RUN \
   echo "**** install packages ****" && \
-  apt-get update && \
+  apt-get update -yqq && \
   apt-get install --no-install-recommends -y \
     jq \
     libchromaprint-tools \
     libicu60 && \
   echo "**** install lidarr ****" && \
   mkdir -p /app/lidarr/bin && \
-  if [ -z ${LIDARR_RELEASE+x} ]; then \
-    LIDARR_RELEASE=$(curl -sL "https://lidarr.servarr.com/v1/update/${LIDARR_BRANCH}/changes?runtime=netcore&os=linux" \
-    | jq -r '.[0].version'); \
-  fi && \
+  LIDARR_RELEASE=$(curl -sL "https://lidarr.servarr.com/v1/update/${LIDARR_BRANCH}/changes?runtime=netcore&os=linux" | jq -r '.[0].version') && \
   curl -o \
     /tmp/lidarr.tar.gz -L \
     "https://lidarr.servarr.com/v1/update/${LIDARR_BRANCH}/updatefile?version=${LIDARR_RELEASE}&os=linux&runtime=netcore&arch=x64" && \
@@ -36,9 +29,7 @@ RUN \
     /var/lib/apt/lists/* \
     /var/tmp/*
 
-# copy local files
 COPY ./apps/docker-lidarr/root/ /
 
-# ports and volumes
 EXPOSE 8686
 VOLUME /config
