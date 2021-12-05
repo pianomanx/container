@@ -49,11 +49,9 @@ ARG OVERLAY_ARCH="amd64"
 
 # set version for s6 overlay
 RUN set -x && apk add --no-cache bash curl coreutils tzdata shadow curl tar jq \
-  && OVERLAY_VERSION=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') ~
+  && OVERLAY_VERSION=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') \
   && curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz | tar xvzf - -C / \
-  apk del --no-cache curl \
-  apk del --purge \
-  rm -rf /tmp/*
+  && apk del --no-cache curl && apk del --purge &&  rm -rf /tmp/*
 
 COPY ./base/docker-alpine/patch/ /tmp/patch
 
