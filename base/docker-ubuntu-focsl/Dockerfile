@@ -43,7 +43,7 @@ RUN set -x && apt-get install -y curl tzdata curl tar jq \
 	/var/lib/apt/lists/* \
 	/var/tmp/*
 
-OPY ./apps/docker-ubuntu-focal/patch/ /tmp/patch
+COPY ./apps/docker-ubuntu-focal/patch/ /tmp/patch
 
 # set environment variables
 ARG DEBIAN_FRONTEND="noninteractive"
