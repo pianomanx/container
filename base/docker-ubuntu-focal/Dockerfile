@@ -26,13 +26,13 @@ RUN \
 FROM scratch
 COPY --from=rootfs-stage /root-out/ /
 ARG VERSION
-OVERLAY_ARCH='amd64'
 
 RUN \
   apt-get update -yqq && apt-get install -y curl tzdata curl tar jq
+
 RUN \
-  && OVERLAY_VERSION=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') \
-  && curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz | tar xvzf - -C /
+  OVERLAY_VERSION=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') \
+  && OVERLAY_ARCH='amd64' && curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz | tar xvzf - -C /
 
 COPY ./base/docker-ubuntu-focal/patch/ /tmp/patch
 
