@@ -1,4 +1,4 @@
-FROM ghcr.io/dockserver/docker-alpine
+FROM ghcr.io/linuxserver/baseimage-alpine:3.14
 
 ARG VERSION
 ENV TZ="Etc/UTC"
