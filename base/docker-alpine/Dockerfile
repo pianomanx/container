@@ -45,7 +45,7 @@ ARG VERSION
 ARG OVERLAY_VERSION=${OVERLAY_VERSION}
 ARG OVERLAY_ARCH="amd64"
 
-ENV OVERLAY_VERSION=${OVERLAY_VERSION}
+ENV OVERLAY_VERSION=v${OVERLAY_VERSION}
 
 # add s6 overlay
 ADD https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}-installer /tmp/
