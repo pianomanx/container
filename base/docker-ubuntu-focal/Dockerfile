@@ -6,11 +6,7 @@ ENV REL=bionic
 ENV ARCH=amd64
 # install packages
 RUN \
- apk add --no-cache \
-        bash \
-        curl \
-        tzdata \
-        xz
+ apk --quiet --no-cache --no-progress bash curl tzdata xz
 
 # grab base tarball
 RUN \
@@ -28,11 +24,14 @@ COPY --from=rootfs-stage /root-out/ /
 ARG VERSION
 
 RUN \
-  apt-get update -yqq && apt-get install -y curl tzdata curl tar jq
-
-RUN \
-  OVERLAY_VERSION=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') \
-  && OVERLAY_ARCH='amd64' && curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz | tar xvzf - -C /
+  apt-get update -yqq && apt-get install -yqq curl tzdata curl tar jq \
+  && OVERLAY_VERSION=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') \
+  && OVERLAY_ARCH='amd64' && curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz | tar xvzf - -C / \
+  && apt-get autoremove -yqq && apt-get clean \
+  && rm -rf \
+     /tmp/* \
+     /var/lib/apt/lists/* \
+     /var/tmp/*
 
 COPY ./base/docker-ubuntu-focal/patch/ /tmp/patch
 
@@ -80,12 +79,12 @@ RUN \
  echo 'docker' \
 	> /run/systemd/container && \
  echo "**** install apt-utils and locales ****" && \
- apt-get update && \
- apt-get install -y \
+ apt-get update -yqq && \
+ apt-get install -yqq \
 	apt-utils \
 	locales && \
  echo "**** install packages ****" && \
- apt-get install -y \
+ apt-get install -yqq \
 	curl \
 	patch \
 	tzdata && \
