@@ -53,7 +53,7 @@ LANG="en_US.UTF-8" \
 TERM="xterm"
 
 # copy sources
-OPY ./apps/docker-ubuntu-focal/sources.list /etc/apt/
+COPY ./apps/docker-ubuntu-focal/sources.list /etc/apt/
 
 RUN \
  echo "**** Ripped from Ubuntu Docker Logic ****" && \
