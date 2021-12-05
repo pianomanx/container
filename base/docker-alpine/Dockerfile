@@ -3,7 +3,7 @@ FROM alpine:${VERSION} as rootfs-stage
 
 # environment
 ENV REL=v3.15
-ENV ARCH=$(uname -m)
+##ENV ARCH=x86_64
 ENV MIRROR=http://dl-cdn.alpinelinux.org/alpine
 ENV PACKAGES=alpine-baselayout,\
 alpine-keys,\
