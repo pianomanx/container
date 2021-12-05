@@ -43,7 +43,7 @@ RUN set -x && apt-get install -y curl tzdata curl tar jq \
 	/var/lib/apt/lists/* \
 	/var/tmp/*
 
-COPY ./apps/docker-ubuntu-focal/patch/ /tmp/patch
+COPY ./base/docker-ubuntu-focal/patch/ /tmp/patch
 
 # set environment variables
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -53,7 +53,7 @@ LANG="en_US.UTF-8" \
 TERM="xterm"
 
 # copy sources
-COPY ./apps/docker-ubuntu-focal/sources.list /etc/apt/
+COPY ./base/docker-ubuntu-focal/sources.list /etc/apt/
 
 RUN \
  echo "**** Ripped from Ubuntu Docker Logic ****" && \
@@ -119,6 +119,6 @@ RUN \
 	/var/tmp/*
 
 # add local files
-COPY ./apps/docker-ubuntu-focal/root/ /
+COPY ./base/docker-ubuntu-focal/root/ /
 
 ENTRYPOINT ["/init"]
