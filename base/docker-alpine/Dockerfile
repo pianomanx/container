@@ -1,5 +1,5 @@
 ARG VERSION
-FROM alpine:3.14 as rootfs-stage
+FROM alpine:${VERSION} as rootfs-stage
 
 # environment
 ENV REL=v3.15
@@ -45,10 +45,16 @@ RUN \
 FROM scratch
 COPY --from=rootfs-stage /root-out/ /
 ARG VERSION
-ARG OVERLAY_ARCH="amd64"
 
 # set version for s6 overlay
 RUN set -x && apk add --no-cache bash curl coreutils tzdata shadow curl tar jq \
+  && OVERLAY_ARCH=$(uname -m) \
+  && case "${OVERLAY_ARCH}" in \
+    x86_64) OVERLAY_ARCH='amd64';; \
+    arm) OVERLAY_ARCH='armhf';; \
+    aarch64) OVERLAY_ARCH='aarch64';; \
+    *) echo "unsupported architecture"; exit 1 ;; \
+  esac \
   && OVERLAY_VERSION=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') \
   && curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz | tar xvzf - -C / \
   && apk del --no-cache curl && apk del --purge &&  rm -rf /tmp/*
