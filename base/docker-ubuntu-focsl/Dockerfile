@@ -27,14 +27,23 @@ FROM scratch
 COPY --from=rootfs-stage /root-out/ /
 ARG VERSION
 
-# set version for s6 overlay
-ARG OVERLAY_VERSION="v2.2.0.3"
-ARG OVERLAY_ARCH="amd64"
+RUN set -x && apt-get install -y curl tzdata curl tar jq \
+  && OVERLAY_ARCH=$(uname -m) \
+  && case "${OVERLAY_ARCH}" in \
+    x86_64) OVERLAY_ARCH='amd64';; \
+    arm) OVERLAY_ARCH='armhf';; \
+    aarch64) OVERLAY_ARCH='aarch64';; \
+    *) echo "unsupported architecture"; exit 1 ;; \
+  esac \
+  && OVERLAY_VERSION=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') \
+  && curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz | tar xvzf - -C / \
+  && apt-get autoremove && apt-get clean \
+  && rm -rf \
+	/tmp/* \
+	/var/lib/apt/lists/* \
+	/var/tmp/*
 
-# add s6 overlay
-ADD https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}-installer /tmp/
-RUN chmod +x /tmp/s6-overlay-${OVERLAY_ARCH}-installer && /tmp/s6-overlay-${OVERLAY_ARCH}-installer / && rm /tmp/s6-overlay-${OVERLAY_ARCH}-installer
-COPY patch/ /tmp/patch
+OPY ./apps/docker-ubuntu-focal/patch/ /tmp/patch
 
 # set environment variables
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -44,7 +53,7 @@ LANG="en_US.UTF-8" \
 TERM="xterm"
 
 # copy sources
-COPY sources.list /etc/apt/
+OPY ./apps/docker-ubuntu-focal/sources.list /etc/apt/
 
 RUN \
  echo "**** Ripped from Ubuntu Docker Logic ****" && \
