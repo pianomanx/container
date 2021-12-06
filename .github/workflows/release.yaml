@@ -16,6 +16,7 @@ on:
 env:
   GOSS_SLEEP: 30
   MOBY: "moby/buildkit:latest"
+  PLATFORM: "linux/amd64,linux/armhf,linux/arm64"
 
 jobs:
   get-version:
@@ -85,8 +86,7 @@ jobs:
            CREATED=$(date +'%Y-%m-%dT%H:%M:%SZ')
         echo ::set-output name=created::${CREATED}
         echo ::set-output name=source::dockserver.io
-           PLATFORMOUT=$(linux/amd64,linux/armhf,linux/arm64)
-        echo ::set-output name=platformout::${PLATFORMOUT}
+        echo ::set-output name=platformout::${{ env.PLATFORM }}
 
         if [ "${{github.event_name}}" == "pull_request" ]; then
            echo ::set-output name=push::false
@@ -182,7 +182,6 @@ jobs:
           org.opencontainers.image.description=${{ matrix.container }}
           org.opencontainers.image.source=${{ steps.prep.outputs.source }}
           org.opencontainers.image.vendor=${{ github.repository_owner }}
-          org.opencontainers.image.platform=${{ steps.prep.outputs.platformout }}
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
