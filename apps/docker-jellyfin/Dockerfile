@@ -1,4 +1,4 @@
-FROM ghcr.io/dockserver/docker-ubuntu-focal:latest
+FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
 
 ARG VERSION
 ARG DEBIAN_FRONTEND="noninteractive"
