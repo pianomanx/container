@@ -28,7 +28,7 @@ RUN \
 	/tmp/opt/emby-server/etc \
 	/tmp/opt/emby-server/extra/lib/*
 
-FROM ghcr.io/dockserver/docker-ubuntu-focal:latest
+FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
 
 ARG VERSION
 ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility"
