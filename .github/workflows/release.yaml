@@ -84,8 +84,7 @@ jobs:
         echo ::set-output name=platform::${PLATFORM}
            CREATED=$(date +'%Y-%m-%dT%H:%M:%SZ')
         echo ::set-output name=created::${CREATED}
-           SOURCE=$(https://dockserver.io)
-        echo ::set-output name=source::${SOURCE}
+        echo ::set-output name=source::dockserver.io
            PLATFORMOUT=$(linux/amd64,linux/armhf,linux/arm64)
         echo ::set-output name=platformout::${PLATFORMOUT}
 
@@ -184,9 +183,6 @@ jobs:
           org.opencontainers.image.source=${{ steps.prep.outputs.source }}
           org.opencontainers.image.vendor=${{ github.repository_owner }}
           org.opencontainers.image.platform=${{ steps.prep.outputs.platformout }}
-
-
-
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
