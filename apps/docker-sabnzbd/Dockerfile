@@ -29,8 +29,10 @@ RUN \
     python3-distutils \
     python3-pip \
     python3-setuptools \
-    unrar && \
-    SABNZBD_VERSION=$(curl -s https://api.github.com/repos/sabnzbd/sabnzbd/releases/latest | awk '/tag_name/{print $4;exit}' FS='[""]') && \
+    unrar
+
+RUN \
+  SABNZBD_VERSION=$(curl -s https://api.github.com/repos/sabnzbd/sabnzbd/releases/latest | awk '/tag_name/{print $4;exit}' FS='[""]') && \
   mkdir -p /app/sabnzbd && \
   curl -o \
     /tmp/sabnzbd.tar.gz -L \
@@ -60,9 +62,7 @@ RUN \
     /var/tmp/* \
     $HOME/.cache
 
-# add local files
 COPY ./apps/docker-sabnzbd/root/ /
 
-# ports and volumes
 EXPOSE 8080 9090
 VOLUME /config
