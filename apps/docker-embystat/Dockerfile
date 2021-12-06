@@ -1,4 +1,4 @@
-FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
+FROM ghcr.io/linuxserver/baseimage-ubuntu:bionic
 
 ARG VERSION
 ENV HOME="/config"
@@ -9,7 +9,8 @@ RUN \
 	jq \
 	libicu60 \
 	libssl1.0 \
-	unzip && \
+	unzip
+RUN \
  echo "**** install embystat ****" && \
  mkdir -p /opt/embystat && \
  EMBYSTAT_RELEASE=$(curl -sX GET "https://api.github.com/repos/mregni/EmbyStat/releases" | jq -r 'first(.[] | .tag_name)') && \
@@ -23,7 +24,6 @@ RUN \
 	/var/lib/apt/lists/* \
 	/var/tmp/*
 
-# add local files
 COPY ./apps/docker-embystat/root/ /
 
 # ports and volumes
