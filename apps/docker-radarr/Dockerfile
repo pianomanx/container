@@ -1,4 +1,4 @@
-FROM ghcr.io/dockserver/docker-ubuntu-focal:latest
+FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
 
 ARG VERSION
 ARG DEBIAN_FRONTEND="noninteractive"
@@ -30,9 +30,7 @@ RUN \
     /var/lib/apt/lists/* \
     /var/tmp/*
 
-# copy local files
 COPY ./apps/docker-radarr/root/ /
 
-# ports and volumes
 EXPOSE 7878
 VOLUME /config
