@@ -158,30 +158,5 @@ jobs:
           org.opencontainers.image.vendor=${{ github.repository_owner }}
           org.opencontainers.image.platform=${{ steps.prep.outputs.platformout }}
 
-    - name: Build and Push Image
-      uses: docker/bake-action@master
-      with:
-        build-args: VERSION=${{ steps.prep.outputs.version }}
-        context: .
-        platforms: ${{ steps.prep.outputs.platformout }}
-        file: ./${{ steps.prep.outputs.category }}/${{ matrix.container }}/Dockerfile
-        push: ${{ steps.prep.outputs.push }}
-        pull: ${{ steps.prep.outputs.push }}
-        tags: |
-          ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:latest
-          ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:v${{ steps.prep.outputs.version }}
-        cache-from: ${{ steps.prep.outputs.cache_from }}
-        cache-to: ${{ steps.prep.outputs.cache_to }}
-        labels: |
-          maintainer=${{ github.repository_owner }}
-          org.opencontainers.image.title=${{ matrix.container }}
-          org.opencontainers.image.version=${{ steps.prep.outputs.version }}
-          org.opencontainers.image.maintainer=${{ github.repository_owner }}
-          org.opencontainers.image.created=${{ steps.prep.outputs.created }}
-          org.opencontainers.image.authors=${{ github.repository_owner }}
-          org.opencontainers.image.description=${{ matrix.container }}
-          org.opencontainers.image.source=${{ steps.prep.outputs.source }}
-          org.opencontainers.image.vendor=${{ github.repository_owner }}
-
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
