@@ -1,4 +1,4 @@
-FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
+FROM ghcr.io/linuxserver/baseimage-ubuntu:bionic
 
 ARG VERSION
 ARG DEBIAN_FRONTEND="noninteractive"
