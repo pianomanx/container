@@ -1,0 +1,21 @@
+name: Rebase
+on:
+  workflow_dispatch:
+  push:
+    branches:
+    - master
+    paths:
+    - 'base/**'
+    - 'apps/**'
+  pull_request:
+    paths:
+    - 'base/**'
+    - 'apps/**'
+
+jobs:
+  rebase:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: peter-evans/rebase@v1
+        with:
+          base: master
