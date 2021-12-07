@@ -14,7 +14,7 @@ on:
 
 jobs:
   rebase:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - uses: peter-evans/rebase@v1
         with:
