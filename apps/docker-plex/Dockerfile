@@ -3,17 +3,9 @@ ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 ARG VERSION
 
-RUN \
-  case "${TARGETPLATFORM}" in \
-    'linux/amd64') export PLEX_ARCH="amd64" ;; \
-    'linux/armhf') export PLEX_ARCH="armhf" ;; \
-    'linux/arm64') export PLEX_ARCH="arm64" ;; \
-  esac
-
 ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility"
 ENV DEBIAN_FRONTEND="noninteractive" \
 PLEX_DOWNLOAD="https://downloads.plex.tv/plex-media-server-new" \
-PLEX_ARCH="${PLEX_ARCH}" \
 PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR="/config/Library/Application Support" \
 PLEX_MEDIA_SERVER_HOME="/usr/lib/plexmediaserver" \
 PLEX_MEDIA_SERVER_MAX_PLUGIN_PROCS="6" \
@@ -46,16 +38,19 @@ RUN \
 
 RUN \
  echo "**** install plex ****" && \
-  curl -o \
-	/tmp/plexmediaserver.deb -L \
-	"${PLEX_DOWNLOAD}/${VERSION}/debian/plexmediaserver_${VERSION}_${PLEX_ARCH}.deb" && \
- dpkg -i /tmp/plexmediaserver.deb && \
+ case "${TARGETPLATFORM}" in \
+   'linux/amd64') export PLEX_ARCH="amd64" ;; \
+   'linux/armhf') export PLEX_ARCH="armhf" ;; \
+   'linux/arm64') export PLEX_ARCH="arm64" ;; \
+  esac \
+  && \
+  curl -o /tmp/plexmediaserver.deb -L "${PLEX_DOWNLOAD}/${VERSION}/debian/plexmediaserver_${VERSION}_${PLEX_ARCH}.deb" && \
+  dpkg -i /tmp/plexmediaserver.deb && \
  echo "**** ensure abc user's home folder is /app ****" && \
- usermod -d /app abc && \
+   usermod -d /app abc && \
  echo "**** cleanup ****" && \
- apt-get clean && \
- rm -rf \
-	/etc/default/plexmediaserver \
+   apt-get clean -yqq && \
+   rm -rf /etc/default/plexmediaserver \
 	/tmp/* \
 	/var/lib/apt/lists/* \
 	/var/tmp/*
