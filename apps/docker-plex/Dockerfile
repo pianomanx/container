@@ -14,32 +14,50 @@ PLEX_MEDIA_SERVER_INFO_VENDOR="Docker" \
 PLEX_MEDIA_SERVER_INFO_DEVICE="Docker Container (dockserver.io)"
 
 RUN \
- echo "**** install runtime packages ****" && \
- apt-get update -yqq && \
- apt-get install -yqq \
+  case "${TARGETPLATFORM}" in \
+    'linux/amd64') \
+        export PLEX_ARCH='amd64'; \
+        export EXTRA_ARG='beignet-opencl-icd ocl-icd-libopencl1 i965-va-driver'; \
+    ;; \
+    'linux/armhf') \
+        export PLEX_ARCH='armhf'; \
+        export EXTRA_ARG=''; \
+        unset NVIDIA_DRIVER_CAPABILITIES; \
+    ;; \
+    'linux/arm64') \
+        export PLEX_ARCH='arm64'; \
+        export EXTRA_ARG=''; \
+        unset NVIDIA_DRIVER_CAPABILITIES; \
+    ;; \
+  esac \
+  echo "**** install runtime packages ****" && \
+  apt-get update -yqq && \
+  apt-get install -yqq \
 	jq \
 	udev \
 	unrar \
 	wget \
-	curl && \
-  PLEX_ARCH=$(uname -m) && \
+	unzip \
+	uuid-runtime \
+	${EXTRA_ARG} \
+  && \
   case "${PLEX_ARCH}" in \
-    x86_64) PLEX_ARCH='amd64' && apt-get install -yqq beignet-opencl-icd ocl-icd-libopencl1 ;; \
-    arm) PLEX_ARCH='armhf';; \
-    aarch64) PLEX_ARCH='arm64';; \
-    *) echo "unsupported architecture"; exit 1 ;; \
+    'amd64') \
+      COMP_RT_RELEASE=$(curl -sX GET "https://api.github.com/repos/intel/compute-runtime/releases/latest" | jq -r '.tag_name') \
+      && COMP_RT_URLS=$(curl -sX GET "https://api.github.com/repos/intel/compute-runtime/releases/tags/${COMP_RT_RELEASE}" | jq -r '.body' | grep wget | sed 's|wget ||g') \
+      && mkdir -p /opencl-intel \
+      && \
+      for i in ${COMP_RT_URLS}; do \
+        i=$(echo ${i} | tr -d '\r'); \
+        echo "**** downloading ${i} ****"; \
+        curl -o "/opencl-intel/$(basename ${i})" \
+          -L "${i}"; \
+      done \
+      && dpkg -i /opencl-intel/*.deb \
+      && rm -rf /opencl-intel \
+    ;; \
   esac \
- && \
-   COMP_RT_RELEASE=$(curl -sX GET "https://api.github.com/repos/intel/compute-runtime/releases/latest" | jq -r '.tag_name') && \
-   COMP_RT_URLS=$(curl -sX GET "https://api.github.com/repos/intel/compute-runtime/releases/tags/${COMP_RT_RELEASE}" | jq -r '.body' | grep wget | sed 's|wget ||g') && \
-   mkdir -p /opencl-intel && \
- for i in ${COMP_RT_URLS}; do \
-	i=$(echo ${i} | tr -d '\r'); \
-	echo "**** downloading ${i} ****"; \
-	curl -o "/opencl-intel/$(basename ${i})" -L "${i}"; \
- done && \
-   dpkg -i /opencl-intel/*.deb && \
-   rm -rf /opencl-intel && \
+  &&
  echo "**** install plex ****" && \
   curl -o /tmp/plexmediaserver.deb -L "${PLEX_DOWNLOAD}/${VERSION}/debian/plexmediaserver_${VERSION}_${PLEX_ARCH}.deb" && \
   dpkg -i /tmp/plexmediaserver.deb && \
