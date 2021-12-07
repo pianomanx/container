@@ -26,7 +26,7 @@ RUN \
   case "${PLEX_ARCH}" in \
     x86_64) PLEX_ARCH='amd64' && apt-get install -yqq beignet-opencl-icd ocl-icd-libopencl1 ;; \
     arm) PLEX_ARCH='armhf';; \
-    aarch64) PLEX_ARCH='aarch64';; \
+    aarch64) PLEX_ARCH='arm64';; \
     *) echo "unsupported architecture"; exit 1 ;; \
   esac \
  && \
