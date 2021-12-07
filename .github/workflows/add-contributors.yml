@@ -15,7 +15,7 @@ on:
 jobs:
   addcon:
     name: Add all Contributors to ReadME
-    runs-on: ubuntu-20.04
+    runs-on: self-hosted
     steps:
       - name: Check out code
         uses: actions/checkout@v2.4.0
