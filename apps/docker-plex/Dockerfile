@@ -57,7 +57,6 @@ RUN \
       && rm -rf /opencl-intel \
     ;; \
   esac \
-  &&
  echo "**** install plex ****" && \
   curl -o /tmp/plexmediaserver.deb -L "${PLEX_DOWNLOAD}/${VERSION}/debian/plexmediaserver_${VERSION}_${PLEX_ARCH}.deb" && \
   dpkg -i /tmp/plexmediaserver.deb && \
