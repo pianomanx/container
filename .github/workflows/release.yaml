@@ -16,7 +16,7 @@ on:
 env:
   GOSS_SLEEP: 30
   MOBY: "moby/buildkit:latest"
-  PLATFORM: "linux/amd64,linux/armhf,linux/arm64"
+  PLATFORM: "linux/amd64"
 
 jobs:
   get-version:
