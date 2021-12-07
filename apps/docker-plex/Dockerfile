@@ -1,10 +1,19 @@
 FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 ARG VERSION
+
+RUN \
+  case "${TARGETPLATFORM}" in \
+    'linux/amd64') export PLEX_ARCH="amd64" ;; \
+    'linux/armhf') export PLEX_ARCH="armhf" ;; \
+    'linux/arm64') export PLEX_ARCH="arm64" ;; \
+  esac
 
 ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility"
 ENV DEBIAN_FRONTEND="noninteractive" \
 PLEX_DOWNLOAD="https://downloads.plex.tv/plex-media-server-new" \
-PLEX_ARCH="amd64" \
+PLEX_ARCH="${PLEX_ARCH}" \
 PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR="/config/Library/Application Support" \
 PLEX_MEDIA_SERVER_HOME="/usr/lib/plexmediaserver" \
 PLEX_MEDIA_SERVER_MAX_PLUGIN_PROCS="6" \
@@ -16,12 +25,14 @@ RUN \
  echo "**** install runtime packages ****" && \
  apt-get update -yqq && \
  apt-get install -yqq \
-	beignet-opencl-icd \
 	jq \
-	ocl-icd-libopencl1 \
 	udev \
 	unrar \
 	wget && \
+ case "${TARGETPLATFORM}" in \
+    'linux/amd64') apt-get install beignet-opencl-icd ocl-icd-libopencl1 ;; \
+  esac \
+ && \
  COMP_RT_RELEASE=$(curl -sX GET "https://api.github.com/repos/intel/compute-runtime/releases/latest" | jq -r '.tag_name') && \
  COMP_RT_URLS=$(curl -sX GET "https://api.github.com/repos/intel/compute-runtime/releases/tags/${COMP_RT_RELEASE}" | jq -r '.body' | grep wget | sed 's|wget ||g') && \
  mkdir -p /opencl-intel && \
