@@ -29,9 +29,9 @@ RUN \
 	udev \
 	unrar \
 	wget && \
- case "${TARGETPLATFORM}" in \
-    'linux/amd64') apt-get install beignet-opencl-icd ocl-icd-libopencl1 ;; \
-  esac \
+    case "${TARGETPLATFORM}" in \
+       'linux/amd64') apt-get install beignet-opencl-icd ocl-icd-libopencl1 -yqq ;; \
+    esac \
  && \
  COMP_RT_RELEASE=$(curl -sX GET "https://api.github.com/repos/intel/compute-runtime/releases/latest" | jq -r '.tag_name') && \
  COMP_RT_URLS=$(curl -sX GET "https://api.github.com/repos/intel/compute-runtime/releases/tags/${COMP_RT_RELEASE}" | jq -r '.body' | grep wget | sed 's|wget ||g') && \
