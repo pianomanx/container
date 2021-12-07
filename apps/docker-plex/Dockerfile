@@ -14,6 +14,8 @@ ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility" \
     PLEX_MEDIA_SERVER_INFO_VENDOR="Docker" \
     PLEX_MEDIA_SERVER_INFO_DEVICE="Docker Container (dockserver.io)"
 
+
+# hadolint ignore=DL3008,DL3015,SC2039,SC2086
 RUN \
   case "${TARGETPLATFORM}" in \
     'linux/amd64') \
@@ -27,15 +29,14 @@ RUN \
     ;; \
   esac \
   && \
-  apt-get -qq update && \
+  apt-get -qq update \
+  && \
   apt-get -qq install -y \
     aria2 \
     jq \
     unrar \
     unzip \
     uuid-runtime \
-    curl \
-    wget \
     ${EXTRA_INSTALL_ARG} \
   && \
   case "${ARCH}" in \
@@ -55,25 +56,28 @@ RUN \
     ;; \
   esac \
   && \
-  echo "Using curl or wget to download the plex debian package result in a qemu failure, why? I dunno" && \
-    aria2c -d /tmp -o plex.deb "${PLEX_DOWNLOAD}/${VERSION}/debian/plexmediaserver_${VERSION}_${ARCH}.deb"  && \
-    dpkg -i --force-confold /tmp/plex.deb && \
-  echo "**** cleanup ****" && \
-    apt-get remove -yqq aria2 jq && \
-    apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \ 
-    apt-get autoremove -yqq && \ 
-    apt-get clean -yqq && \
-  echo "**** cleanup leftover ****" && \
+  echo "Using curl or wget to download the plex debian package result in a qemu failure, why? I dunno" \
+  && \
+  aria2c -d /tmp -o plex.deb \
+    "${PLEX_DOWNLOAD}/${VERSION}/debian/plexmediaserver_${VERSION}_${ARCH}.deb" \
+  && \
+  dpkg -i --force-confold /tmp/plex.deb \
+  && \
+  apt-get remove -y aria2 jq \
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && apt-get autoremove -y \
+  && apt-get clean \
+  && \
   rm -rf \
     /etc/default/plexmediaserver \
     /tmp/* \
     /var/lib/apt/lists/* \
-    /var/tmp/ && \
-  echo "**** set ownership permanent ****" && \
-  chown -R abc:abc "${PLEX_MEDIA_SERVER_HOME}" && \
-  chmod -R u=rwX,go=rX "${PLEX_MEDIA_SERVER_HOME}" && \
-  printf "umask %d" "${UMASK}" >> /etc/bash.bashrc && \
-  update-ca-certificates
+    /var/tmp/ \
+  && chown -R ${PLEX_MEDIA_SERVER_USER}:${PLEX_MEDIA_SERVER_USER} "${PLEX_MEDIA_SERVER_HOME}" \
+  && chmod -R u=rwX,go=rX "${PLEX_MEDIA_SERVER_HOME}" \
+  && printf "umask %d" "${UMASK}" >> /etc/bash.bashrc \
+  && update-ca-certificates
+
 
 COPY ./apps/docker-plex/root/ /
 EXPOSE 32400/tcp
