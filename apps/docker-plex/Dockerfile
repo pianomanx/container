@@ -58,8 +58,7 @@ RUN \
   && \
   echo "Using curl or wget to download the plex debian package result in a qemu failure, why? I dunno" \
   && \
-  aria2c -d /tmp -o plex.deb \
-    "${PLEX_DOWNLOAD}/${VERSION}/debian/plexmediaserver_${VERSION}_${ARCH}.deb" \
+  aria2c -d /tmp -o plex.deb "${PLEX_DOWNLOAD}/${VERSION}/debian/plexmediaserver_${VERSION}_${ARCH}.deb" \
   && \
   dpkg -i --force-confold /tmp/plex.deb \
   && \
@@ -75,9 +74,7 @@ RUN \
     /var/tmp/ \
   && chown -R ${PLEX_MEDIA_SERVER_USER}:${PLEX_MEDIA_SERVER_USER} "${PLEX_MEDIA_SERVER_HOME}" \
   && chmod -R u=rwX,go=rX "${PLEX_MEDIA_SERVER_HOME}" \
-  && printf "umask %d" "${UMASK}" >> /etc/bash.bashrc \
-  && update-ca-certificates
-
+  && printf "umask %d" "${UMASK}" >> /etc/bash.bashrc
 
 COPY ./apps/docker-plex/root/ /
 EXPOSE 32400/tcp
