@@ -29,7 +29,9 @@ RUN \
         export EXTRA_ARG=''; \
         unset NVIDIA_DRIVER_CAPABILITIES; \
     ;; \
-  esac \
+  esac
+
+RUN \
   echo "**** install runtime packages ****" && \
   apt-get update -yqq && \
   apt-get install -yqq \
@@ -39,8 +41,9 @@ RUN \
 	wget \
 	unzip \
 	uuid-runtime \
-	${EXTRA_ARG} \
-  && \
+	${EXTRA_ARG}
+
+RUN \
   case "${PLEX_ARCH}" in \
     'amd64') \
       COMP_RT_RELEASE=$(curl -sX GET "https://api.github.com/repos/intel/compute-runtime/releases/latest" | jq -r '.tag_name') \
@@ -56,7 +59,9 @@ RUN \
       && dpkg -i /opencl-intel/*.deb \
       && rm -rf /opencl-intel \
     ;; \
-  esac \
+  esac
+
+RUN \
  echo "**** install plex ****" && \
   curl -o /tmp/plexmediaserver.deb -L "${PLEX_DOWNLOAD}/${VERSION}/debian/plexmediaserver_${VERSION}_${PLEX_ARCH}.deb" && \
   dpkg -i /tmp/plexmediaserver.deb && \
