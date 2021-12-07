@@ -55,7 +55,7 @@ ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility" \
     INTEL_IGC_VERSION=1.0.9441 \
     INTEL_GMMLIB_VERSION=21.3.3
 RUN \
-  apt-get update-yqq && \
+  apt-get update -yqq && \
   apt-get install -yqq --no-install-recommends mesa-va-drivers uuid-runtime && \
   case "${ARCH}" in \
     'x86_64') \
