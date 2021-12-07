@@ -58,7 +58,7 @@ RUN \
   echo "Using curl or wget to download the plex debian package result in a qemu failure, why? I dunno" && \
     aria2c -d /tmp -o plex.deb "${PLEX_DOWNLOAD}/${VERSION}/debian/plexmediaserver_${VERSION}_${ARCH}.deb"  && \
     dpkg -i --force-confold /tmp/plex.deb && \
-  echo "**** cleanup ****" && 
+  echo "**** cleanup ****" && \
     apt-get remove -yqq aria2 jq && \
     apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false && \ 
     apt-get autoremove -yqq && \ 
