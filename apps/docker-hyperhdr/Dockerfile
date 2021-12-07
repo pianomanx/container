@@ -14,7 +14,8 @@ RUN \
     libglu1-mesa \
   && \
   case "${TARGETPLATFORM}" in \
-    'linux/amd64') export ARCH='x86_64' ;; \
+     'linux/amd64') export ARCH='x86_64' ;; \
+     'linux/arm64') export ARCH='aarch64' ;; \
   esac \
   && \
   curl -fsSL -o /tmp/hyperhdr.deb \
@@ -26,9 +27,7 @@ RUN \
     /var/lib/apt/lists/* \
     /var/tmp/*
 
-# hadolint ignore=DL3002
 USER abc
 COPY ./apps/docker-hyperhdr/root/ /
-
 EXPOSE 8090 19444 19445
 VOLUME /config
