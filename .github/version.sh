@@ -45,8 +45,8 @@ find ./apps -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read ap
 done
 sleep 5
 if [[ -n $(git status --porcelain) ]]; then
-   git config --global user.name 'Github Bot'
-   git config --global user.email 'bot@users.noreply.github.com'
+   git config --global user.name 'github-actions[bot]'
+   git config --global user.email 'github-actions[bot]@users.noreply.github.com'
    git add -A
    git commit -sam "[Auto Generation] Adding new release version" || exit 0
    git push
