@@ -16,6 +16,9 @@ I don't accept any pull request
 This repository is heavily based on 
 *Linuxserver.io* images and *k8s-at-home* idea
 
+All Containers have some additional edits just for dockserver.io
+
+Please check before you run it on other systems
 
 ---
 
@@ -65,4 +68,3 @@ Thanks goes to these wonderful people
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
 <!-- ALL-CONTRIBUTORS-LIST:END -->
-
