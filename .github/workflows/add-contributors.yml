@@ -20,7 +20,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2.4.0
         with:
-          fetch-depth: '5'
+          fetch-depth: '0'
 
       - uses: BobAnkh/add-contributors@master
         with:
