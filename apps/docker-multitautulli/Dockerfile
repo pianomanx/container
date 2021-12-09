@@ -25,7 +25,7 @@ RUN \
 	mock \
 	tzlocal \
 	plexapi \
-        cherrypy \
+	cherrypy \
 	pycryptodomex && \
  echo "**** install app ****" && \
    mkdir -p /app/tautulli && \
