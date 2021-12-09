@@ -17,8 +17,8 @@ function log() {
 }
 source /system/mount/mount.env
 ##### FOLDER START #####
-SMOUNT=/app/rclone/scripts
 SDOWN=/mnt/downloads
+SMOUNT=/app/mount
 SUNION=/mnt/unionfs
 TMPRCLONE=${TMPRCLONE}
 LOGS=/system/mount/logs
@@ -68,9 +68,7 @@ for i in ${mapped[@]}; do
 done
 
 chown -hR abc:abc ${LOGS} && chmod -R 775 ${LOGS}
-chown -hR abc:abc ${SMOUNT} && chmod -R 775 ${SMOUNT}
 
-SMOUNT=/app/mount
 find ${SMOUNT} -type f -name "mount.sh" | while read file; do
    chmod -cR 755 "$file" && bash "$file"
 done
