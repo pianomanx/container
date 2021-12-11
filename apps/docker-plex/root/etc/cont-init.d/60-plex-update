@@ -1,5 +1,7 @@
 #!/usr/bin/with-contenv bash
 
+VERSION=$(dpkg-query -W -f='${Version}' plexmediaserver)
+
 # If docker manages versioning exit
 if [ "${VERSION}" ] && [ "${VERSION}" == 'docker' ]; then
    echo "Docker is used for versioning skip update check" && exit 0
@@ -50,9 +52,7 @@ EOFTOKEN
    exit 0
 fi
 
-PLEX_TOKEN=$( sed -n 's/.*PlexOnlineToken="//p' \
-       	"/config/Library/Application Support/Plex Media Server/Preferences.xml" \
-       	| sed "s/\".*//")
+PLEX_TOKEN=$( sed -n 's/.*PlexOnlineToken="//p' "/config/Library/Application Support/Plex Media Server/Preferences.xml" | sed "s/\".*//")
 
 # if plex token isn't found, exit out
 if [ -z "$PLEX_TOKEN" ]; then
