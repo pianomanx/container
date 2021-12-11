@@ -23,6 +23,6 @@ chown abc:abc \
 	/config \
 	/config/*
 
-if [ ! "$(stat -c %u /config/Library)" = "$PUID" ]; then
-   chown abc:abc -R /app/*
-fi
+chown abc:abc -R /app/*
+chmod -R 755 /app/*
+
