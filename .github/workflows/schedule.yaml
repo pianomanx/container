@@ -16,8 +16,7 @@ jobs:
 
     - name: Test API
       run: |
-        API=$(curl -H "Authorization: token ${{ secrets.CR_PAT }}" \
-             | -X GET https://api.github.com/rate_limit \
+        API=$(curl -H "Authorization: token ${{ secrets.CR_PAT }}" -X GET https://api.github.com/rate_limit \
              | jq --raw-output '.rate.limit')
         if [[ $API -gt 10 ]]; then
            echo " $API okay "
