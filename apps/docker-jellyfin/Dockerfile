@@ -8,7 +8,7 @@ ARG BUILDPLATFORM
 
 RUN \
   apt-get update -yqq && \
-  apt-get install -yqq --no-install-recommend gnupg curl && \
+  apt-get install -y --no-install-recommend gnupg curl && \
   case "${TARGETPLATFORM}" in \
     'linux/amd64') \
         export EXTRA_INSTALL_ARG='beignet-opencl-icd intel-media-va-driver-non-free i965-va-driver ocl-icd-libopencl1'; \
@@ -33,7 +33,7 @@ RUN \
     JELLYFIN="jellyfin-server=${VERSION}"; \
   fi && \
   apt-get update -yqq && \
-  apt-get install -yqq --no-install-recommends \
+  apt-get install -y --no-install-recommends \
     at \
     intel-media-va-driver-non-free \
     ${JELLYFIN} \
