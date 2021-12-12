@@ -24,34 +24,19 @@ find ./base -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read ap
    fi
  done
 sleep 5
-find ./base -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read app; do
-   if test -f "./base/${app}/latest-version.sh"; then
-      version=$(bash "./base/${app}/latest-version.sh")
-      if [[ ! -z "${version}" || "${version}" != "null" ]]; then
-         echo "${version}" | tee "./base/${app}/VERSION" > /dev/null
-         echo "${app} ${version}"
+
+folder="apps base nightly"
+
+for i in ${folder[@]}; do
+   find ./$i -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read app; do
+      if test -f "./$i/${app}/latest-version.sh"; then
+         version=$(bash "./$i/${app}/latest-version.sh")
+         if [[ ! -z "${version}" || "${version}" != "null" ]]; then
+            echo "${version}" | tee "./$i/${app}/VERSION" > /dev/null
+            echo "${app} ${version}"
+         fi
       fi
-   fi
-done
-sleep 5
-find ./apps -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read app; do
-   if test -f "./apps/${app}/latest-version.sh"; then
-      version=$(bash "./apps/${app}/latest-version.sh")
-      if [[ ! -z "${version}" || "${version}" != "null" ]]; then
-          echo "${version}" | tee "./apps/${app}/VERSION" > /dev/null
-          echo "${app} ${version}"
-      fi
-   fi
-done
-sleep 5
-find ./nightly -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read app; do
-   if test -f "./nightly/${app}/latest-version.sh"; then
-      version=$(bash "./nightly/${app}/latest-version.sh")
-       if [[ ! -z "${version}" || "${version}" != "null" ]]; then
-           echo "${version}" | tee "./nightly/${app}/VERSION" > /dev/null
-           echo "${app} ${version}"
-      fi
-   fi
+   done
 done
 sleep 5
 if [[ -n $(git status --porcelain) ]]; then
