@@ -21,14 +21,14 @@ RUN \
   && \
   case "${ARCH}" in \
     'amd64') \
-        export EXTRA_INSTALL_ARG='beignet-opencl-icd intel-media-va-driver-non-free i965-va-driver ocl-icd-libopencl1' \
+        export EXTRA_INSTALL_ARG='mesa-va-drivers intel-media-va-driver-non-free beignet-opencl-icd intel-media-va-driver-non-free i965-va-driver' \
         && curl -s https://repo.jellyfin.org/ubuntu/jellyfin_team.gpg.key | apt-key add - \
         && echo 'deb [arch=amd64] https://repo.jellyfin.org/ubuntu focal main' > /etc/apt/sources.list.d/jellyfin.list \
         && curl -s https://repositories.intel.com/graphics/intel-graphics.key | apt-key add - \
         && echo 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main' > /etc/apt/sources.list.d/intel-graphics.list \
     ;; \
     'arm64') \
-        export EXTRA_INSTALL_ARG='' \
+        export EXTRA_INSTALL_ARG='libomxil-bellagio0 libomxil-bellagio-bin libraspberrypi0' \
         && curl -s https://repo.jellyfin.org/ubuntu/jellyfin_team.gpg.key | apt-key add - \
         && curl -s https://keyserver.ubuntu.com/pks/lookup?op=get\&search=0x6587ffd6536b8826e88a62547876ae518cbcf2f2 | apt-key add - \
         && echo 'deb [arch=arm64] https://repo.jellyfin.org/ubuntu focal main' > /etc/apt/sources.list.d/jellyfin.list \
@@ -44,14 +44,12 @@ RUN \
   apt-get update -yqq && \
   apt-get install -y --no-install-recommends \
     at \
-    intel-media-va-driver-non-free \
     ${JELLYFIN} \
     jellyfin-ffmpeg \
     jellyfin-web \
     libfontconfig1 \
     libfreetype6 \
     libssl1.1 \
-    mesa-va-drivers \
     ${EXTRA_INSTALL_ARG} && \
   echo "**** cleanup ****" && \
   rm -rf \
