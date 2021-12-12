@@ -22,7 +22,7 @@ jobs:
            echo "Fetch new Versions"
            if test -f "./.github/version.sh"; then
               bash "./.github/version.sh"
-            fi
+           fi
         elif [[ $API -lt 100 ]]; then
              echo " GitHube API busted " && exit 0
         else
