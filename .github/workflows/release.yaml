@@ -52,6 +52,7 @@ jobs:
           changed:
           - 'apps/**'
           - 'base/**'
+          - 'nightly/**'
     - run: echo '${{ toJson(steps.filter.outputs) }}' > changes.json
     - id: reduce
       run: |
@@ -77,7 +78,7 @@ jobs:
       run: |
         if test -f "./apps/${{ matrix.container }}/Dockerfile"; then
            CATEGORY="apps"
-        elif
+        elif test -f "./nightly/${{ matrix.container }}/Dockerfile"; then 
            CATEGORY="nightly"
         else
            CATEGORY="base"
