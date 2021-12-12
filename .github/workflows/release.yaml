@@ -70,7 +70,7 @@ jobs:
         echo ::set-output name=containers::${CONTAINERS}
 
   build:
-    name: Build
+    name: Build Docker
     runs-on: ubuntu-20.04
     needs:
     - changes
@@ -174,3 +174,30 @@ jobs:
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
+
+  addcon:
+    name: Add all Contributors to ReadME
+    runs-on: ubuntu-20.04
+    needs:
+    - changes
+    - get-version
+    - build
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2.4.0
+        with:
+          fetch-depth: '5'
+
+      - name: Add Contributors
+        uses: BobAnkh/add-contributors@master
+        if: github.event_name != 'pull_request'
+        with:
+          REPO_NAME: 'dockserver/container'
+          CONTRIBUTOR: '### Contributors'
+          COLUMN_PER_ROW: '4'
+          ACCESS_TOKEN: ${{secrets.CR_PAT}}
+          IMG_WIDTH: '50'
+          FONT_SIZE: '14'
+          PATH: '/README.md'
+          COMMIT_MESSAGE: 'docs(README): update contributors'
+          AVATAR_SHAPE: 'round'
