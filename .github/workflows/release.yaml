@@ -19,6 +19,8 @@ env:
   GOSS_SLEEP: 30
   MOBY: "moby/buildkit:latest"
   PLATFORM: "linux/amd64,linux/arm64"
+  LICENSE: "GPL-3.0 License (c) DockServer.io"
+  CODE_OWNED: "base image LSIO / changes dockserver.io"
 
 jobs:
   get-version:
@@ -102,6 +104,8 @@ jobs:
         echo ::set-output name=created::${CREATED}
         echo ::set-output name=source::dockserver.io
         echo ::set-output name=platformout::${{ env.PLATFORM }}
+        echo ::set-output name=linc::${{ env.LICENSE }}
+        echo ::set-output name=owndocker::${{ env.CODE_OWNED }}
 
         if [ "${{github.event_name}}" == "pull_request" ]; then
            echo ::set-output name=push::false
@@ -171,6 +175,9 @@ jobs:
           org.opencontainers.image.source=${{ steps.prep.outputs.source }}
           org.opencontainers.image.vendor=${{ github.repository_owner }}
           org.opencontainers.image.platform=${{ steps.prep.outputs.platformout }}
+          org.opencontainers.image.license=${{ steps.prep.outputs.linc }}
+          org.opencontainers.image.owner=${{ steps.prep.outputs.owndocker }}
+
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
