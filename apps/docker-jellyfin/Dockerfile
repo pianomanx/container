@@ -7,9 +7,10 @@ ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 
 RUN \
-  apt-get update -yqq && apt-get install -yqq --no-install-recommend gnupg curl && \
-  curl -s https://repositories.intel.com/graphics/intel-graphics.key | apt-key add - & \
+  apt-get update -yqq && \
+  apt-get install -yqq --no-install-recommend gnupg curl && \
   curl -s https://repo.jellyfin.org/ubuntu/jellyfin_team.gpg.key | apt-key add - && \
+  curl -s https://repositories.intel.com/graphics/intel-graphics.key | apt-key add - && \
   case "${TARGETPLATFORM}" in \
     'linux/amd64') \
         export ARCH='amd64'; \
@@ -25,7 +26,7 @@ RUN \
     ;; \
   esac \
   && \
-  if [ -z ${VERSION} ]; then \
+  if [ -z ${JELLYFIN_RELEASE+x} ]; then \
     JELLYFIN="jellyfin-server"; \
   else \
     JELLYFIN="jellyfin-server=${VERSION}"; \
@@ -41,8 +42,7 @@ RUN \
     libfreetype6 \
     libssl1.1 \
     mesa-va-drivers \
-    ${EXTRA_INSTALL_ARG} \
-  && \
+    ${EXTRA_INSTALL_ARG} && \
   echo "**** cleanup ****" && \
   rm -rf \
     /tmp/* \
