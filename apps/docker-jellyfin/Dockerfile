@@ -8,7 +8,7 @@ ARG BUILDPLATFORM
 
 RUN \
   apt-get update -yqq && \
-  apt-get install -y --no-install-recommend gnupg curl && \
+  apt-get install -y --no-install-recommends gnupg curl && \
   case "${TARGETPLATFORM}" in \
     'linux/amd64') \
         export ARCH='amd64'; \
