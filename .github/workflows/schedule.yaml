@@ -3,7 +3,7 @@ name: Get latest versions
 on:
   workflow_dispatch:
   schedule:
-  - cron: "*/30 * * * *"
+  - cron: "* */2 * * *"
 
 jobs:
   get-version:
