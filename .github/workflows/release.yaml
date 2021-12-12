@@ -19,8 +19,8 @@ env:
   GOSS_SLEEP: 30
   MOBY: "moby/buildkit:latest"
   PLATFORM: "linux/amd64,linux/arm64"
-  LICENSE: "GPL-3.0 License (c) DockServer.io"
-  CODE_OWNED: "base image LSIO / changes dockserver.io"
+  LICENSE: "GPL-3.0 DockServer.io"
+  CODE_OWNED: "base image LSIO, changes dockserver.io"
 
 jobs:
   get-version:
