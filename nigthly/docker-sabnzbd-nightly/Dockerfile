@@ -18,7 +18,7 @@ RUN \
   echo "deb http://ppa.launchpad.net/jcfp/sab-addons/ubuntu focal main" >> /etc/apt/sources.list.d/sabnzbd.list && \
   echo "deb-src http://ppa.launchpad.net/jcfp/sab-addons/ubuntu focal main" >> /etc/apt/sources.list.d/sabnzbd.list && \
   echo "**** install packages ****" && \
-  apt-get update -yqq && \
+  apt-get update && \
   apt-get install -yqq \
     libffi-dev \
     libssl-dev \

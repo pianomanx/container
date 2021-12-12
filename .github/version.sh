@@ -44,6 +44,16 @@ find ./apps -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read ap
    fi
 done
 sleep 5
+find ./nightly -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read app; do
+   if test -f "./nightly/${app}/latest-version.sh"; then
+      version=$(bash "./nightly/${app}/latest-version.sh")
+       if [[ ! -z "${version}" || "${version}" != "null" ]]; then
+           echo "${version}" | tee "./nightly/${app}/VERSION" > /dev/null
+           echo "${app} ${version}"
+      fi
+   fi
+done
+sleep 5
 if [[ -n $(git status --porcelain) ]]; then
    git config --global user.name 'github-actions[bot]'
    git config --global user.email 'github-actions[bot]@users.noreply.github.com'
