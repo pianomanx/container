@@ -37,7 +37,6 @@ function unwanted() {
 echo -e ".git
 .github
 CONTRIBUTING.md
-LICENSE
 README.md
 SECURITY.md
 backup.sh
@@ -45,6 +44,12 @@ config.json
 get_pull_request_title.rb
 renovate.json
 wgetfile.sh
+.all-contributorsrc
+.mergify.yml
+changelog-ci-config.yaml
+.editorconfig
+.gitignore
+.gitattributes
 wiki" > /tmp/unwanted
 ## cleanup unused files and folders
 
