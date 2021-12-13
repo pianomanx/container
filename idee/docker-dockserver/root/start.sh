@@ -14,23 +14,101 @@
 # shellcheck disable=SC2196
 # shellcheck disable=SC2046
 
-FOLDER=/opt/dockserver
-FOLDERTMP=/tmp/dockserver
-
 function log() {
+
    echo "[INSTALL] DockServer ${1}"
+
 }
 
-apk --quiet --no-cache --no-progress update && \
-apk --quiet --no-cache --no-progress upgrade && \
-apk del --quiet --clean-protected --no-progress && \
-rm -rf /var/cache/apk/* /tmp/*
+function first() {
 
-if [ -z `command -v git` ]; then apk --quiet --no-cache --no-progress add git; fi
-if [ -z `command -v curl` ]; then apk --quiet --no-cache --no-progress add curl; fi
+   log "**** update system packages ****" && \
+   apk --quiet --no-cache --no-progress update && \
+   apk --quiet --no-cache --no-progress upgrade
 
-FOLDER=${FOLDER}
+   PGID=${PGID:-1000}
+   PUID=${PUID:-1000}
 
-VERSION=$(curl -sX GET "https://api.github.com/repos/dockserver/dockserver/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
+   if [ ! "$(id -u abc)" -eq "$PUID" ]; then
+      usermod -o -u "$PUID" abc
+   fi
+   if [ ! "$(id -g abc)" -eq "$PGID" ]; then
+      groupmod -o -g "$PGID" abc
+   fi
+}
 
-https://github.com/dockserver/dockserver/archive/refs/tags/v${VERSION}.tar.gz
+function build() {
+   log "**** install build packages ****" && \
+   apk add --no-cache --virtual=build-dependencies \
+	aria2 \
+	curl \
+	bc \
+	findutils \
+	coreutils \
+	tar \
+	git \
+	jq \
+	pv \
+	pigz \
+	tzdata
+}
+
+function run() {
+LASTRUN=`date +%s`
+
+while :
+ do
+
+   YET=`date +%s`  
+   FOLDER=/opt/dockserver
+   FOLDERTMP=/tmp/dockserver
+   FILETMP=/tmp/dockserver.tar.gz
+   URL="https://api.github.com/repos/dockserver/dockserver/releases/latest"
+   GTHUB="https://github.com/dockserver/dockserver"
+
+   DIFF=$(($YET-$LASTRUN))
+
+   if [ "$DIFF" -gt 43200 ] || [ "$DIFF" -lt 1 ];then
+
+      if test -f "/tmp/VERSION";then
+         LOCAL="$(cat /tmp/VERSION)"
+      else
+         LOCAL=null
+      fi
+
+      VERSION="$(curl -sX GET "${URL}" | jq -r '.tag_name')"
+      NONREMOTE="${LOCAL#*v}"
+      VERSION="${VERSION#*v}"
+
+      if [[ ! -z "${VERSION}" || "${VERSION}" != "null" ]]; then
+         echo "${VERSION}" | tee "/tmp/VERSION" > /dev/null
+         if [[ ${VERSION#*v} == ${LOCAL#*v} ]]; then
+            log "**** LOCAL ${NONREMOTE} is the same as Remote ${VERSION} of Dockserver || no update needed ****" && \
+            break
+         else
+           log "**** install dockserver ${VERSION} ****" && \
+           aria2c -x2 -k1M -d /tmp -o ${FILETMP} ${GTHUB}/archive/refs/tags/${VERSION}.tar.gz && \
+           if test -f "${FILETMP}";then
+              if test -d "/tmp/dockserver"; then
+                 if test -d "${FOLDER}/apps/myapps"; then
+                    unpigz -dcqp 8 ${FILETMP} | pv -pterb | tar pxf - -C ${FOLDERTMP} --strip-components=1
+                    cp -rv ${FOLDER}/apps/myapps ${FOLDERTMP}/apps/myapps
+                    rm -rf ${FOLDER} && mv ${FOLDERTMP} ${FOLDER}
+                    echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null
+                 fi
+              else
+                 unpigz -dcqp 8 ${FILETMP} | pv -pterb | tar pxf - -C ${FOLDER} --strip-components=1
+                 echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null
+              fi
+           fi
+         fi
+      fi
+   fi
+   sleep 720
+done
+}
+   ## RUN IN ORDER
+   first
+   build 
+   run
+   ##
