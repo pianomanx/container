@@ -34,6 +34,7 @@ function first() {
 }
 
 function unwanted() {
+
 echo -e ".git
 .github
 CONTRIBUTING.md
@@ -51,6 +52,7 @@ changelog-ci-config.yaml
 .gitignore
 .gitattributes
 wiki" > /tmp/unwanted
+
 ## cleanup unused files and folders
 
    sed '/^\s*#.*$/d' /tmp/unwanted | \
@@ -76,6 +78,7 @@ function build() {
 }
 
 function run() {
+
 LASTRUN=`date +%s`
 
 while :
@@ -111,21 +114,20 @@ while :
            log "**** install dockserver ${VERSION} ****" && \
            aria2c -x2 -k1M -d /tmp -o dockserver.tar.gz ${GTHUB}/v${VERSION}.tar.gz
            if test -f "${FILETMP}";then
-              if test -d "/tmp/dockserver"; then
+              if test -d "${FOLDER}"; then
                  if test -d "${FOLDER}/apps/myapps"; then
-                    unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C ${FOLDERTMP} --strip-components=1
-                    cp -rv ${FOLDER}/apps/myapps ${FOLDERTMP}/apps/myapps
-                    rm -rf ${FOLDER} && mv ${FOLDERTMP} ${FOLDER}
-                    unwanted
+                    mkdir -p ${FOLDERTMP} && cp -r ${FOLDER}/apps/myapps ${FOLDERTMP}/myapps && \
+                    unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C ${FOLDER} --strip-components=1 && \
+                    cp -r ${FOLDERTMP}/myapps ${FOLDER}/apps/myapps && \
                     rm -rf ${FILETMP} && echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null
                  fi
               else
-                 unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C ${FOLDER} --strip-components=1
-                 unwanted
+                 unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C ${FOLDER} --strip-components=1 && \
                  rm -rf ${FILETMP} && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
               fi
               GUID=$(stat -c '%g' "${FOLDER}"/* | head -n 1)
-              if [[ ! $GUID == '0' ]]; then chown -cR abc:abc ${FOLDER} > /dev/null; fi
+              if [[ $GUID == 0 ]]; then chown -cR abc:abc ${FOLDER} > /dev/null; fi
+              unwanted
            fi
          fi
       fi
