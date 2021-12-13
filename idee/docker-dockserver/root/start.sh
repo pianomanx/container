@@ -87,7 +87,7 @@ while :
             break
          else
            log "**** install dockserver ${VERSION} ****" && \
-           aria2c -x2 -k1M -d /tmp -o ${FILETMP} ${GTHUB}/archive/refs/tags/${VERSION}.tar.gz && \
+           aria2c -x2 -k1M -d /tmp -o ${FILETMP} ${GTHUB}/archive/refs/tags/v${VERSION}.tar.gz && \
            if test -f "${FILETMP}";then
               if test -d "/tmp/dockserver"; then
                  if test -d "${FOLDER}/apps/myapps"; then
