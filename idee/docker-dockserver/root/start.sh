@@ -28,13 +28,30 @@ function first() {
 
    PGID=${PGID:-1000}
    PUID=${PUID:-1000}
+   groupmod -o -g "$PGID" abc
+   usermod -o -u "$PUID" abc
 
-   if [ ! "$(id -u abc)" -eq "$PUID" ]; then
-      usermod -o -u "$PUID" abc
-   fi
-   if [ ! "$(id -g abc)" -eq "$PGID" ]; then
-      groupmod -o -g "$PGID" abc
-   fi
+}
+
+function unwanted() {
+echo -e ".git
+.github
+CONTRIBUTING.md
+LICENSE
+README.md
+SECURITY.md
+backup.sh
+config.json
+get_pull_request_title.rb
+renovate.json
+wgetfile.sh
+wiki" > /tmp/unwanted
+## cleanup unused files and folders
+
+   sed '/^\s*#.*$/d' /tmp/unwanted | \
+   while IFS=$'\n' read -r -a myArray; do
+       rm -rf ${FOLDER}/${myArray[0]} > /dev/null
+   done
 }
 
 function build() {
@@ -64,7 +81,7 @@ while :
    FOLDERTMP=/tmp/dockserver
    FILETMP=/tmp/dockserver.tar.gz
    URL="https://api.github.com/repos/dockserver/dockserver/releases/latest"
-   GTHUB="https://github.com/dockserver/dockserver"
+   GTHUB="https://github.com/dockserver/dockserver/archive/refs/tags"
 
    DIFF=$(($YET-$LASTRUN))
 
@@ -87,19 +104,23 @@ while :
             break
          else
            log "**** install dockserver ${VERSION} ****" && \
-           aria2c -x2 -k1M -d /tmp -o dockserver.tar.gz ${GTHUB}/archive/refs/tags/v${VERSION}.tar.gz
+           aria2c -x2 -k1M -d /tmp -o dockserver.tar.gz ${GTHUB}/v${VERSION}.tar.gz
            if test -f "${FILETMP}";then
               if test -d "/tmp/dockserver"; then
                  if test -d "${FOLDER}/apps/myapps"; then
-                    unpigz -dcqp 8 ${FILETMP} | pv -pterb | tar pxf - -C ${FOLDERTMP} --strip-components=1
+                    unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C ${FOLDERTMP} --strip-components=1
                     cp -rv ${FOLDER}/apps/myapps ${FOLDERTMP}/apps/myapps
                     rm -rf ${FOLDER} && mv ${FOLDERTMP} ${FOLDER}
-                    echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null
+                    unwanted
+                    rm -rf ${FILETMP} && echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null
                  fi
               else
-                 unpigz -dcqp 8 ${FILETMP} | pv -pterb | tar pxf - -C ${FOLDER} --strip-components=1
-                 echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
+                 unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C ${FOLDER} --strip-components=1
+                 unwanted
+                 rm -rf ${FILETMP} && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
               fi
+              GUID=$(stat -c '%g' "${FOLDER}"/* | head -n 1)
+              if [[ ! $GUID == '0' ]]; then chown -cR abc:abc ${FOLDER} > /dev/null; fi
            fi
          fi
       fi
