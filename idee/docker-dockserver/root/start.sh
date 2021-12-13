@@ -98,7 +98,7 @@ while :
                  fi
               else
                  unpigz -dcqp 8 ${FILETMP} | pv -pterb | tar pxf - -C ${FOLDER} --strip-components=1
-                 echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null
+                 echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
               fi
            fi
          fi
