@@ -108,8 +108,7 @@ while :
       if [[ ! -z "${VERSION}" || "${VERSION}" != "null" ]]; then
          echo "${VERSION}" | tee "/tmp/VERSION" > /dev/null
          if [[ ${VERSION#*v} == ${LOCAL#*v} ]]; then
-            log "**** LOCAL ${NONREMOTE} is the same as Remote ${VERSION} of Dockserver || no update needed ****" && \
-            break
+            log "**** LOCAL ${NONREMOTE} is the same as Remote ${VERSION} of Dockserver || no update needed ****"
          else
            log "**** install dockserver ${VERSION} ****" && \
            aria2c -x2 -k1M -d /tmp -o dockserver.tar.gz ${GTHUB}/v${VERSION}.tar.gz
