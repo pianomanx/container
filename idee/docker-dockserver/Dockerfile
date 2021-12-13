@@ -5,7 +5,6 @@
 #####################################
 ARG VERSION
 FROM alpine:${VERSION}
-LABEL maintainer=dockserver
 
 RUN apk add --no-cache bash git
 
