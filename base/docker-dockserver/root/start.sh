@@ -24,7 +24,8 @@ function first() {
 
    log "**** update system packages ****" && \
    apk --quiet --no-cache --no-progress update && \
-   apk --quiet --no-cache --no-progress upgrade
+   apk --quiet --no-cache --no-progress upgrade && \
+   apk --quiet --no-cache --no-progress add shadow 
 
    addgroup -S abc
    adduser -S abc -G abc
