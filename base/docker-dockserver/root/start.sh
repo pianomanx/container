@@ -26,6 +26,9 @@ function first() {
    apk --quiet --no-cache --no-progress update && \
    apk --quiet --no-cache --no-progress upgrade
 
+   addgroup -S abc
+   adduser -S abc -G abc
+
    PGID=${PGID:-1000}
    PUID=${PUID:-1000}
    groupmod -o -g "$PGID" abc
@@ -63,7 +66,7 @@ wiki" > /tmp/unwanted
 
 function build() {
    log "**** install build packages ****" && \
-   apk add --no-cache --virtual=build-dependencies \
+   apk add --quiet --no-cache --no-progress --virtual=build-dependencies \
 	aria2 \
 	curl \
 	bc \
