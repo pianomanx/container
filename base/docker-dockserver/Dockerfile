@@ -8,6 +8,6 @@ FROM alpine:${VERSION}
 
 RUN apk add --no-cache bash
 
-COPY ./apps/docker-dockserver/root/start.sh /start.sh
+COPY ./base/docker-dockserver/root/start.sh /start.sh
 
 ENTRYPOINT [ "/bin/bash", "/start.sh" ]
