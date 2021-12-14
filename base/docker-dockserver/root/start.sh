@@ -132,12 +132,14 @@ while :
                     log "**** check if ${FILETMP} available ****" && \
                     unpigz -dcqp 16 "${FILETMP}" | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
                     rm -rf ${FILETMP} && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
+                    log "**** Update dockserver to $ ${VERSION#*v} completed ****"
                  else
                     log "**** check if ${FOLDER}/apps/myapps is available ****"
                     mkdir -p "${FOLDERTMP}" && mv "${FOLDER}/apps/myapps" "${FOLDERTMP}/myapps" && \
                     unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
                     cp -r "${FOLDERTMP}/myapps" "${FOLDER}/apps/myapps" && \
                     rm -rf "${FILETMP}" && echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null
+                    log "**** Update dockserver to $ ${VERSION#*v} completed ****"
                  fi
               fi
               GUID=$(stat -c '%g' "${FOLDER}"/* | head -n 1)
