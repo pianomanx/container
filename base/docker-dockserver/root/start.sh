@@ -112,21 +112,31 @@ while :
       if [[ ! -z "${VERSION}" || "${VERSION}" != "null" ]]; then
          echo "${VERSION}" | tee "/tmp/VERSION" > /dev/null
          if [[ ${VERSION#*v} == ${LOCAL#*v} ]]; then
-            log "**** LOCAL ${NONREMOTE} is the same as Remote ${VERSION} of Dockserver || no update needed ****"
+            log "**** Local ${NONREMOTE} is the same as Remote ${VERSION} of Dockserver || no update needed ****"
          else
-           log "**** install dockserver ${VERSION} ****" && \
+           log "**** downloading dockserver ${VERSION} ****" && \
            aria2c -x2 -k1M -d /tmp -o dockserver.tar.gz ${GTHUB}/v${VERSION}.tar.gz
-           if test -f "${FILETMP}";then
-              if test -d "${FOLDER}"; then
-                 if test -d "${FOLDER}/apps/myapps"; then
-                    mkdir -p ${FOLDERTMP} && cp -r ${FOLDER}/apps/myapps ${FOLDERTMP}/myapps && \
-                    unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C ${FOLDER} --strip-components=1 && \
-                    cp -r ${FOLDERTMP}/myapps ${FOLDER}/apps/myapps && \
-                    rm -rf ${FILETMP} && echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null
-                 fi
-              else
-                 unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C ${FOLDER} --strip-components=1 && \
+           if [[ ! -f "${FILETMP}" ]];then
+              log "**** check of ${FILETMP} failed ****"
+           else 
+              log "**** check of ${FILETMP} positiv ****"
+              if [[ ! -d "${FOLDER}" ]]; then
+                 log "**** check of ${FOLDER} is negativ | create the folder now****"
+                 mkdir -p ${FOLDER}
+                 unpigz -dcqp 16 "${FILETMP}" | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1
                  rm -rf ${FILETMP} && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
+              else
+                 log "**** check of ${FOLDER} is positiv ****"
+                 if [[ -d "${FOLDER}/apps/myapps" ]] ; then
+                    log "**** check if ${FOLDER}/apps/myapps available ****"
+                    unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
+                    cp -r "${FOLDERTMP}/myapps" "${FOLDER}/apps/myapps" && \
+                    rm -rf "${FILETMP}" && echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null
+                 else
+                   log "**** check if ${FILETMP} available ****"
+                   unpigz -dcqp 16 "${FILETMP}" | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
+                   rm -rf ${FILETMP} && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
+                 fi
               fi
               GUID=$(stat -c '%g' "${FOLDER}"/* | head -n 1)
               if [[ $GUID == 0 ]]; then chown -cR abc:abc ${FOLDER} > /dev/null; fi
@@ -142,4 +152,3 @@ done
    first
    build 
    run
-   ##
