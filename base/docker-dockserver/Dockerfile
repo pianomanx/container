@@ -6,7 +6,7 @@
 ARG VERSION
 FROM alpine:${VERSION}
 
-RUN apk add --no-cache bash shadown && \
+RUN apk add --no-cache bash shadow && \
     usermod -u 1000 abc && \
     groupmod -g 1000 abc
 
