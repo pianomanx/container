@@ -26,4 +26,4 @@ RUN \
 
 COPY ./apps/docker-duplicati/root/ /
 EXPOSE 8200
-VOLUME /mnt/downloads/backups /config /source
+VOLUME /config
