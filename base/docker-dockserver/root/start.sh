@@ -139,7 +139,7 @@ while :
                     unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
                     cp -r "${FOLDERTMP}/myapps" "${FOLDER}/apps/myapps" && \
                     rm -rf "${FILETMP}" && echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null
-                    log "**** Update dockserver to $ ${VERSION#*v} completed ****"
+                    log "**** Update dockserver to ${VERSION#*v} completed ****"
                  fi
               fi
               GUID=$(stat -c '%g' "${FOLDER}"/* | head -n 1)
