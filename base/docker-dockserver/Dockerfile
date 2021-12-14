@@ -6,7 +6,7 @@
 ARG VERSION
 FROM alpine:${VERSION}
 
-RUN apk add --no-cache bash git
+RUN apk add --no-cache bash
 
 COPY ./apps/docker-dockserver/root/start.sh /start.sh
 
