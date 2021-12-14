@@ -117,22 +117,46 @@ while :
            log "**** downloading dockserver ${VERSION} ****" && \
            aria2c -x2 -k1M -d /tmp -o dockserver.tar.gz ${GTHUB}/v${VERSION}.tar.gz
            if [[ ! -f "${FILETMP}" ]];then
-              log "**** check of ${FILETMP} is failed ****"
-           else 
+              log "**** check of ${FILETMP} is failed || fallback to curl download ****"
+              log "**** sleep 180 seconds for next run || bypass API Ban ****"
+              sleep 180 && apk --quiet --no-cache --no-progress add curl && \
+              curl -o "${FILETMP}" -L "${GTHUB}/v${VERSION}.tar.gz"
               log "**** check of ${FILETMP} positiv ****"
               if [[ ! -f "${FOLDER}/install.sh" ]]; then
                  log "**** check of ${FOLDER} is negativ | create the folder now****"
-                 mkdir -p ${FOLDER}
-                 unpigz -dcqp 16 "${FILETMP}" | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1
+                 mkdir -p ${FOLDER} && \
+                 unpigz -dcqp 16 "${FILETMP}" | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
                  rm -rf ${FILETMP} && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
               else
                  log "**** check of ${FOLDER} is positiv ****"
                  if [[ ! -d "${FOLDER}/apps/myapps" ]] ; then
-                    log "**** check if ${FILETMP} available ****"
+                    log "**** check if ${FILETMP} available ****" && \
                     unpigz -dcqp 16 "${FILETMP}" | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
                     rm -rf ${FILETMP} && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
                  else
                     log "**** check if ${FOLDER}/apps/myapps is available ****"
+                    cp -rv "${FOLDER}/apps/myapps" "${FOLDERTMP}/myapps" && \
+                    unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
+                    cp -r "${FOLDERTMP}/myapps" "${FOLDER}/apps/myapps" && \
+                    rm -rf "${FILETMP}" && echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null
+                 fi
+              fi
+           else 
+              log "**** check of ${FILETMP} positiv ****"
+              if [[ ! -f "${FOLDER}/install.sh" ]]; then
+                 log "**** check of ${FOLDER} is negativ | create the folder now****"
+                 mkdir -p ${FOLDER} && \
+                 unpigz -dcqp 16 "${FILETMP}" | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
+                 rm -rf ${FILETMP} && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
+              else
+                 log "**** check of ${FOLDER} is positiv ****"
+                 if [[ ! -d "${FOLDER}/apps/myapps" ]] ; then
+                    log "**** check if ${FILETMP} available ****" && \
+                    unpigz -dcqp 16 "${FILETMP}" | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
+                    rm -rf ${FILETMP} && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
+                 else
+                    log "**** check if ${FOLDER}/apps/myapps is available ****"
+                    cp -rv "${FOLDER}/apps/myapps" "${FOLDERTMP}/myapps" && \
                     unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
                     cp -r "${FOLDERTMP}/myapps" "${FOLDER}/apps/myapps" && \
                     rm -rf "${FILETMP}" && echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null
