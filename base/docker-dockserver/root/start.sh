@@ -22,6 +22,12 @@ function log() {
 
 function first() {
 
+   cat > /etc/apk/repositories << EOF; $(echo)
+http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/main
+http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/community
+http://dl-cdn.alpinelinux.org/alpine/edge/testing
+EOF
+
    log "**** update system packages ****" && \
    apk --quiet --no-cache --no-progress update && \
    apk --quiet --no-cache --no-progress upgrade && \
@@ -78,7 +84,8 @@ function build() {
 	jq \
 	pv \
 	pigz \
-	tzdata
+	tzdata \
+	rsync
 }
 
 function run() {
@@ -122,7 +129,7 @@ while :
            else 
               log "**** check of ${FILETMP} positiv ****"
               if [[ ! -f "${FOLDER}/install.sh" ]]; then
-                 log "**** check of ${FOLDER} is negativ | create the folder now****"
+                 log "**** check of ${FOLDER} is negativ | create the folder now ****"
                  mkdir -p ${FOLDER} && \
                  unpigz -dcqp 16 "${FILETMP}" | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
                  rm -rf ${FILETMP} && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
@@ -135,16 +142,20 @@ while :
                     log "**** Update dockserver to $ ${VERSION#*v} completed ****"
                  else
                     log "**** check if ${FOLDER}/apps/myapps is available ****"
-                    mkdir -p "${FOLDERTMP}" && mv "${FOLDER}/apps/myapps" "${FOLDERTMP}/myapps" && \
+                    mkdir -p "${FOLDERTMP}/apps/myapps/" && \
+                    rsync -aqhv --include='**.yml' --prune-empty-dirs "${FOLDER}/apps/myapps/" "${FOLDERTMP}/apps/myapps/" && \
                     unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
-                    cp -r "${FOLDERTMP}/myapps" "${FOLDER}/apps/myapps" && \
+                    rsync -aqhv --include='**.yml' --prune-empty-dirs "${FOLDERTMP}/apps/myapps/" "${FOLDER}/apps/myapps/" && \
                     rm -rf "${FILETMP}" && echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null
                     log "**** Update dockserver to ${VERSION#*v} completed ****"
                  fi
               fi
-              GUID=$(stat -c '%g' "${FOLDER}"/* | head -n 1)
-              if [[ $GUID == 0 ]]; then chown -cR abc:abc ${FOLDER} > /dev/null; fi
               unwanted
+              GUID=$(stat -c '%g' "${FOLDER}/*" | head -n 1)
+              if [[ $GUID == 0 ]]; then
+                 find "${FOLDER}" -exec chmod a=rx,u+w {} \;
+                 find "${FOLDER}" -exec chown -hR 1000:1000 {} \;
+              fi
            fi
          fi
       fi
