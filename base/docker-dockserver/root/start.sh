@@ -103,6 +103,8 @@ while :
    GTHUB="https://github.com/dockserver/dockserver/archive/refs/tags"
    GIT="https://github.com/dockserver/dockserver.git"
    DIFF=$(($YET-$LASTRUN))
+   FILE=$(ls "${FOLDER}/apps/myapps/" | wc -l)
+   MINFILES=1
 
    if [ "$DIFF" -gt 43200 ] || [ "$DIFF" -lt 1 ];then
       if test -f "/tmp/VERSION";then
@@ -121,41 +123,41 @@ while :
            log "**** downloading dockserver ${VERSION} ****" && \
            aria2c -x2 -k1M -d /tmp -o dockserver.tar.gz ${GTHUB}/v${VERSION}.tar.gz
            if [[ ! -f "${FILETMP}" ]]; then
-              log "**** check of ${FILETMP} is failed || fallback to git-clone ****"
-              apk --quiet --no-cache --no-progress add git && \
-              git clone --quiet ${GIT} ${FOLDER}
-              REMOGIT=$(git describe --tags `git rev-list --tags --max-count=1`)
-              echo "${REMOGIT#*v}" | tee "/tmp/VERSION" > /dev/null
+              log "**** check of ${FILETMP} is failed || fallback to git-clone ****" && \
+              apk add --quiet --no-cache --no-progress --virtual=build-dependencies git rsync && \
+              rm -rf "${FOLDERTMP}" && git clone --quiet "${GIT}" "${FOLDERTMP}" && \
+              rsync --remove-source-files --prune-empty-dirs -aqhv "${FOLDERTMP}" "${FOLDER}" && \
+              rm -rf "${FOLDERTMP}"
            else 
               log "**** check of ${FILETMP} positiv ****"
               if [[ ! -f "${FOLDER}/install.sh" ]]; then
                  log "**** check of ${FOLDER} is negativ | create the folder now ****"
                  mkdir -p ${FOLDER} && \
                  unpigz -dcqp 16 "${FILETMP}" | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
-                 rm -rf ${FILETMP} && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
+                 rm -rf "${FILETMP}" "${FOLDERTMP}" && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
               else
                  log "**** check of ${FOLDER} is positiv ****"
-                 if [[ ! -d "${FOLDER}/apps/myapps" ]] ; then
-                    log "**** check if ${FILETMP} available ****" && \
-                    unpigz -dcqp 16 "${FILETMP}" | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
-                    rm -rf ${FILETMP} && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
-                    log "**** Update dockserver to $ ${VERSION#*v} completed ****"
-                 else
+                 if [[ ! ${FILE} -ge ${MINFILES} ]]; then
                     log "**** check if ${FOLDER}/apps/myapps is available ****"
                     mkdir -p "${FOLDERTMP}/apps/myapps/" && \
-                    rsync -aqhv --include='**.yml' --prune-empty-dirs "${FOLDER}/apps/myapps/" "${FOLDERTMP}/apps/myapps/" && \
+                    rsync --remove-source-files --prune-empty-dirs -aqhv --include='**.yml' "${FOLDER}/apps/myapps/" "${FOLDERTMP}/apps/myapps/" && \
                     unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
-                    rsync -aqhv --include='**.yml' --prune-empty-dirs "${FOLDERTMP}/apps/myapps/" "${FOLDER}/apps/myapps/" && \
-                    rm -rf "${FILETMP}" && echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null
+                    rsync --remove-source-files --prune-empty-dirs -aqhv --include='**.yml' "${FOLDERTMP}/apps/myapps/" "${FOLDER}/apps/myapps/" && \
+                    rm -rf "${FILETMP}" "${FOLDERTMP}" && echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null && \
                     log "**** Update dockserver to ${VERSION#*v} completed ****"
+                 else
+                    log "**** check if ${FILETMP} available ****" && \
+                    unpigz -dcqp 16 "${FILETMP}" | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
+                    rm -rf "${FILETMP}" && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null && \
+                    log "**** Update dockserver to $ ${VERSION#*v} completed ****"
                  fi
               fi
-              unwanted
-              GUID=$(stat -c '%g' "${FOLDER}/*" | head -n 1)
+              GUID=$(stat -c '%g' "${FOLDER}"/* | head -n 1)
               if [[ $GUID == 0 ]]; then
                  find "${FOLDER}" -exec chmod a=rx,u+w {} \;
                  find "${FOLDER}" -exec chown -hR 1000:1000 {} \;
               fi
+              unwanted
            fi
          fi
       fi
