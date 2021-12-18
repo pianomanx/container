@@ -15,38 +15,52 @@
 function log() {
      echo "[MOUNT] ${1}"
 }
-log "**** update system ****"
-apk --quiet --no-cache --no-progress update
-apk --quiet --no-cache --no-progress upgrade
-apk --quiet --no-cache --no-progress fix
 
-INSTALL="/app/requirements.txt"
-while IFS=$'|' read -r -a myArray; do
-      apk add --quiet --no-cache --no-progress ${myArray[0]}
-done < $INSTALL
+cat > /etc/apk/repositories << EOF; $(echo)
+http://dl-cdn.alpinelinux.org/alpine/v3.15/main
+http://dl-cdn.alpinelinux.org/alpine/v3.15/community
+http://dl-cdn.alpinelinux.org/alpine/edge/testing
+EOF
+
+log "**** update system packages ****" && \
+   apk --quiet --no-cache --no-progress update && \
+   apk --quiet --no-cache --no-progress upgrade
 
 apk del --quiet --no-cache nginx
 rm -rf /var/cache/apk/*
-rm -rf /etc/nginx/nginx.conf
+rm -rf /etc/nginx/*
 
-ARCH="$(command arch)"
-if [ "${ARCH}" = "x86_64" ]; then
-     ARCH="amd64"
-elif [ "${ARCH}" = "aarch64" ]; then
-     ARCH="arm64"
-elif [ "${ARCH}" = "armv7l" ]; then
-     ARCH="armhf"
-else
-     echo "**** Unsupported Linux architecture ${ARCH} found, exiting... ****"
+log "**** install build packages from packages.lock ****"
+sed '/^\s*#.*$/d' /app/requirements.txt | \
+   while IFS=$'\n' read -r -a myArray; do
+     apk add --quiet --no-cache --no-progress ${myArray[0]}
+   done
+
+rclone_version=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
+case "$(arch)" in
+   x86_64)
+      platform=linux-amd64
+      rclone_file=rclone-v${rclone_version}-${platform}.zip
+     ;;
+   armv7l)
+     platform=linux-armv7
+     rclone_file=rclone-v${rclone_version}-linux-arm-v7.zip
+     ;;
+   aarch64)
+     platform=linux-arm64
+     rclone_file=rclone-v${rclone_version}-${platform}.zip
+     ;;
+   *)
+     echo "[ERROR] unsupported arch $(arch), exit now"
      exit 1
-fi
+     ;;
+esac
 
-## VERSION=1.55.1
-VERSION=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
-curl -o /tmp/rclone.zip -SL https://github.com/rclone/rclone/releases/download/v${VERSION}/rclone-v${VERSION}-linux-${ARCH}.zip
-cd /tmp/ && unzip -q /tmp/rclone.zip
-mv /tmp/rclone-*-linux-${ARCH}/rclone /usr/local/bin/
+apk add --quiet --no-cache --no-progress --virtual=build-dependencies aria2
+aria2c -x2 -k1M -d /tmp -o rclone.zip https://downloads.rclone.org/v${rclone_version}/${rclone_file}
+cd /tmp/ && unzip rclone.zip
+cd /tmp/rclone-*
+cp rclone /usr/local/bin/ \
+  && rm -rf /tmp/rclone*
 rm -rf /var/cache/apk/* /tmp/*
-
-if [[ ! -d "/app/language" ]]; then mkdir -p /app/language && git -C /app clone https://github.com/dockserver/language.git; fi
-#<EOF>#
+#EOF
