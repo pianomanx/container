@@ -16,7 +16,6 @@ log "**** update system packages ****" && \
    apk --quiet --no-cache --no-progress update && \
    apk --quiet --no-cache --no-progress upgrade
 
-
 log "**** install build packages from packages.lock ****"
 sed '/^\s*#.*$/d' /app/requirements.txt | \
    while IFS=$'\n' read -r -a myArray; do
@@ -28,15 +27,15 @@ rclone_version=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releas
 case "$(arch)" in
    x86_64)
       platform=linux-amd64
-      rclone_file=rclone-${rclone_version}-${platform}.zip
+      rclone_file=rclone-v${rclone_version}-${platform}.zip
      ;;
    armv7l)
      platform=linux-armv7
-     rclone_file=rclone-${rclone_version}-linux-arm-v7.zip
+     rclone_file=rclone-v${rclone_version}-linux-arm-v7.zip
      ;;
    aarch64)
      platform=linux-arm64
-     rclone_file=rclone-${rclone_version}-${platform}.zip
+     rclone_file=rclone-v${rclone_version}-${platform}.zip
      ;;
 
    *)
@@ -46,12 +45,11 @@ case "$(arch)" in
 esac
 
 apk add --quiet --no-cache --no-progress --virtual=build-dependencies aria2
-aria2c -x2 -k1M -d /tmp -o ${rclone_file} https://downloads.rclone.org/${rclone_version}/${rclone_file}
-cd /tmp/ && unzip -q ${rclone_file} \ 
-  && cd rclone-* \ 
-  && cp rclone /usr/local/bin/ \
-  && rm -rf /tmp/${rclone_file} \
-  && rm -rf /tmp/rclone-*
+aria2c -x2 -k1M -d /tmp -o rclone.zip https://downloads.rclone.org/v${rclone_version}/${rclone_file}
+cd /tmp/ && unzip rclone.zip
+cd /tmp/rclone-*
+cp rclone /usr/local/bin/ \
+  && rm -rf /tmp/rclone*
 
 if [[ ! -d "/app/language" ]]; then mkdir -p /app/language && git -C /app clone https://github.com/dockserver/language.git; fi
 if [[ ! -d "/system/uploader/json/" ]];then mkdir -p /system/uploader/json/; fi
