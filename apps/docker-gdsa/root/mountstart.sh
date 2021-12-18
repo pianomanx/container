@@ -18,12 +18,13 @@
 # shellcheck disable=SC2086
 # shellcheck disable=SC2046
 
-export KEYS_DIR=/system/mount/keys
+PROJECTRANDOM=$(head /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c16)
 
 source $KEYS_DIR/.env
+export KEYS_DIR=/system/mount/keys
 export ACCOUNT=${ACCOUNT}
 export GROUP_NAME=${GROUPNAME}
-export PROJECT_BASE_NAME=${PROJECT}
+export PROJECT_BASE_NAME=${PROJECTRANDOM}
 export FIRST_PROJECT_NUM=1
 export LAST_PROJECT_NUM=5
 export SA_EMAIL_BASE_NAME=mount
@@ -96,10 +97,8 @@ create_keys() {
         saname="$SA_EMAIL_BASE_NAME""$name"
         echo -e "Creating json key $name.json in project = $PROJECT for service account = $saname@$PROJECT"
         set -x
-        gcloud iam service-accounts keys create $KEYS_DIR/$name.json --iam-account=$saname@$PROJECT.iam.gserviceaccount.com
+        gcloud iam service-accounts keys create $KEYS_DIR/GDSA$name.json --iam-account=$saname@$PROJECT.iam.gserviceaccount.com
         set +x
-        #  NEED to fix syntax for below command to add SA email to group
-        # syntax  fixed
         gcloud iam service-accounts add-iam-policy-binding $saname@$PROJECT.iam.gserviceaccount.com --member='serviceAccount:group:$GROUP_NAME' --role='roles/editor'
         echo "$GROUP_NAME,$saname@$PROJECT.iam.gserviceaccount.com,USER,MEMBER" | tee -a $KEYS_DIR/members.csv $KEYS_DIR/allmembers.csv
         sleep $CYCLE_DELAY
@@ -129,7 +128,7 @@ main() {
     echo -e "\n\nTotal keys BEFORE running key-gen    = $TOTAL_JSONS_START"
     echo -e "Total keys AFTER running key-gen         = $TOTAL_JSONS_END"
     let TOTAL_JSONS_MADE=$TOTAL_JSONS_END-$TOTAL_JSONS_START
-    echo -e "Total 🔑 CREATED                         = $TOTAL_JSONS_MADE"
+    echo -e "Total Keys CREATED                       = $TOTAL_JSONS_MADE"
     rm -rf /system/servicekeys/.env
 }
 ######################################################################################
@@ -138,12 +137,15 @@ main() {
 ### needs to be in ENV !!
 # ACCOUNT=${ACCOUNT} = USER Identity
 # GROUP_NAME=${GROUPNAME}  = Google Group ( must exist before!)
-# PROJECT_BASE_NAME=${PROJECT} = Can be random
+# PROJECT_BASE_NAME=${PROJECT} = is set to random unique
 ###
 
 if [[ ! -d $KEYS_DIR ]]; then mkdir -p $KEYS_DIR; fi
 if [[ -f "$KEYS_DIR/allmembers.csv" ]]; then $(command -v rm) -rf $KEYS_DIR/allmembers.csv; fi
 if [[ -f "$KEYS_DIR/members.csv" ]]; then $(command -v rm) -rf $KEYS_DIR/members.csv; fi
-find $KEYS_DIR/ -type f -iname "*.json" -exec rm -rf \{\} \;
+
+   find $KEYS_DIR/ -type f -iname "*.json" -exec rm -rf \{\} \;
+
 if [[ -f "$KEYS_DIR/.env" ]]; then main; fi
-#"
+
+#E-O-F#
