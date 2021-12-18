@@ -6,47 +6,57 @@ function log() {
      echo "[UPLOADER] ${1}"
 }
 
-rm -f /dev/null && mknod /dev/null c 1 3 && chmod 666 /dev/null
+cat > /etc/apk/repositories << EOF; $(echo)
+http://dl-cdn.alpinelinux.org/alpine/v3.15/main
+http://dl-cdn.alpinelinux.org/alpine/v3.15/community
+http://dl-cdn.alpinelinux.org/alpine/edge/testing
+EOF
 
-apk update --quiet --no-cache --no-progress
-apk upgrade --quiet --no-cache --no-progress
+log "**** update system packages ****" && \
+   apk --quiet --no-cache --no-progress update && \
+   apk --quiet --no-cache --no-progress upgrade
+
 
 log "**** install build packages from packages.lock ****"
- INSTALL="/app/requirements.txt"
- while IFS=$'\n' read -r -a myArray; do
+sed '/^\s*#.*$/d' /app/requirements.txt | \
+   while IFS=$'\n' read -r -a myArray; do
      apk add --quiet --no-cache --no-progress ${myArray[0]}
- done < $INSTALL
+   done
 
-ARCH="$(command arch)"
-if [ "${ARCH}" = "x86_64" ]; then 
-  ARCH="amd64"
-elif [ "${ARCH}" = "aarch64" ]; then 
-  ARCH="arm64" 
-elif [ "${ARCH}" = "armv7l" ]; then 
-  ARCH="armhf" 
-else
-  echo "**** Unsupported Linux architecture ${ARCH} found, exiting... ****"
-  sleep infinity
-fi
+rclone_version=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
 
-## VERSION=1.55.1
-VERSION=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
-curl --silent -o /tmp/rclone.zip -SL https://github.com/rclone/rclone/releases/download/v${VERSION}/rclone-v${VERSION}-linux-${ARCH}.zip
-cd /tmp/ && unzip -q /tmp/rclone.zip && mv /tmp/rclone-*-linux-${ARCH}/rclone /usr/local/bin/
+case "$(arch)" in
+   x86_64)
+      platform=linux-amd64
+      rclone_file=rclone-${rclone_version}-${platform}.zip
+     ;;
+   armv7l)
+     platform=linux-armv7
+     rclone_file=rclone-${rclone_version}-linux-arm-v7.zip
+     ;;
+   aarch64)
+     platform=linux-arm64
+     rclone_file=rclone-${rclone_version}-${platform}.zip
+     ;;
 
-rm -rf /var/cache/apk/* \
-      /tmp/rclone-*-linux-${ARCH} >>/dev/null
+   *)
+     echo "[ERROR] unsupported arch $(arch), exit now"
+     exit 1
+     ;;
+esac
+
+apk add --quiet --no-cache --no-progress --virtual=build-dependencies aria2
+aria2c -x2 -k1M -d /tmp -o ${rclone_file} https://downloads.rclone.org/${rclone_version}/${rclone_file}
+cd /tmp/ && unzip -q ${rclone_file} \ 
+  && cd rclone-* \ 
+  && cp rclone /usr/local/bin/ \
+  && rm -rf /tmp/${rclone_file} \
+  && rm -rf /tmp/rclone-*
 
 if [[ ! -d "/app/language" ]]; then mkdir -p /app/language && git -C /app clone https://github.com/dockserver/language.git; fi
-   rm -rf /var/run/s6/etc/cont-init.d/90-custom-folders \
-      /var/run/s6/etc/cont-init.d/99-custom-files \
-      /etc/cont-init.d/90-custom-folders \
-      /etc/cont-init.d/99-custom-files >>/dev/null
-
 if [[ ! -d "/system/uploader/json/" ]];then mkdir -p /system/uploader/json/; fi
 if [[ ! -d "/system/uploader/json/done/" ]];then mkdir -p /system/uploader/json/done/; fi
 if [[ ! -d "/system/uploader/json/upload/" ]];then mkdir -p /system/uploader/json/upload/; fi
-
 
 if [[ ! -f "/system/servicekeys/rclonegdsa.conf" ]]; then
    log "-->> [ WARNING ] ----------------------------- [ WARNING ] <<--"
