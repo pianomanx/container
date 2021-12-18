@@ -122,6 +122,7 @@ EOL
 # Init
 echo "Initializing files and folders..."
 mkdir -p /data/geoip \
+  /data/rutorrent \
   /data/rtorrent/log \
   /data/rtorrent/.session \
   /data/rtorrent/watch \
@@ -133,9 +134,10 @@ mkdir -p /data/geoip \
   /data/rutorrent/themes \
   ${RU_DOWNLOAD_FOLDER} \
     ${RU_DOWNLOAD_FOLDER}/complete \
-    ${RU_DOWNLOAD_FOLDER}/temp \
-  /data/rtorrent/log/rtorrent.log \
-  "${RU_LOG_FILE}"
+    ${RU_DOWNLOAD_FOLDER}/temp
+
+touch "${RU_LOG_FILE}"
+
 rm -f /data/rtorrent/.session/rtorrent.lock
 
 # rTorrent local config
