@@ -54,10 +54,8 @@ rclone mount remote: /mnt/remotes \
 --vfs-cache-max-age=${VFS_CACHE_MAX_AGE} \
 --vfs-cache-max-size=${VFS_CACHE_MAX_SIZE} \
 --vfs-read-chunk-size-limit=${VFS_READ_CHUNK_SIZE_LIMIT} \
---vfs-read-chunk-size=${VFS_READ_CHUNK_SIZE} --daemon
-
-
-##--rc --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
-##--rc-addr=localhost:${RC_ADDRESS} --daemon
+--vfs-read-chunk-size=${VFS_READ_CHUNK_SIZE}
+--rc --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
+--rc-addr=localhost:${RC_ADDRESS} --daemon
 
 #EOF
