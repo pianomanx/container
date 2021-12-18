@@ -16,10 +16,16 @@ if pidof -o %PPID -x "$0"; then
     exit 1
 fi
 
+function fusercommand() {
+    fusermount -uzq "$1"
+}
+
 # environment
 source /system/mount/mount.env
 CONFIG=/app/rclone/rclone.conf
 log=/system/mount/logs/rclone-union.log
+
+fusercommand /mnt/remotes
 
 # rclone command
 
