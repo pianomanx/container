@@ -24,12 +24,11 @@ http://dl-cdn.alpinelinux.org/alpine/v3.15/community
 http://dl-cdn.alpinelinux.org/alpine/edge/testing
 EOF
 
+   install=(python3 py3-crcmod py3-openssl bash libc6-compat openssh-client git gnupg bc curl wget openssl ca-certificates)
+
    log "**** update system packages ****" && \
    apk --quiet --no-cache --no-progress update && \
    apk --quiet --no-cache --no-progress upgrade && \
-   apk --quiet --no-cache --no-progress add shadow
-
-   install=(python3 py3-crcmod py3-openssl bash libc6-compat openssh-client git gnupg bc curl wget openssl ca-certificates)
    log "**** install build packages ****" && \
    apk add --quiet --no-cache --no-progress --virtual=build-dependencies ${install[@]}
    unset install
@@ -37,7 +36,20 @@ EOF
 MOUNT=/system/mount/keys/.env
 GDSA=/system/servicekeys/.env
 
-if [[ -f $MOUNT ]];then bash mountstart.sh;fi
-if [[ -f $GDSA ]];then bash mountstart.sh;fi
+shfile=(mountstart.sh gdsastart.sh start.sh)
+chmod -cR 755 ${shfile[@]}
+unset shfile
+
+folder=(/system/mount/keys /system/servicekeys)
+mkdir -p ${folder[@]}
+unset folder
+
+if [[ -f $MOUNT ]];then
+   bash mountstart.sh
+elif [[ -f $GDSA ]];then
+     bash gdsastart.sh
+else
+   bash start.sh
+fi
 
 #E-O-F#
