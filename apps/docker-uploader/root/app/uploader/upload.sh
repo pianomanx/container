@@ -92,6 +92,5 @@ else
 fi
 
 rm -f "${FILE}.lck" "${LOGFILE}" "${PID}/${FILEBASE}.trans"
-sleep 120 && rm -rf "${VFS}"
 
 #<E-O-F>#
