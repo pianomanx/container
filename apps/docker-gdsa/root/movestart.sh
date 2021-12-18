@@ -18,18 +18,26 @@
 # shellcheck disable=SC2086
 # shellcheck disable=SC2046
 
-set -x
-   apk --quiet --no-cache --no-progress update
-   apk --quiet --no-cache --no-progress ugrade
-set +x
-set -x
-   apk --quiet --no-cache --no-progress add python3 py3-crcmod py3-openssl bash libc6-compat openssh-client git gnupg bc curl wget openssl ca-certificates
-set +x
-}
+cat > /etc/apk/repositories << EOF; $(echo)
+http://dl-cdn.alpinelinux.org/alpine/v3.15)/main
+http://dl-cdn.alpinelinux.org/alpine/v3.15/community
+http://dl-cdn.alpinelinux.org/alpine/edge/testing
+EOF
+
+   log "**** update system packages ****" && \
+   apk --quiet --no-cache --no-progress update && \
+   apk --quiet --no-cache --no-progress upgrade && \
+   apk --quiet --no-cache --no-progress add shadow
+
+   install=(python3 py3-crcmod py3-openssl bash libc6-compat openssh-client git gnupg bc curl wget openssl ca-certificates)
+   log "**** install build packages ****" && \
+   apk add --quiet --no-cache --no-progress --virtual=build-dependencies ${install[@]}
+   unset install
 
 MOUNT=/system/mount/keys/.env
 GDSA=/system/servicekeys/.env
 
 if [[ -f $MOUNT ]];then bash mountstart.sh;fi
 if [[ -f $GDSA ]];then bash mountstart.sh;fi
-#"
+
+#E-O-F#
