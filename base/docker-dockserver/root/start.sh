@@ -15,13 +15,10 @@
 # shellcheck disable=SC2046
 
 function log() {
-
    echo "[INSTALL] DockServer ${1}"
-
 }
 
 function first() {
-
    cat > /etc/apk/repositories << EOF; $(echo)
 http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/main
 http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/community
@@ -38,13 +35,12 @@ EOF
 
    PGID=${PGID:-1000}
    PUID=${PUID:-1000}
+
    groupmod -o -g "$PGID" abc
    usermod -o -u "$PUID" abc
-
 }
 
 function unwanted() {
-
 echo -e ".git
 .github
 CONTRIBUTING.md
@@ -63,29 +59,19 @@ changelog-ci-config.yaml
 .gitattributes
 wiki" > /tmp/unwanted
 
-## cleanup unused files and folders
-
    sed '/^\s*#.*$/d' /tmp/unwanted | \
-   while IFS=$'\n' read -r -a myArray; do
-       rm -rf ${FOLDER}/${myArray[0]} > /dev/null
+   while IFS=$'\n' read -r -a remove; do
+       rm -rf ${FOLDER}/${remove[0]} > /dev/null
    done
+   unset remove
+   rm -rf /tmp/unwanted
 }
 
 function build() {
+   install=(aria2 curl bc findutils coreutils tar git jq pv pigz tzdata rsync)
    log "**** install build packages ****" && \
-   apk add --quiet --no-cache --no-progress --virtual=build-dependencies \
-	aria2 \
-	curl \
-	bc \
-	findutils \
-	coreutils \
-	tar \
-	git \
-	jq \
-	pv \
-	pigz \
-	tzdata \
-	rsync
+   apk add --quiet --no-cache --no-progress --virtual=build-dependencies ${install[@]}
+   unset install
 }
 
 function run() {
