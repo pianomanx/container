@@ -69,10 +69,6 @@ done
 
 chown -hR abc:abc ${LOGS} && chmod -R 775 ${LOGS}
 
-find ${SMOUNT} -type f -name "mount.sh" | while read file; do
-   chmod -cR 755 "$file" && bash "$file"
-done
-
 file1=/system/mount/mount.env
 file2=/tmp/mount.env
 rm -rf "$file2" && cp "$file1" "$file2"
