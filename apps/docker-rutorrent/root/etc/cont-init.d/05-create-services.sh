@@ -7,6 +7,7 @@ with-contenv
 s6-setuidgid ${PUID}:${PGID}
 nginx -g "daemon off;"
 EOL
+
 chmod +x /etc/services.d/nginx/run
 
 mkdir -p /etc/services.d/php-fpm
@@ -16,6 +17,7 @@ with-contenv
 s6-setuidgid ${PUID}:${PGID}
 php-fpm7 -F
 EOL
+
 chmod +x /etc/services.d/php-fpm/run
 
 mkdir -p /etc/services.d/rtorrent
@@ -27,4 +29,5 @@ with-contenv
 s6-setuidgid ${PUID}:${PGID}
 rtorrent -D -o import=/etc/rtorrent/.rtlocal.rc -i ${WAN_IP}
 EOL
+
 chmod +x /etc/services.d/rtorrent/run
