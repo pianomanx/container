@@ -15,7 +15,9 @@
 # shellcheck disable=SC2046
 
 function log() {
+
    echo "[INSTALL] DockServer ${1}"
+
 }
 
 function first() {
