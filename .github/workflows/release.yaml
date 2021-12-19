@@ -122,13 +122,21 @@ jobs:
       with:
         platforms: ${{ steps.prep.outputs.platformout }}
 
-    - name: Login to GHCR
+    - name: Login in Registry
       uses: docker/login-action@v1.10.0
       if: github.event_name != 'pull_request'
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.CR_PAT }}
+
+    - name: Login in Registry
+      uses: docker/login-action@v1.10.0
+      if: github.event_name != 'pull_request'
+       with:
+          registry: ${{ secrets.OWN_REGISTRY }}
+          username: ${{ secrets.CR_QUAI }}
+          password: ${{ secrets.QR_LOGIN }}
 
     - name: Set up Docker Buildx
       id: buildx
@@ -162,6 +170,8 @@ jobs:
         tags: |
           ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:latest
           ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:v${{ steps.prep.outputs.version }}
+          ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:latest
+          ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:v${{ steps.prep.outputs.version }}
         cache-from: ${{ steps.prep.outputs.cache_from }}
         cache-to: ${{ steps.prep.outputs.cache_to }}
         labels: |
