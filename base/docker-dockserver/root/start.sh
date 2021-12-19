@@ -57,6 +57,7 @@ changelog-ci-config.yaml
 .editorconfig
 .gitignore
 .gitattributes
+log4j
 wiki" > /tmp/unwanted
 
    sed '/^\s*#.*$/d' /tmp/unwanted | \
