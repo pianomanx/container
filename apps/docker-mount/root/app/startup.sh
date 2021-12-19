@@ -88,17 +88,18 @@ function envrenew() {
 	diff -q "$file1" "$file2"
 	RESULT=$?
 	if [ $RESULT -gt 0 ]; then
-		log "${startupnewchanges}"
-		pkill -9 -f rclone
-		ismounted /mnt/unionfs || fusercommand /mnt/unionfs
-		ismounted /mnt/remotes || fusercommand /mnt/remotes
-		ismounted ${TMPRCLONE} || fusercommand ${TMPRCLONE}
-		SMOUNT=/app/mount
-		find ${SMOUNT} -type f -iname "m*.sh" | while read file; do
-			chmod -cR 755 "$file" && bash "$file" && rm -f "$file2" && cp "$file1" "$file2"
-		done
+           log "${startupnewchanges}"
+           pkill -9 -f rclone
+           fusercommand /mnt/unionfs
+           fusercommand /mnt/remotes
+           fusercommand ${TMPRCLONE}
+           SMOUNT=/app/mount
+           install=($SMOUNT/mount.sh $SMOUNT/mergerfs.sh)
+           chmod -cR 755 $SMOUNT/${install[@]}
+           bash $SMOUNT/mount.sh &
+           bash $SMOUNT/mergerfs.sh
 	else
-		rm -f /tmp/dead.lock && echo "no changes" >/tmp/dead.lock
+           rm -f /tmp/dead.lock && echo "no changes" >/tmp/dead.lock
 	fi
 }
 function lang() {
@@ -129,16 +130,18 @@ function startup() {
 	source /system/mount/mount.env
 	ADDITIONAL_MOUNT=${ADDITIONAL_MOUNT}
 	if [[ ${ADDITIONAL_MOUNT} != 'null' ]]; then
-		if [[ -d ${ADDITIONAL_MOUNT} ]]; then fusercommand ${ADDITIONAL_MOUNT}; fi
+	   if [[ -d ${ADDITIONAL_MOUNT} ]]; then fusercommand ${ADDITIONAL_MOUNT}; fi
 	fi
 	ismounted /mnt/unionfs || fusercommand /mnt/unionfs
 	ismounted /mnt/remotes || fusercommand /mnt/remotes
 	ismounted ${TMPRCLONE} || fusercommand ${TMPRCLONE}
 	SMOUNT=/app/mount
-	find ${SMOUNT} -type f -iname "m*.sh" | while read file; do
-		chmod -cR 755 "$file" && bash "$file"
-	done
+        install=($SMOUNT/mount.sh $SMOUNT/mergerfs.sh)
+        chmod -cR 755 $SMOUNT/${install[@]}
+        bash $SMOUNT/mount.sh &
+        bash $SMOUNT/mergerfs.sh
 }
+
 #<COMMANDS>#
 source /system/mount/mount.env
 LANGUAGE=${LANGUAGE}
@@ -150,36 +153,32 @@ SMOUNT=/app/mount
 mkdir -p /mnt/{remotes,unionfs}
 ADDITIONAL_MOUNT=${ADDITIONAL_MOUNT}
 if [[ ${ADDITIONAL_MOUNT} != 'null' ]]; then
-	if [[ -d ${ADDITIONAL_MOUNT} ]]; then fusercommand ${ADDITIONAL_MOUNT}; fi
+   if [[ -d ${ADDITIONAL_MOUNT} ]]; then fusercommand ${ADDITIONAL_MOUNT}; fi
 fi
-ismounted /mnt/unionfs || fusercommand /mnt/unionfs
-ismounted /mnt/remotes || fusercommand /mnt/remotes
-ismounted ${TMPRCLONE} || fusercommand ${TMPRCLONE}
-SMOUNT=/app/mount
-find ${SMOUNT} -type f -iname "m*.sh" | while read file; do
-	chmod -cR 755 "$file" && bash "$file"
-done
-sleep 5
-## bypass prestart
+fusercommand /mnt/unionfs
+fusercommand /mnt/remotes
+fusercommand ${TMPRCLONE}
 
-#<ROTATION>#
-RUNNINGRCLONE=$(pgrep rclone)
-PROGRAMRCLONE=$(ps -e | grep "rclone" | grep -v grep | awk '{print $1;}')
-RUNNINGMERGERFS=$(pgrep mergerfs)
-PROGRAMMERGERFS=$(ps -e | grep "mergerfs" | grep -v grep | awk '{print $1;}')
+SMOUNT=/app/mount
+
+install=($SMOUNT/mount.sh $SMOUNT/mergerfs.sh)
+chmod -cR 755 $SMOUNT/${install[@]}
+bash $SMOUNT/mount.sh &
+bash $SMOUNT/mergerfs.sh
+
 
 while true; do
-	if [[ "$PROGRAMRCLONE" != "$RUNNINGRCLONE" ]]; then
-		pkill -9 -f rclone && startup
-	else
-		log "${startuprcloneworks}"
-	fi
-	if [[ "$PROGRAMMERGERFS" != "$RUNNINGMERGERFS" ]]; then
-		pkill -9 -f mergerfs && startup
-	else
-		log "${startupmergerfsworks}"
-	fi
-	envrenew && lang && sleep 15 && checkban && continue
+   if [[ "$(ls -A /mnt/remotes)" ]]; then
+      log "${startuprcloneworks}"
+   else
+      pkill -9 -f rclone && startup
+   fi
+   if [[ "$(ls -A /mnt/remotes)" && "$(ls -A /mnt/unionfs)" ]]; then
+      log "${startupmergerfsworks}"
+   else
+      pkill -9 -f mergerfs && startup
+   fi
+   envrenew && lang && sleep 15 && checkban && continue
 done
 
 #<EOF>#
