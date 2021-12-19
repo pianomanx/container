@@ -173,7 +173,7 @@ while true; do
    else
       pkill -9 -f rclone && startup
    fi
-   if [[ "$(ls -A /mnt/remotes)" && "$(ls -A /mnt/unionfs)" ]]; then
+   if [[ "$(ls -A /mnt/unionfs)" ]]; then
       log "${startupmergerfsworks}"
    else
       pkill -9 -f mergerfs && startup
