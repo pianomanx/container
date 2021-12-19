@@ -135,8 +135,8 @@ jobs:
       if: github.event_name != 'pull_request'
       with:
           registry: ${{ secrets.OWN_REGISTRY }}
-          username: ${{ secrets.CR_QUAI }}
-          password: ${{ secrets.QR_LOGIN }}
+          username: ${{ secrets.QR_LOGIN }}
+          password: ${{ secrets.CR_QUAI }}
 
     - name: Set up Docker Buildx
       id: buildx
