@@ -19,15 +19,13 @@ fi
 function fusercommand() {
     fusermount -uzq "$1"
 }
-
+function rcx() {
 # environment
 source /system/mount/mount.env
 CONFIG=/app/rclone/rclone.conf
 log=/system/mount/logs/rclone-union.log
 
 fusercommand /mnt/remotes
-
-# rclone command
 
 rclone mount remote: /mnt/remotes \
 --config=${CONFIG} \
@@ -56,6 +54,17 @@ rclone mount remote: /mnt/remotes \
 --vfs-read-chunk-size-limit=${VFS_READ_CHUNK_SIZE_LIMIT} \
 --vfs-read-chunk-size=${VFS_READ_CHUNK_SIZE}
 --rc --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
---rc-addr=localhost:${RC_ADDRESS} --daemon
+--rc-addr=localhost:${RC_ADDRESS}
+
+}
+#--daemon
+
+while true; do
+if [ "$(ls -A /mnt/remotes)" ]; then
+   sleep 120 && continue
+else
+    rcx && sleep 240 && continue
+fi
+done
 
 #EOF
