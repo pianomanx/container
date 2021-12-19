@@ -8,4 +8,4 @@
 umask 022
 phpfpm_command="php-fpm8 -F"
 echo "-> Starting php-fpm <-"
-exec s6-setuidgid abc $phpfpm_command
+exec $phpfpm_command
