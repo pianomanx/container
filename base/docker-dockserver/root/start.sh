@@ -19,6 +19,7 @@ function log() {
 }
 
 function first() {
+
    cat > /etc/apk/repositories << EOF; $(echo)
 http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/main
 http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/community
@@ -41,6 +42,7 @@ EOF
 }
 
 function unwanted() {
+
 echo -e ".git
 .github
 CONTRIBUTING.md
@@ -69,10 +71,12 @@ wiki" > /tmp/unwanted
 }
 
 function build() {
+
    install=(aria2 curl bc findutils coreutils tar git jq pv pigz tzdata rsync)
    log "**** install build packages ****" && \
    apk add --quiet --no-cache --no-progress --virtual=build-dependencies ${install[@]}
    unset install
+
 }
 
 function run() {
@@ -151,6 +155,7 @@ while :
    fi
    sleep 720
 done
+
 }
    ## RUN IN ORDER
    first
