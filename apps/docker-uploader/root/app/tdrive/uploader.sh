@@ -56,7 +56,9 @@ if [[ -e "/system/uploader/.keys/usedupload" ]];then usedupload=$(cat /system/up
 if [[ -e "/system/uploader/.keys/lastday" ]];then lastday=$(cat /system/uploader/.keys/lastday); fi
 if [[ ! -e "/system/uploader/.keys/lasteservicekey" ]]; then lastkeysused=0; fi
 if [[ ! -e "/system/uploader/.keys/usedupload" ]]; then usedupload=0; fi
-if [[ ! -e "/system/uploader/.keys/lastday" ]]; then last=0; fi
+if [[ ! -e "/system/uploader/.keys/lastday" ]]; then
+   echo "0" >/system/uploader/.keys/lastday
+fi
 
 BI="! -wholename '**.anchor' ! -wholename '*partial~*' ! -wholename '*_HIDDEN~' ! -wholename '*.fuse_hidden*' ! -wholename '*.lck' ! -wholename '*.version'"
 DI1="! -path '**.anchors/**' ! -path '**torrent/**' ! -path '**nzb/**' ! -path '**backup/**' ! -path '**nzbget/**' ! -path '**jdownloader2/**' ! -path '**sabnzbd/**'"
