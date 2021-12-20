@@ -136,7 +136,7 @@ function startup() {
 	ismounted /mnt/remotes || fusercommand /mnt/remotes
 	ismounted ${TMPRCLONE} || fusercommand ${TMPRCLONE}
 	SMOUNT=/app/mount
-        install=($SMOUNT/mount.sh $SMOUNT/mergerfs.sh)
+        install=(mount.sh mergerfs.sh)
         chmod -cR 755 $SMOUNT/${install[@]}
         bash $SMOUNT/mount.sh &
         bash $SMOUNT/mergerfs.sh
@@ -166,6 +166,7 @@ chmod -cR 755 $SMOUNT/${install[@]}
 bash $SMOUNT/mount.sh &
 bash $SMOUNT/mergerfs.sh
 
+sleep 90
 
 while true; do
    if [[ "$(ls -A /mnt/remotes)" ]]; then
