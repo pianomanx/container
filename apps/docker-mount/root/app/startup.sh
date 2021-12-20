@@ -94,7 +94,7 @@ function envrenew() {
            fusercommand /mnt/remotes
            fusercommand ${TMPRCLONE}
            SMOUNT=/app/mount
-           install=($SMOUNT/mount.sh $SMOUNT/mergerfs.sh)
+           install=(mount.sh mergerfs.sh)
            chmod -cR 755 $SMOUNT/${install[@]}
            bash $SMOUNT/mount.sh &
            bash $SMOUNT/mergerfs.sh
@@ -161,10 +161,12 @@ fusercommand ${TMPRCLONE}
 
 SMOUNT=/app/mount
 
-install=($SMOUNT/mount.sh $SMOUNT/mergerfs.sh)
+install=(mount.sh mergerfs.sh)
 chmod -cR 755 $SMOUNT/${install[@]}
 bash $SMOUNT/mount.sh &
 bash $SMOUNT/mergerfs.sh
+
+lang
 
 sleep 90
 
