@@ -1,4 +1,11 @@
 #!/usr/bin/with-contenv bash
+while true; do
+   if [ "$(ls -A /mnt/remotes)" ] && [ "$(ls -A /mnt/unionfs)" ]; then
+      break 
+   else
+      sleep 5 && continue 
+   fi
+done
 
 cd /app/radarr/bin || exit
 

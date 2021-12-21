@@ -37,17 +37,10 @@ else
    if [[ "$last" -gt "0" ]] || [[ $(stat -c %s /tmp/plex.deb) -lt 10000 ]]; then
       apt-get remove -yqq wget jq aria2 && apt-get purge -yqq \
       && rm -rf /tmp/plex*.deb \
-      && apt-get autoremove -yqq \
-      && apt-get clean -yqq \
-      && rm -rf /tmp/plex*.deb \
       && exit 0
    else
       dpkg -i --force-confold /tmp/plex*.deb \
       && rm -rf /tmp/plex*.deb \
-      && apt-get remove -yqq wget jq aria2 \
-      && apt-get purge -yqq \
-      && apt-get autoremove -yqq \
-      && apt-get clean -yqq \
       && exit 0
    fi
 fi

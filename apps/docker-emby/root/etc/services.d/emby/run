@@ -1,11 +1,18 @@
 #!/usr/bin/with-contenv bash
+while true; do
+  if [ "$(ls -A /mnt/remotes)" ] && [ "$(ls -A /mnt/unionfs)" ]; then
+      break 
+   else
+      sleep 5 && continue 
+   fi
+done
 
 # env settings
 APP_DIR="/app/emby"
 export LD_LIBRARY_PATH="${APP_DIR}"
 export FONTCONFIG_PATH="${APP_DIR}"/etc/fonts
 if [ -d "/lib/x86_64-linux-gnu" ]; then
-	export LIBVA_DRIVERS_PATH=/usr/lib/x86_64-linux-gnu/dri:"${APP_DIR}"/dri
+   export LIBVA_DRIVERS_PATH=/usr/lib/x86_64-linux-gnu/dri:"${APP_DIR}"/dri
 fi
 export SSL_CERT_FILE="${APP_DIR}"/etc/ssl/certs/ca-certificates.crt
 

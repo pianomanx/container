@@ -1,7 +1,0 @@
-#!/usr/bin/with-contenv bash
-
-echo "Starting Plex Media Server Patching."
-umask 022
-command="/app/plexpatch.sh"
-sleep 2
-exec s6-setuidgid abc $command

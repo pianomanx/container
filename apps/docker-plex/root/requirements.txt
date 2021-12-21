@@ -6,3 +6,5 @@ unrar
 wget
 git
 curl
+xmlstarlet
+sqlite
