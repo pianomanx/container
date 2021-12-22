@@ -1,4 +1,4 @@
-name: Release
+name: Release - mirror
 
 on:
   workflow_dispatch:
@@ -122,13 +122,13 @@ jobs:
       with:
         platforms: ${{ steps.prep.outputs.platformout }}
 
-    - name: Login in Registry || major
+    - name: Login in Registry || mirror
       uses: docker/login-action@v1.10.0
       if: github.event_name != 'pull_request'
       with:
-        registry: ${{ secrets.DOCKER_REGISTRY }}
-        username: ${{ github.actor }}
-        password: ${{ secrets.CR_PAT }}
+          registry: ${{ secrets.OWN_REGISTRY }}
+          username: ${{ secrets.QR_LOGIN }}
+          password: ${{ secrets.CR_QUAI }}
 
     - name: Set up Docker Buildx
       id: buildx
@@ -160,8 +160,8 @@ jobs:
         push: ${{ steps.prep.outputs.push }}
         pull: ${{ steps.prep.outputs.push }}
         tags: |
-          ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:latest
-          ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:v${{ steps.prep.outputs.version }}
+          ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:latest
+          ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:v${{ steps.prep.outputs.version }}
         cache-from: ${{ steps.prep.outputs.cache_from }}
         cache-to: ${{ steps.prep.outputs.cache_to }}
         labels: |
