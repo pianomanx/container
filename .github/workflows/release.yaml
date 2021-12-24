@@ -21,6 +21,8 @@ env:
   PLATFORM: "linux/amd64,linux/arm64"
   LICENSE: "GPL-3.0 DockServer.io"
   CODE_OWNED: "base image LSIO, changes dockserver.io"
+  COSIGN_KEY: ${{ secrets.COSIGN_KEY }}
+  COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
 
 jobs:
   get-version:
@@ -74,6 +76,14 @@ jobs:
   build:
     name: Build Docker
     runs-on: ubuntu-20.04
+
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      actions: nwrite
+      checks: write
+ 
     needs:
     - changes
     - get-version
@@ -122,6 +132,12 @@ jobs:
       with:
         platforms: ${{ steps.prep.outputs.platformout }}
 
+    - name: Install cosign
+      if: github.event_name != 'pull_request'
+      uses: sigstore/cosign-installer@1e95c1de343b5b0c23352d6417ee3e48d5bcd422
+      with:
+        cosign-release: 'v1.4.0'
+
     - name: Login in Registry || major
       uses: docker/login-action@v1.10.0
       if: github.event_name != 'pull_request'
@@ -150,6 +166,12 @@ jobs:
         restore-keys: |
           ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
 
+    - name: Extract Docker metadata
+      id: meta
+      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      with:
+        images: ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
+
     - name: Build and Push Image
       uses: docker/build-push-action@v2.7.0
       with:
@@ -177,6 +199,19 @@ jobs:
           org.opencontainers.image.platform=${{ steps.prep.outputs.platformout }}
           org.opencontainers.image.license=${{ steps.prep.outputs.linc }}
           org.opencontainers.image.owner=${{ steps.prep.outputs.owndocker }}
+
+    - name: Sign image with trusted keypairs
+      run: |
+        echo ${{ COSIGN_KEY }} > /tmp/my_cosign.key && \
+        cosign sign --key /tmp/my_cosign.key ${TAGS}
+      env:
+        TAGS: ${{ steps.docker_meta.outputs.tags }}
+
+    - name: Sign the published Docker image
+      if: ${{ github.event_name != 'pull_request' }}
+      env:
+        COSIGN_EXPERIMENTAL: "true"
+      run: cosign sign ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}@${{ steps.build-and-push.outputs.digest }}
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
