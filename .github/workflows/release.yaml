@@ -79,7 +79,7 @@ jobs:
       contents: read
       packages: write
       id-token: write
-      actions: nwrite
+      actions: write
       checks: write
  
     needs:
