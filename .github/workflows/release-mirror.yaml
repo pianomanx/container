@@ -204,8 +204,8 @@ jobs:
         cosign sign --key /tmp/my_cosign.key ${TAGS}
       env:
         TAGS: ${{ steps.docker_meta.outputs.tags }}
-        KEY_REPO: ${{ secrets.COSIGN_KEY }}
-        PASS: ${{ secrets.COSIGN_PASSWORD }}
+        COSIGN_KEY: ${{ secrets.KEY_REPO }}
+        COSIGN_PASSWORD PASS: ${{ secrets.PASSWORD }}
 
     - name: Sign the published Docker image
       if: ${{ github.event_name != 'pull_request' }}
