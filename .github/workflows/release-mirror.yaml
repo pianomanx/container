@@ -198,11 +198,11 @@ jobs:
           org.opencontainers.image.license=${{ steps.prep.outputs.linc }}
           org.opencontainers.image.owner=${{ steps.prep.outputs.owndocker }}
 
+    - name: Image digest
+      run: echo ${{ steps.docker_build.outputs.digest }}
+
     - name: Sign the published Docker image
       if: ${{ github.event_name != 'pull_request' }}
       env:
         COSIGN_EXPERIMENTAL: "true"
       run: cosign sign ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}@${{ steps.docker_build.outputs.digest }}
-
-    - name: Image digest
-      run: echo ${{ steps.docker_build.outputs.digest }}
