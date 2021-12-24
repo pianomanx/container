@@ -1,5 +1,5 @@
 ARG VERSION
-FROM alpine:3.15 as rootfs-stage
+FROM alpine:3.14 as rootfs-stage
 
 # environment
 ENV REL=v3.15
