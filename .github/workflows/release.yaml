@@ -21,8 +21,6 @@ env:
   PLATFORM: "linux/amd64,linux/arm64"
   LICENSE: "GPL-3.0 DockServer.io"
   CODE_OWNED: "base image LSIO, changes dockserver.io"
-  COSIGN_KEY: ${{ secrets.COSIGN_KEY }}
-  COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
 
 jobs:
   get-version:
@@ -206,6 +204,8 @@ jobs:
         cosign sign --key /tmp/my_cosign.key ${TAGS}
       env:
         TAGS: ${{ steps.docker_meta.outputs.tags }}
+        COSIGN_KEY: ${{ secrets.COSIGN_KEY }}
+        COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
 
     - name: Sign the published Docker image
       if: ${{ github.event_name != 'pull_request' }}
