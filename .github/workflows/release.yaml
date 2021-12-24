@@ -171,6 +171,7 @@ jobs:
         images: ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
 
     - name: Build and Push Image
+      id: build-and-push
       uses: docker/build-push-action@v2.7.0
       with:
         build-args: VERSION=${{ steps.prep.outputs.version }}
@@ -205,4 +206,4 @@ jobs:
       if: ${{ github.event_name != 'pull_request' }}
       env:
         COSIGN_EXPERIMENTAL: "true"
-      run: cosign sign ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}@${{ steps.docker_build.outputs.digest }}
+      run: cosign sign ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}@${{ steps.build-and-push.outputs.digest }}
