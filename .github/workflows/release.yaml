@@ -202,7 +202,7 @@ jobs:
       if: ${{ github.event_name != 'pull_request' }}
       env:
         COSIGN_EXPERIMENTAL: "true"
-      run: cosign sign ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}@${{ steps.build-and-push.outputs.digest }}
+      run: cosign sign ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}@${{ steps.docker_build.outputs.digest }}
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
