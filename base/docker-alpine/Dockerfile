@@ -1,47 +1,16 @@
-ARG VERSION
-FROM alpine:3.14 as rootfs-stage
-
-# environment
-ENV REL=v3.15
-ENV ARCH=x86_64
-ENV MIRROR=http://dl-cdn.alpinelinux.org/alpine
-ENV PACKAGES=alpine-baselayout,\
-alpine-keys,\
-apk-tools,\
-busybox,\
-libc-utils,\
-xz
-
-# install packages
-RUN \
- apk add --no-cache \
-	bash \
-	curl \
-	tzdata \
-	xz
-
-# fetch builder script from gliderlabs
-RUN \
- curl -o \
- /mkimage-alpine.bash -L \
-	https://raw.githubusercontent.com/gliderlabs/docker-alpine/master/builder/scripts/mkimage-alpine.bash && \
- chmod +x \
-	/mkimage-alpine.bash && \
- ./mkimage-alpine.bash  && \
- mkdir /root-out && \
- tar xf \
-	/rootfs.tar.xz -C \
-	/root-out && \
- sed -i -e 's/^root::/root:!:/' /root-out/etc/shadow
-
-# Runtime stage
-FROM scratch
-COPY --from=rootfs-stage /root-out/ /
+FROM alpine:3.14
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 ARG VERSION
 
-# set version for s6 overlay
-RUN set -x && apk add --no-cache bash curl coreutils tzdata shadow curl tar jq \
-  && OVERLAY_ARCH=$(uname -m) \
+RUN \
+ echo "**** update build packages ****" && \
+   apk --quiet --no-cache --no-progress update && \
+   apk --quiet --no-cache --no-progress upgrade && \
+ echo "**** install build packages ****" && \
+   apk add --no-cache bash curl tzdata xz coreutils shadow curl tar jq
+
+RUN set -x && OVERLAY_ARCH=$(uname -m) \
   && case "${OVERLAY_ARCH}" in \
     x86_64) OVERLAY_ARCH='amd64';; \
     arm) OVERLAY_ARCH='armhf';; \
@@ -61,22 +30,9 @@ TERM="xterm"
 
 RUN \
  echo "**** install build packages ****" && \
- apk add --no-cache --virtual=build-dependencies \
-	curl \
-	patch \
-	tar && \
+ apk add --no-cache --virtual=build-dependencies curl patch tar && \
  echo "**** install runtime packages ****" && \
- apk add --no-cache \
-	ca-certificates \
-	coreutils \
-	procps \
-	shadow \
-	tzdata \
-	bash \
-	curl \
-	bc \
-	findutils \
-	coreutils && \
+ apk add --no-cache ca-certificates coreutils procps shadow tzdata bash curl bc findutils coreutils && \
  echo "**** create abc user and make our folders ****" && \
  groupmod -g 1000 users && \
  useradd -u 911 -U -d /config -s /bin/false abc && \
@@ -87,14 +43,25 @@ RUN \
 	/defaults \
 	/system && \
  mv /usr/bin/with-contenv /usr/bin/with-contenvb && \
- patch -u /etc/s6/init/init-stage2 -i /tmp/patch/etc/s6/init/init-stage2.patch && \
- echo "**** cleanup ****" && \
- apk del --purge \
-	build-dependencies && \
- rm -rf \
-	/tmp/*
+ patch -u /etc/s6/init/init-stage2 -i /tmp/patch/etc/s6/init/init-stage2.patch
 
-# add local files
+RUN \
+  QARCH=$(uname -m) \
+  && case "${QARCH}" in \
+  aarch64) \
+     curl -o /usr/bin/qemu-${QARCH}-static -L "https://lsio-ci.ams3.digitaloceanspaces.com/qemu-${ARCH}-static" && \
+     chmod +x /usr/bin/qemu-${QARCH}-static; \
+  ;; \
+  arm) \
+     curl -o /usr/bin/qemu-${QARCH}-static -L "https://lsio-ci.ams3.digitaloceanspaces.com/qemu-${ARCH}-static" && \
+     chmod +x /usr/bin/qemu-${QARCH}-static; \
+  ;; \
+  esac \
+  && \
+  apk del --purge build-dependencies && \
+  echo "**** cleanup ****" && \
+  rm -rf /tmp/*
+
 COPY ./base/docker-alpine/root/ /
 
 ENTRYPOINT ["/init"]
