@@ -1,9 +1,10 @@
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 ARG VERSION
 FROM alpine:3.14 as rootfs-stage
 
 # environment
 ENV REL=v3.15
-ENV ARCH=x86_64
 ENV MIRROR=http://dl-cdn.alpinelinux.org/alpine
 ENV PACKAGES=alpine-baselayout,\
 alpine-keys,\
@@ -87,12 +88,24 @@ RUN \
 	/defaults \
 	/system && \
  mv /usr/bin/with-contenv /usr/bin/with-contenvb && \
- patch -u /etc/s6/init/init-stage2 -i /tmp/patch/etc/s6/init/init-stage2.patch && \
- echo "**** cleanup ****" && \
- apk del --purge \
-	build-dependencies && \
- rm -rf \
-	/tmp/*
+ patch -u /etc/s6/init/init-stage2 -i /tmp/patch/etc/s6/init/init-stage2.patch
+
+RUN \
+  QARCH=$(uname -m) \
+  && case "${QARCH}" in \
+  'aarch64') \
+     curl -o /usr/bin/qemu-${QARCH}-static -L "https://lsio-ci.ams3.digitaloceanspaces.com/qemu-${ARCH}-static" && \
+     chmod +x /usr/bin/qemu-${QARCH}-static; \
+  ;; \
+  'arm) \
+     curl -o /usr/bin/qemu-${QARCH}-static -L "https://lsio-ci.ams3.digitaloceanspaces.com/qemu-${ARCH}-static" && \
+     chmod +x /usr/bin/qemu-${QARCH}-static; \
+  ;; \
+  esac \
+  && \
+  apk del --purge build-dependencies && \
+  echo "**** cleanup ****" && \
+  rm -rf /tmp/*
 
 # add local files
 COPY ./base/docker-alpine/root/ /
