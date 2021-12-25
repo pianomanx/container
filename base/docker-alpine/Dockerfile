@@ -93,11 +93,11 @@ RUN \
 RUN \
   QARCH=$(uname -m) \
   && case "${QARCH}" in \
-  'aarch64') \
+  aarch64) \
      curl -o /usr/bin/qemu-${QARCH}-static -L "https://lsio-ci.ams3.digitaloceanspaces.com/qemu-${ARCH}-static" && \
      chmod +x /usr/bin/qemu-${QARCH}-static; \
   ;; \
-  'arm) \
+  arm) \
      curl -o /usr/bin/qemu-${QARCH}-static -L "https://lsio-ci.ams3.digitaloceanspaces.com/qemu-${ARCH}-static" && \
      chmod +x /usr/bin/qemu-${QARCH}-static; \
   ;; \
