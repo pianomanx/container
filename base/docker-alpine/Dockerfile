@@ -3,9 +3,14 @@ ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 ARG VERSION
 
-# set version for s6 overlay
-RUN set -x && apk add --no-cache bash curl coreutils tzdata shadow curl tar jq \
-  && OVERLAY_ARCH=$(uname -m) \
+RUN \
+ echo "**** update build packages ****" && \
+   apk --quiet --no-cache --no-progress update && \
+   apk --quiet --no-cache --no-progress upgrade && \
+ echo "**** install build packages ****" && \
+   apk add --no-cache bash curl tzdata xz coreutils shadow curl tar jq
+
+RUN set -x && OVERLAY_ARCH=$(uname -m) \
   && case "${OVERLAY_ARCH}" in \
     x86_64) OVERLAY_ARCH='amd64';; \
     arm) OVERLAY_ARCH='armhf';; \
@@ -25,22 +30,9 @@ TERM="xterm"
 
 RUN \
  echo "**** install build packages ****" && \
- apk add --no-cache --virtual=build-dependencies \
-	curl \
-	patch \
-	tar && \
+ apk add --no-cache --virtual=build-dependencies curl patch tar && \
  echo "**** install runtime packages ****" && \
- apk add --no-cache \
-	ca-certificates \
-	coreutils \
-	procps \
-	shadow \
-	tzdata \
-	bash \
-	curl \
-	bc \
-	findutils \
-	coreutils && \
+ apk add --no-cache ca-certificates coreutils procps shadow tzdata bash curl bc findutils coreutils && \
  echo "**** create abc user and make our folders ****" && \
  groupmod -g 1000 users && \
  useradd -u 911 -U -d /config -s /bin/false abc && \
@@ -70,7 +62,6 @@ RUN \
   echo "**** cleanup ****" && \
   rm -rf /tmp/*
 
-# add local files
 COPY ./base/docker-alpine/root/ /
 
 ENTRYPOINT ["/init"]
