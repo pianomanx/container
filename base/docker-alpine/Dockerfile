@@ -1,43 +1,6 @@
+FROM alpine:3.14
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
-ARG VERSION
-FROM alpine:3.14 as rootfs-stage
-
-# environment
-ENV REL=v3.15
-ENV MIRROR=http://dl-cdn.alpinelinux.org/alpine
-ENV PACKAGES=alpine-baselayout,\
-alpine-keys,\
-apk-tools,\
-busybox,\
-libc-utils,\
-xz
-
-# install packages
-RUN \
- apk add --no-cache \
-	bash \
-	curl \
-	tzdata \
-	xz
-
-# fetch builder script from gliderlabs
-RUN \
- curl -o \
- /mkimage-alpine.bash -L \
-	https://raw.githubusercontent.com/gliderlabs/docker-alpine/master/builder/scripts/mkimage-alpine.bash && \
- chmod +x \
-	/mkimage-alpine.bash && \
- ./mkimage-alpine.bash  && \
- mkdir /root-out && \
- tar xf \
-	/rootfs.tar.xz -C \
-	/root-out && \
- sed -i -e 's/^root::/root:!:/' /root-out/etc/shadow
-
-# Runtime stage
-FROM scratch
-COPY --from=rootfs-stage /root-out/ /
 ARG VERSION
 
 # set version for s6 overlay
