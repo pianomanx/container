@@ -17,8 +17,12 @@
 ######################################################
 # shellcheck disable=SC2086
 # shellcheck disable=SC2046
-echo "######################################################
-#          Sorry no docker anymore                   #
-######################################################"
 
-sleep 120
+if [ -f "/system/rclone/.env" ] && [ -f "/system/rclone/.token" ]; then
+   bash startup
+fi
+if [ ! -f "/system/rclone/.env" ] && [ ! -f "/system/rclone/.token" ]; then
+   exit
+fi
+
+##E#O#F##
