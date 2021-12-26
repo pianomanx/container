@@ -67,7 +67,7 @@ DI3="! -path '**_UNPACK_**' ! -path '**complete/**' ! -path '**torrents/**' ! -p
 
 while true; do
     source /system/uploader/uploader.env
-    if [[ ${DRIVEUSEDSPACE} != "null" ]]; then
+    if [[ ${DRIVEUSEDSPACE} != null ]]; then
        pathglobal=/mnt/downloads
        DRIVEPERCENT=$(df --output=pcent ${pathglobal} | tr -dc '0-9')
        TARCHECK=$(find ${downloadpath} -type f -cmin +${MIN_AGE_UPLOAD} -name "**.tar.**" | wc -l)
