@@ -4,8 +4,9 @@
 # Docker owned dockserver           #
 # Docker Maintainer dockserver      #
 #####################################
-ARG VERSION
-FROM alpine:${VERSION}
+FROM alpine:3.14
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 
 RUN \
     echo "**** update build ****" && \
