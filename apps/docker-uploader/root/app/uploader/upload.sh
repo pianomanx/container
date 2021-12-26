@@ -50,24 +50,26 @@ touch "${VFS}" && chmod 777 "${VFS}" 1>/dev/null 2>&1
 touch "${LOGFILE}" && chmod 777 "${LOGFILE}" 1>/dev/null 2>&1
 chown -cR 1000:1000 "${LOGFILE}" "${VFS}" "${JSONFILERUN}"  1>/dev/null 2>&1
 
-rclone copyto --tpslimit=32 --checkers=${CHECKERS} \
-   --config=${rjson} --log-file=${LOGFILE} --log-level=${LOG_LEVEL} --stats 1s \
-   --drive-chunk-size=32M --user-agent=${USERAGENT} ${BWLIMIT} \
-   "${FILE}" "${REMOTE}:${FILEDIR}/${FILEBASE}/${FILE}"
+rclone mkdir \
+    --config=${rjson} --user-agent=${USERAGENT} \
+    "${REMOTE}:${FILEDIR}/${FILEBASE}/"
 
-rclone check "${downloadpath}/${FILEDIR}/${FILEBASE}/${FILE}" "${REMOTE}:${FILEDIR}/${FILEBASE}/${FILE}"
 if [ $? -eq 0 ]; then
-   echo true
-   ##rm -rf ${downloadpath}/${FILEDIR}/${FILEBASE}/${FILE}
+   rclone sync --checkers=${CHECKERS} \
+      --config=${rjson} --log-file=${LOGFILE} --log-level=${LOG_LEVEL} --stats 1s \
+      --drive-chunk-size=32M --user-agent=${USERAGENT} ${BWLIMIT} --create-empty-src-dirs \
+      "${FILE}" "${REMOTE}:${FILEDIR}/${FILEBASE}/${FILE}"
+   if [ $? -eq 0 ]; then
+      rm -rf "${downloadpath}/${FILEDIR}/${FILEBASE}/${FILE}"
+   fi
 else
-   echo FAIL
+   rclone moveto --checkers=${CHECKERS} \
+      --config=${rjson} --log-file=${LOGFILE} --log-level=${LOG_LEVEL} --stats 1s \
+      --drive-chunk-size=32M --user-agent=${USERAGENT} ${BWLIMIT} \
+      "${FILE}" "${REMOTE}:${FILEDIR}/${FILEBASE}/${FILE}"
 fi
 
-##rclone check "${downloadpath}/${FILEDIR}/${FILEBASE}/${FILE}" "${REMOTE}:${FILEDIR}/${FILEBASE}/${FILE}" | \
-##rm -rf ${downloadpath}/${FILEDIR}/${FILEBASE}/${FILE}
-
 ENDTIME=$(date +%s)
-
 # shellcheck disable=SC2003
 DRIVEPERCENT=$(df --output=pcent ${pathglobal} | tr -dc '0-9')
 LEFTTOUPLOAD=$(du -sh ${downloadpath}/ --exclude={torrent,nzb,filezilla,backup,nzbget,jdownloader2,sabnzbd,rutorrent,deluge,qbittorrent} | awk '$2 == "/mnt/downloads/" {print $1}')
