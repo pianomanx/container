@@ -82,7 +82,7 @@ while true; do
        done
     fi
     if [[ ${ADDITIONAL_IGNORES} == 'null' ]]; then ADDITIONAL_IGNORES=""; fi
-    mapfile -t files < <(eval find ${downloadpath} -cmin +${MIN_AGE_UPLOAD} -type f $BI $DI1 $DI2 $DI3 ${ADDITIONAL_IGNORES} -printf '%T+ %p\n' | sort | sed 's/^[^ ]* //')
+    mapfile -t files < <(eval find ${downloadpath} -cmin +${MIN_AGE_UPLOAD} -type f $BI $DI1 $DI2 $DI3 ${ADDITIONAL_IGNORES})
     if [[ ${#files[@]} -gt 0 ]]; then
         for i in "${files[@]}"; do
             #mode chang for bypass double matched
