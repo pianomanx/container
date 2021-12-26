@@ -55,8 +55,8 @@ rclone copyto --tpslimit=32 --checkers=${CHECKERS} \
    --drive-chunk-size=32M --user-agent=${USERAGENT} ${BWLIMIT} \
    "${FILE}" "${REMOTE}:${FILEDIR}/${FILEBASE}/${FILE}"
 
-rclone check "${downloadpath}/${FILEDIR}/${FILEBASE}/${FILE}" "${REMOTE}:${FILEDIR}/${FILEBASE}/${FILE}" | \
-f [ $? -eq 0 ]; then
+rclone check "${downloadpath}/${FILEDIR}/${FILEBASE}/${FILE}" "${REMOTE}:${FILEDIR}/${FILEBASE}/${FILE}"
+if [ $? -eq 0 ]; then
    echo true
    ##rm -rf ${downloadpath}/${FILEDIR}/${FILEBASE}/${FILE}
 else
