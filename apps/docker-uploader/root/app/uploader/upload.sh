@@ -50,10 +50,14 @@ touch "${VFS}" && chmod 777 "${VFS}" 1>/dev/null 2>&1
 touch "${LOGFILE}" && chmod 777 "${LOGFILE}" 1>/dev/null 2>&1
 chown -cR 1000:1000 "${LOGFILE}" "${VFS}" "${JSONFILERUN}"  1>/dev/null 2>&1
 
-rclone moveto --tpslimit 32 --checkers=${CHECKERS} \
+rclone sync --tpslimit 32 --checkers=${CHECKERS} \
    --config=${rjson} --log-file=${LOGFILE} --log-level=${LOG_LEVEL} --stats 1s \
    --drive-chunk-size=32M --user-agent=${USERAGENT} ${BWLIMIT} \
-   "${FILE}" "${REMOTE}:${FILEDIR}"
+   "${FILE}" "${REMOTE}:${FILEDIR}/${FILEBASE}"
+
+rclone check "${REMOTE}:${FILEDIR}/${FILEBASE}/${FILE}" "${downloadpath}/${FILEDIR}/${FILEBASE}/${FILE}" | \
+rm -rf ${downloadpath}/${FILEDIR}/${FILEBASE}/${FILE}
+
 
 ENDTIME=$(date +%s)
 
