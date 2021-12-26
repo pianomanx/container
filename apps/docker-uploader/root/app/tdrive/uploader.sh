@@ -65,10 +65,6 @@ DI1="! -path '**.anchors/**' ! -path '**torrent/**' ! -path '**nzb/**' ! -path '
 DI2="! -path '**rutorrent/**' ! -path '**deluge/**' ! -path '**qbittorrent/**' ! -path '**amd/**' ! -path '**aria/**' ! -path '**tubesync/**' ! -path '**-vpn/**'"
 DI3="! -path '**_UNPACK_**' ! -path '**complete/**' ! -path '**torrents/**' ! -path '**temp/**' ! -path '.unionfs-fuse/*' ! -path '.unionfs/*' ! -path '**.inProgress/**'"
 
-export pathglobal=/mnt
-export nzbpath=/mnt/nzb
-export downloadpath=/mnt/downloads
-
 while true; do
     source /system/uploader/uploader.env
     if [[ ${DRIVEUSEDSPACE} != "null" ]]; then
@@ -76,34 +72,17 @@ while true; do
        TARCHECK=$(find ${downloadpath} -type f -cmin +${MIN_AGE_UPLOAD} -name "**.tar.**" | wc -l)
        while true; do
           if [[ ${TARCHECK} != 0 ]]; then
-             sleep ${MIN_AGE_UPLOAD} && break
-          fi
-          if [[ ! ${DRIVEPERCENT} -ge ${DRIVEUSEDSPACE} ]]; then
-             find ${nzbpath}/watch -mindepth 1 -cmin +${MIN_AGE_UPLOAD} -type d -name "*.nzb**" -exec rm -rf \;
-             if [[ ${TARCHECK} != 0 ]]; then break; else continue; fi
+             sleep 1 && break
+          elif [[ ! ${DRIVEPERCENT} -ge ${DRIVEUSEDSPACE} ]]; then
+             sleep 1 && break
           else
-             break
+             sleep 5 && continue
           fi
        done
     fi
     if [[ ${ADDITIONAL_IGNORES} == 'null' ]]; then ADDITIONAL_IGNORES=""; fi
-    ##Set Priority of backups global
-    TARCHECK=$(find ${downloadpath} -type f -cmin +${MIN_AGE_UPLOAD} -name "**.tar.**" | wc -l)
-    if [[ ${TARCHECK} != 0 ]]; then
-       findcommand="find ${downloadpath} -type f -cmin +${MIN_AGE_UPLOAD} -name '**.tar.**'"
-       export TRANSFERS=1
-    elif [[ ${DRIVEUSEDSPACE} != "null" ]]; then
-         findcommand="find ${downloadpath} -type f $BI $DI1 $DI2 $DI3 ${ADDITIONAL_IGNORES} -printf '%T+ %p\n' | sort | sed 's/^[^ ]* //'"
-         export TRANSFERS=${TRANSFERS}
-    else
-         findcommand="find ${downloadpath} -cmin +${MIN_AGE_UPLOAD} -type f $BI $DI1 $DI2 $DI3 ${ADDITIONAL_IGNORES} -printf '%T+ %p\n' | sort | sed 's/^[^ ]* //'"
-         export TRANSFERS=${TRANSFERS}
-    fi
-    ##REMOVE
-    #find ${downloadpath} -mindepth 1 -cmin +${MIN_AGE_UPLOAD} -type d -name "*FAILED_**" -exec rm -rf \;
-    #find ${downloadpath} -mindepth 2 -cmin +${MIN_AGE_UPLOAD} -type d $BI $DI1 $DI2 $DI3 -empty -print0 | xargs -0 -I {} /bin/rm -rf "{}"
-    find ${nzbpath} -mindepth 1 -cmin +${MIN_AGE_UPLOAD} -type d  -name "*nzb**" -exec rm -rf \;
-    mapfile -t files < <(eval $findcommand)
+    find ${downloadpath} -cmin +${MIN_AGE_UPLOAD} -type f $BI $DI1 $DI2 $DI3 ${ADDITIONAL_IGNORES} -printf '%T+ %p\n' | sort | sed 's/^[^ ]* //'"
+    mapfile -t files < <(eval find ${downloadpath} -cmin +${MIN_AGE_UPLOAD} -type f $BI $DI1 $DI2 $DI3 ${ADDITIONAL_IGNORES} -printf '%T+ %p\n' | sort | sed 's/^[^ ]* //')
     if [[ ${#files[@]} -gt 0 ]]; then
         for i in "${files[@]}"; do
             #mode chang for bypass double matched
