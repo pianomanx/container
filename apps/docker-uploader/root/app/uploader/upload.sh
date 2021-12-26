@@ -50,14 +50,13 @@ touch "${VFS}" && chmod 777 "${VFS}" 1>/dev/null 2>&1
 touch "${LOGFILE}" && chmod 777 "${LOGFILE}" 1>/dev/null 2>&1
 chown -cR 1000:1000 "${LOGFILE}" "${VFS}" "${JSONFILERUN}"  1>/dev/null 2>&1
 
-rclone mkdir \
-    --config=${rjson} --user-agent=${USERAGENT} \
+rclone lsd --config=${rjson} --user-agent=${USERAGENT} \
     "${REMOTE}:${FILEDIR}/${FILEBASE}/"
 
 if [ $? -eq 0 ]; then
-   rclone sync --checkers=${CHECKERS} \
+   rclone copy --checkers=${CHECKERS} \
       --config=${rjson} --log-file=${LOGFILE} --log-level=${LOG_LEVEL} --stats 1s \
-      --drive-chunk-size=32M --user-agent=${USERAGENT} ${BWLIMIT} --create-empty-src-dirs \
+      --drive-chunk-size=32M --user-agent=${USERAGENT} ${BWLIMIT} \
       "${FILE}" "${REMOTE}:${FILEDIR}/${FILEBASE}/${FILE}"
    if [ $? -eq 0 ]; then
       rm -rf "${downloadpath}/${FILEDIR}/${FILEBASE}/${FILE}"
