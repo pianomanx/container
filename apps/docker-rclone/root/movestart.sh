@@ -14,13 +14,6 @@
 #####################################
 # shellcheck disable=SC2086
 # shellcheck disable=SC2006
-
-   apk --quiet --no-cache --no-progress update && \
-   apk --quiet --no-cache --no-progress upgrade
-   inst=(bc curl unzip shadow musl findutils coreutils)
-   apk --quiet --no-cache --no-progress add ${inst[@]}
-
-   echo "-> Installed rclone Version $(rclone --version | awk '{print $2}' | head -n 1 | sed -e 's/v//g' | cut -c1-6) <- "
    source /system/rclone/.env
 
    if [[ ${DRIVE} == "gdrive" ]]; then
