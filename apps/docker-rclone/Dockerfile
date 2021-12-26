@@ -8,9 +8,6 @@ ARG VERSION
 
 FROM rclone/rclone:${VERSION}
 
-LABEL maintainer=dockserver
-LABEL org.opencontainers.image.source https://github.com/dockserver/docker-rclone/
-
 RUN \
     echo "**** install build packages ****" && \
     apk --quiet --no-cache --no-progress update && \
