@@ -4,7 +4,8 @@ ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 ARG VERSION
 
-ENV DEBIAN_FRONTEND="noninteractive" 
+ENV DEBIAN_FRONTEND="noninteractive" \
+    EMBY_URL="https://github.com/MediaBrowser/Emby.Releases/releases/download"
 
 RUN \
   echo "**** set the platform ****" && \
@@ -21,20 +22,14 @@ RUN \
   && \
   echo "**** install packages ****" && \
   apt-get update -yqq && \
-  apt-get install -yqq \
-    aria2 \
-    unrar \
-    uuid-runtime \
-    cpio \
-    jq \
-    rpm2cpio \
-    ${EXTRA_INSTALL_ARG} && \
+  apt-get install -yqq aria2 unrar  uuid-runtime cpio jq rpm2cpio ${EXTRA_INSTALL_ARG} && \
   echo "**** install emby ****" && \
     mkdir -p /app/emby && \
-    curl -o /tmp/emby.rpm -L "https://github.com/MediaBrowser/Emby.Releases/releases/download/${VERSION}/emby-server-rpm_${VERSION}_${ARCH}.rpm" && \
+    EVERSION=$(curl -sX GET https://api.github.com/repos/MediaBrowser/Emby.Releases/releases/latest | jq --raw-output '. | .tag_name') && \
+    aria2c -d /tmp -o emby.rpm "${EMBY_URL}/${VERSION}/emby-server-rpm_${EVERSION}_${ARCH}.rpm" \
     cd /tmp && \
     rpm2cpio emby.rpm | cpio -i --make-directories && \
-    printf "UpdateMethod=docker\nPackageVersion=%s\nPackageAuthor=[dockserver.io](https://dockserver.io)" "${VERSION}" > /app/package_info \
+    printf "UpdateMethod=docker\nPackageVersion=%s\nPackageAuthor=[dockserver.io](https://dockserver.io)" "${EVERSION}" > /app/package_info \
   echo "**** cleanup ****" && \
   mv -t \
     /app/emby \
@@ -47,6 +42,7 @@ RUN \
 FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
 
 ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 ARG VERSION
 
 ENV NVIDIA_DRIVER_CAPABILITIES=""
@@ -73,14 +69,7 @@ RUN \
   && \
   apt-get -qq update \
   && \
-  apt-get -qq install -y \
-    aria2 \
-    jq \
-    unrar \
-    unzip \
-    uuid-runtime \
-    mesa-va-drivers \
-    ${INSTALL_ARG} \
+  apt-get -qq install -y aria2 jq unrar unzip curl uuid-runtime mesa-va-drivers ${INSTALL_ARG} \
   && \
   case "${ARCH}" in \
     'amd64') \
