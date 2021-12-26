@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-version=$(curl -s "https://registry.hub.docker.com/v1/repositories/rclone/rclone/tags" | jq --raw-output '.[] | select(.name | contains(".")) | .name' | sort -t "." -k1,1n -k2,2n -k3,3n | tail -n1)
+version=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
 version="${version#*v}"
 version="${version#*release-}"
 printf "%s" "${version}"
