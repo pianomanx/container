@@ -49,29 +49,59 @@ FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
 ARG TARGETPLATFORM
 ARG VERSION
 
-ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility" \
-    INTEL_NEO_VERSION=21.48.21782 \
-    INTEL_IGC_VERSION=1.0.9441 \
-    INTEL_GMMLIB_VERSION=21.3.3
+ENV NVIDIA_DRIVER_CAPABILITIES=""
 
 RUN \
-  echo "**** install packages ****" && \
-  apt-get update -yqq && \
-  apt-get install -yqq --no-install-recommends mesa-va-drivers uuid-runtime && \
-  case "${ARCH}" in \
-    'x86_64') \
-      curl -J -L -o /tmp/gmmlib.deb https://github.com/intel/compute-runtime/releases/download/${INTEL_NEO_VERSION}/intel-gmmlib_${INTEL_GMMLIB_VERSION}_amd64.deb \
-      && apt-get install -y /tmp/gmmlib.deb \
-      && curl -J -L -o /tmp/#1.deb https://github.com/intel/intel-graphics-compiler/releases/download/igc-${INTEL_IGC_VERSION}/{intel-igc-core,intel-igc-opencl}_${INTEL_IGC_VERSION}_amd64.deb \
-      && apt-get install -y /tmp/intel-igc-core.deb /tmp/intel-igc-opencl.deb \
-      && curl -J -L -o /tmp/intel-opencl.deb https://github.com/intel/compute-runtime/releases/download/${INTEL_NEO_VERSION}/intel-opencl_${INTEL_NEO_VERSION}_amd64.deb \
-      && apt-get install -y /tmp/intel-opencl.deb \
+  case "${TARGETPLATFORM}" in \
+    'linux/amd64') \
+        export ARCH='amd64'; \
+        export INSTALL_ARG='beignet-opencl-icd i965-va-driver gpg-agent libmfx1 ocl-icd-libopencl1'; \
+        export INSTALL_INTEL='intel-opencl-icd intel-level-zero-gpu level-zero intel-media-va-driver-non-free'; \
+        export NVIDIA_DRIVER_CAPABILITIES='compute,video,utility'; \
     ;; \
-    'arm64') \
-      unset NVIDIA_DRIVER_CAPABILITIES; \
-      unset INTEL_NEO_VERSION; \
-      unset INTEL_IGC_VERSION; \
-      unset INTEL_GMMLIB_VERSION; \
+   'linux/arm64') \
+        export INSTALL_ARG=''; \
+        export INSTALL_INTEL=''; \
+        unset NVIDIA_DRIVER_CAPABILITIES; \
+    ;; \
+    'linux/armhf') \
+        export INSTALL_ARG=''; \
+        export INSTALL_INTEL=''; \
+        unset NVIDIA_DRIVER_CAPABILITIES; \
+    ;; \
+  esac \
+  && \
+  apt-get -qq update \
+  && \
+  apt-get -qq install -y \
+    aria2 \
+    jq \
+    unrar \
+    unzip \
+    uuid-runtime \
+    mesa-va-drivers \
+    ${INSTALL_ARG} \
+  && \
+  case "${ARCH}" in \
+    'amd64') \
+      COMP_RT_RELEASE=$(curl -sX GET "https://api.github.com/repos/intel/compute-runtime/releases/latest" | jq -r '.tag_name') \
+      && COMP_RT_URLS=$(curl -sX GET "https://api.github.com/repos/intel/compute-runtime/releases/tags/${COMP_RT_RELEASE}" | jq -r '.body' | grep wget | sed 's|wget ||g') \
+      && mkdir -p /opencl-intel \
+      && \
+      for i in ${COMP_RT_URLS}; do \
+        i=$(echo ${i} | tr -d '\r'); \
+        echo "**** downloading ${i} ****"; \
+        curl -o "/opencl-intel/$(basename ${i})" -L "${i}"; \
+      done \
+      && dpkg -i /opencl-intel/*.deb \
+      && rm -rf /opencl-intel \
+      && apt-get install -qq gpg-agent wget software-properties-common -y \
+      && wget -qO - https://repositories.intel.com/graphics/intel-graphics.key | apt-key add - \
+      && apt-add-repository 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main' \
+      && apt-get -qq update \
+      && apt-get -qq install -y ${INSTALL_INTEL} \
+      && apt-add-repository -r 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main' \
+      && apt-get -qq update \
     ;; \
   esac \
   && \
