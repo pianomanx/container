@@ -55,9 +55,8 @@ rclone sync --tpslimit 32 --checkers=${CHECKERS} \
    --drive-chunk-size=32M --user-agent=${USERAGENT} ${BWLIMIT} \
    "${FILE}" "${REMOTE}:${FILEDIR}/${FILEBASE}"
 
-rclone check "${REMOTE}:${FILEDIR}/${FILEBASE}/${FILE}" "${downloadpath}/${FILEDIR}/${FILEBASE}/${FILE}" | \
+rclone check "${downloadpath}/${FILEDIR}/${FILEBASE}/${FILE}" "${REMOTE}:${FILEDIR}/${FILEBASE}/${FILE}" | \
 rm -rf ${downloadpath}/${FILEDIR}/${FILEBASE}/${FILE}
-
 
 ENDTIME=$(date +%s)
 
