@@ -26,7 +26,7 @@ RUN \
   echo "**** install emby ****" && \
     mkdir -p /app/emby && \
     EVERSION=$(curl -sX GET https://api.github.com/repos/MediaBrowser/Emby.Releases/releases/latest | jq --raw-output '. | .tag_name') && \
-    aria2c -d /tmp -o emby.rpm "${EMBY_URL}/${VERSION}/emby-server-rpm_${EVERSION}_${ARCH}.rpm" \
+    aria2c -d /tmp -o emby.rpm "${EMBY_URL}/${VERSION}/emby-server-rpm_${EVERSION}_${ARCH}.rpm" && \
     cd /tmp && \
     rpm2cpio emby.rpm | cpio -i --make-directories && \
     printf "UpdateMethod=docker\nPackageVersion=%s\nPackageAuthor=[dockserver.io](https://dockserver.io)" "${EVERSION}" > /app/package_info \
