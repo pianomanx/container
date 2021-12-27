@@ -14,24 +14,8 @@
 #####################################
 # shellcheck disable=SC2086
 # shellcheck disable=SC2006
-startup() {
-   apk --quiet --no-cache --no-progress update && \
-   apk --quiet --no-cache --no-progress upgrade
-   inst="bc curl unzip shadow musl findutils coreutils"
-   for i in ${inst}; do
-      apk --quiet --no-cache --no-progress add $i && echo "depends install of $i"
-   done
-   echo "-> Installed rclone Version $(rclone --version | awk '{print $2}' | head -n 1 | sed -e 's/v//g' | cut -c1-6) <- "
-   #BASIC
-   #source /system/rclone/.token
-   #rcdate=$(date +'%Y-%m-%d')
-   #rctime=$(date +"%H:%M:%S" --date="$givenDate 60 minutes")
-   #rczone=$(date +"%:z")
-   #final=$(echo "${rcdate}T${rctime}${rczone}")
+   source /system/rclone/.env
 
-   #export final=${final}
-
-   #####rclone create
    if [[ ${DRIVE} == "gdrive" ]]; then
       source /system/rclone/.env
       NAME=${NAME}
@@ -39,14 +23,12 @@ startup() {
       CLIENT_SECRET_FROM_GOOGLE=${CLIENT_SECRET_FROM_GOOGLE}
       ACCESSTOKEN=$(cat /system/rclone/.token | grep 'access_token' | awk '{print $2}')
       REFRESHTOKEN=$(cat /system/rclone/.token | grep 'refresh_token' | awk '{print $2}')
-
       source /system/rclone/.token
       rcdate=$(date +'%Y-%m-%d')
       rctime=$(date +"%H:%M:%S" --date="$givenDate 60 minutes")
       rczone=$(date +"%:z")
       final=$(echo "${rcdate}T${rctime}${rczone}")
       #export final=${final}
-
       echo -e "\n
 #DockServer Added Drive #\n
 [${NAME}]
@@ -72,13 +54,11 @@ token = {\"access_token\":${ACCESSTOKEN}\"token_type\":\"Bearer\",\"refresh_toke
       ENC_SALT=$(rclone obscure ${SALT} | tail -n1)
       ACCESSTOKEN=$(cat /system/rclone/.token | grep 'access_token' | awk '{print $2}')
       REFRESHTOKEN=$(cat /system/rclone/.token | grep 'refresh_token' | awk '{print $2}')
-
       source /system/rclone/.token
       rcdate=$(date +'%Y-%m-%d')
       rctime=$(date +"%H:%M:%S" --date="$givenDate 60 minutes")
       rczone=$(date +"%:z")
       final=$(echo "${rcdate}T${rctime}${rczone}")
-      #export final=${final}
 
       echo -e "\n
 #DockServer Added Drive #\n
@@ -111,13 +91,11 @@ password2 = ${ENC_SALT}" >>/system/rclone/rclone.conf
       TDRIVE_ID=${TDRIVE_ID}
       ACCESSTOKEN=$(cat /system/rclone/.token | grep 'access_token' | awk '{print $2}')
       REFRESHTOKEN=$(cat /system/rclone/.token | grep 'refresh_token' | awk '{print $2}')
-
       source /system/rclone/.token
       rcdate=$(date +'%Y-%m-%d')
       rctime=$(date +"%H:%M:%S" --date="$givenDate 60 minutes")
       rczone=$(date +"%:z")
       final=$(echo "${rcdate}T${rctime}${rczone}")
-      #export final=${final}
 
       echo -e "\n 
 #DockServer Added Drive #\n
@@ -147,13 +125,11 @@ team_drive = ${TDRIVE_ID}" >>/system/rclone/rclone.conf
       ENC_SALT=$(rclone obscure ${SALT} | tail -n1)
       ACCESSTOKEN=$(cat /system/rclone/.token | grep 'access_token' | awk '{print $2}')
       REFRESHTOKEN=$(cat /system/rclone/.token | grep 'refresh_token' | awk '{print $2}')
-
       source /system/rclone/.token
       rcdate=$(date +'%Y-%m-%d')
       rctime=$(date +"%H:%M:%S" --date="$givenDate 60 minutes")
       rczone=$(date +"%:z")
       final=$(echo "${rcdate}T${rctime}${rczone}")
-      #export final=${final}
 
       echo -e "\n 
 #DockServer Added Drive #\n
@@ -177,32 +153,4 @@ password2 = ${ENC_SALT}" >>/system/rclone/rclone.conf
       rclone mkdir --config=/system/rclone/rclone.conf ${NAME}:/encrypt
       sleep 5 && exit
    fi
-
-   if [[ ${DRIVE} == "rcloneunion" ]]; then
-      source /system/rclone/.env
-      DRIVE=${DRIVE}
-      value=/tmp/rcunion.union
-      if [[ -f ${value} ]]; then $(command -v rm) -rf ${value}; fi
-      IFS=$'\n'
-      filter="$1"
-      config=/system/rclone/rclone.conf
-      configu=/system/rclone/rcloneunion.conf
-      if [[ -f ${configu} ]]; then $(command -v rm) -rf ${configu}; fi
-      if [[ ! -f ${configu} ]]; then $(command -v cp) ${config} ${configu}; fi
-      mapfile -t mounts < <(eval rclone listremotes --config=${configu} | grep "$filter" | sed '/union/d' | sed '/remote/d' | sed '/GDSA/d' | sort -r)
-      for i in ${mounts[@]}; do
-         echo -n "$i " >>${value}
-      done
-      sleep 2
-      mapfile -t mapped < <(eval cat ${value})
-      for i in ${mapped[@]}; do
-         rclone config create remote union upstreams $i search_policy 'all' --config=${configu}
-      done
-      exit
-   fi
-}
-#"
-
-if [ -f "/system/rclone/.env" ] && [ -f "/system/rclone/.token" ]; then startup; fi
-if [ ! -f "/system/rclone/.env" ] && [ ! -f "/system/rclone/.token" ]; then exit; fi
-#"
+#EOF
