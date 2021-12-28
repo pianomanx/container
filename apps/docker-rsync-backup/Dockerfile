@@ -8,9 +8,6 @@ ARG VERSION
 
 FROM alpine:${VERSION}
 
-LABEL maintainer=dockserver
-LABEL org.opencontainers.image.source https://github.com/dockserver/docker-rsync-backup
-
 ENV BACKUPDIR="/home" \
   ARCHIVEROOT="/backup" \
   EXCLUDES="/backup_excludes" \
