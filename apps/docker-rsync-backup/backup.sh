@@ -70,7 +70,7 @@ DISCORD_NAME_OVERRIDE=${DISCORD_NAME_OVERRIDE}
 ####### FUNCTIONS START #######
  apk --quiet --no-cache --no-progress add \
     ca-certificates rsync openssh-client tar wget logrotate \
-    shadow bash bc findutils coreutils openssl \
+    shadow bash bc findutils coreutils openssl rclone \
     curl libxml2-utils tree pigz tzdata openntpd grep
 
 DIR="! -path '**plex/**' ! -path '**emby/**' ! -path '**jellyfin/**' ! -path '**arr/**' ! -path '**uploader/**' ! -path '**mount/**'"
@@ -85,29 +85,6 @@ fi
 
 if [[ "${SERVER_ID}" == "NOT-SET" ]];then
    SERVER_ID=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
-fi
-
-ARCH="$(command arch)"
-if [ "${ARCH}" = "x86_64" ]; then 
-  ARCH="amd64"
-elif [ "${ARCH}" = "aarch64" ]; then
-  ARCH="arm64" 
-elif [ "${ARCH}" = "armv7l" ]; then 
-  ARCH="armhf" 
-else
-  echo "**** Unsupported Linux architecture ${ARCH} found, exiting... ****"
-  exit 1
-fi
-
-##VERSION=1.55.1
-VERSION=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
-if [[ ! -f "/usr/local/bin/rclone" ]];then
-log "-> Configure RCLONE || start <- [RCLONE]" \
-   && apk add --no-cache --purge -uU curl fuse tzdata wget zip unzip \
-   && curl -o /tmp/rclone.zip -SL https://github.com/rclone/rclone/releases/download/v${VERSION}/rclone-v${VERSION}-linux-${ARCH}.zip \
-   && cd /tmp/ && unzip -q /tmp/rclone.zip \
-   && mv /tmp/rclone-*-linux-${ARCH}/rclone /usr/local/bin/ \
-   && rm -rf /var/cache/apk/* /tmp/* \
 fi
 
 # Make sure our backup tree exists
@@ -336,5 +313,6 @@ else
   commando_start
 fi
 
-exit 0
+exit
+
 #E-O-F
