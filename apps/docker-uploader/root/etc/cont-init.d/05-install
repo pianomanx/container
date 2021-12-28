@@ -19,7 +19,7 @@ log "**** update system packages ****" && \
 log "**** install build packages from packages.lock ****"
 sed '/^\s*#.*$/d' /app/requirements.txt | \
    while IFS=$'\n' read -r -a myArray; do
-     apk add --quiet --no-cache --no-progress --virtual=build-dependencies ${myArray[0]}
+     apk add --quiet --no-cache --no-progress ${myArray[0]}
    done
 
 if [[ ! -d "/app/language" ]]; then mkdir -p /app/language && git -C /app clone https://github.com/dockserver/language.git; fi
