@@ -17,7 +17,6 @@ function log() {
 }
 
 cat > /etc/apk/repositories << EOF; $(echo)
-#alpine repos#
 http://dl-cdn.alpinelinux.org/alpine/edge/community/
 http://dl-cdn.alpinelinux.org/alpine/edge/main/
 http://dl-cdn.alpinelinux.org/alpine/edge/testing/
@@ -31,7 +30,7 @@ apk del --quiet --no-cache nginx
 rm -rf /var/cache/apk/*
 rm -rf /etc/nginx/*
 
-log "**** install build packages from packages.lock ****"
+log "**** install build packages from packages ****"
 sed '/^\s*#.*$/d' /app/requirements.txt | \
    while IFS=$'\n' read -r -a myArray; do
      apk add --quiet --no-cache --no-progress ${myArray[0]}
