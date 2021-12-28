@@ -27,8 +27,6 @@ ENV BACKUPDIR="/home" \
   DISCORD_ICON_OVERRIDE="https://i.imgur.com/KorF8zC.png" \
   DISCORD_NAME_OVERRIDE="BACKUP"
 
-COPY ./apps/docker-rsync-backup/repositories /etc/apk/repositories
-
 RUN \
   echo "**** install build packages ****" && \
   apk --quiet --no-cache --no-progress add bash curl bc findutils coreutils && \
@@ -36,8 +34,6 @@ RUN \
 
 COPY ./apps/docker-rsync-backup/docker-entrypoint.sh /usr/local/bin/
 COPY ./apps/docker-rsync-backup/backup.sh /backup.sh
-
-RUN chmod +x /root/backup_excludes
 RUN chmod +x /backup.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
