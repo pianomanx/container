@@ -20,6 +20,7 @@
 function log() {
   echo "[Backup] `date '+%T %A %d-%B,%Y'` ${1}"
 }
+
 echo -e "plex/database/Library/Application Support/Plex Media Server/Cache/PhotoTranscoder
 plex/database/Library/Application Support/Plex Media Server/Cache/Transcode
 plex/database/Library/Application Support/Plex Media Server/Logs
