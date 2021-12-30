@@ -13,7 +13,7 @@
 # NO CODE MIRRORING IS ALLOWED      #
 #####################################
 ARG VERSION
-FROM ghcr.io/dockserver/docker-alpine:v${VERSION}
+FROM docker.dockserver.io/dockserver/docker-alpine:latest
 VOLUME [ "/system" ]
 COPY ./apps/docker-uploader/root/ /
 ENTRYPOINT [ "/init" ]
