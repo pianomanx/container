@@ -115,7 +115,7 @@ while true;do
    rm -f "${CHK}" "${DIFF}" "${START}/${LOGFILE}"
 
    rclone check ${SRC} ${KEY}$[used]${CRYPTED}: --min-age=${MIN_AGE_UPLOAD}m \
-     --size-only --one-way --fast-list --config=${rjson} --exclude-from=${EXCLUDE} > ${CHK} 2>&1
+     --size-only --one-way --fast-list --config=${rjson} --exclude-from=${EXCLUDE} > "${CHK}" 2>&1
 
    awk 'BEGIN { FS = ": " } /ERROR/ {print $2}' "${CHK}" > "${DIFF}"
    awk 'BEGIN { FS = ": " } /NOTICE/ {print $2}' "${CHK}" >> "${DIFF}"
@@ -127,9 +127,9 @@ while true;do
    if [ $num_files -gt 0 ]; then
 
       log "STARTING RCLONE MOVE from ${SRC} to ${KEY}$[used]${CRYPTED}:"
-      touch ${START}/${LOGFILE} 2>&1
-      rclone move --files-from ${DIFF} ${SRC} ${KEY}$[used]${CRYPTED}: --config=${rjson} \
-        --min-age=${MIN_AGE_UPLOAD}m --stats=10s --drive-use-trash=false --drive-server-side-across-configs=true \
+      touch "${START}/${LOGFILE}" 2>&1
+      rclone move --files-from-raw=${DIFF} ${SRC} ${KEY}$[used]${CRYPTED}: --config=${rjson} \
+        --stats=10s --drive-use-trash=false --drive-server-side-across-configs=true \
         --transfers ${TRANSFERS} --checkers=16 --use-mmap --cutoff-mode=soft --use-json-log \
         --log-file=${START}/${LOGFILE} --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
         --max-backlog=20000000 --tpslimit 32 --tpslimit-burst 32
