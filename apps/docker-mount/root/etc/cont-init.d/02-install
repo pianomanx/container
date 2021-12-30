@@ -17,9 +17,8 @@ function log() {
 }
 
 cat > /etc/apk/repositories << EOF; $(echo)
-alpine repos#
-http://dl-cdn.alpinelinux.org/alpine/edge/community/
-http://dl-cdn.alpinelinux.org/alpine/edge/main/
+http://dl-cdn.alpinelinux.org/alpine/v3.15/community/
+http://dl-cdn.alpinelinux.org/alpine/v3.15/main/
 http://dl-cdn.alpinelinux.org/alpine/edge/testing/
 EOF
 
@@ -36,26 +35,6 @@ sed '/^\s*#.*$/d' /app/requirements.txt | \
    while IFS=$'\n' read -r -a myArray; do
      apk add --quiet --no-cache --no-progress ${myArray[0]}
    done
-
-rclone_version=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
-case "$(arch)" in
-   x86_64)
-      platform=linux-amd64
-      rclone_file=rclone-v${rclone_version}-${platform}.zip
-     ;;
-   armv7l)
-     platform=linux-armv7
-     rclone_file=rclone-v${rclone_version}-linux-arm-v7.zip
-     ;;
-   aarch64)
-     platform=linux-arm64
-     rclone_file=rclone-v${rclone_version}-${platform}.zip
-     ;;
-   *)
-     echo "[ERROR] unsupported arch $(arch), exit now"
-     exit 1
-     ;;
-esac
 
 apk add --quiet --no-cache --no-progress --virtual=build-dependencies aria2
 aria2c -x2 -k1M -d /tmp -o rclone.zip https://downloads.rclone.org/v${rclone_version}/${rclone_file}
