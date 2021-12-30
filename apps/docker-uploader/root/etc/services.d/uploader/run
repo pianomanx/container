@@ -16,5 +16,5 @@
 # shellcheck disable=SC2086
 umask 022
 command="/app/uploader/uploader.sh"
-echo "-> Starting tdrive Uploader <-"
+echo "-> Starting Multi Thread Uploader <-"
 exec s6-setuidgid abc $command
