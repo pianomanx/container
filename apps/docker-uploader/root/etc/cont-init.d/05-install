@@ -22,14 +22,6 @@ sed '/^\s*#.*$/d' /app/requirements.txt | \
      apk add --quiet --no-cache --no-progress ${myArray[0]}
    done
 
-
-apk add --quiet --no-cache --no-progress --virtual=build-dependencies aria2
-aria2c -x2 -k1M -d /tmp -o rclone.zip https://downloads.rclone.org/v${rclone_version}/${rclone_file}
-cd /tmp/ && unzip rclone.zip
-cd /tmp/rclone-*
-cp rclone /usr/local/bin/ \
-  && rm -rf /tmp/rclone*
-
 if [[ ! -d "/app/language" ]]; then mkdir -p /app/language && git -C /app clone https://github.com/dockserver/language.git; fi
 if [[ ! -d "/system/uploader/json/" ]];then mkdir -p /system/uploader/json/; fi
 if [[ ! -d "/system/uploader/json/done/" ]];then mkdir -p /system/uploader/json/done/; fi
