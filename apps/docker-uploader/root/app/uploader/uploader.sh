@@ -121,15 +121,15 @@ while true;do
    awk 'BEGIN { FS = ": " } /NOTICE/ {print $2}' "${CHK}" >> "${DIFF}"
    testcfg
 
-   num_files=`cat ${DIFF} | wc -l`
-   log "Number of files to be moved $num_files"
-   [ $num_files -gt 0 ] && {
    sed -i '1d' "${DIFF}" && sed -i '/Encrypted/d' "${DIFF}" && sed -i '/Failed/d' "${DIFF}"
    sed '/^\s*#.*$/d' "${DIFF}" | \
    while IFS=$'\n' read -r -a moud; do
        chown -cR 1000:1000 "${pathglobal}/${moud[0]}" > /dev/null
-   done   
+   done
 
+   num_files=`cat ${DIFF} | wc -l`
+   log "Number of files to be moved $num_files"
+   [ $num_files -gt 0 ] && {
    log "STARTING RCLONE MOVE from ${SRC} to ${KEY}$[used]${CRYPTED}:"
    touch ${START}/${LOGFILE} 2>&1
    rclone moveto --files-from ${DIFF} ${SRC} ${KEY}$[used]${CRYPTED}: \
