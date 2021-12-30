@@ -74,8 +74,8 @@ fi
 LOGFILE=rclone.json
 START=/system/uploader/json/upload
 DONE=/system/uploader/json/done
-DIFF=/tmp/difflist.txt
-CHK=/tmp/check.log
+DIFF=/system/uploader/difflist.txt
+CHK=/system/uploader/check.log
 EXCLUDE=/system/uploader/rclone.exclude
 
 while true;do 
