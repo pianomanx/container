@@ -23,7 +23,7 @@ function log() {
     echo "${1}"
 }
 
-log "dockserver.io Uploader started"
+log "dockserver.io Multi-Thread Uploader started"
 rjson=/system/servicekeys/rclonegdsa.conf
 
 if `rclone config show --config=${rjson} | grep ":/encrypt" &>/dev/null`;then CRYPTED=C;fi
@@ -72,8 +72,8 @@ EOF
 fi
 
 LOGFILE=rclone.json
-START=/system/uploader/json/upload/
-DONE=/system/uploader/json/done/
+START=/system/uploader/json/upload
+DONE=/system/uploader/json/done
 DIFF=/tmp/difflist.txt
 CHK=/tmp/check.log
 EXCLUDE=/system/uploader/rclone.exclude
@@ -89,17 +89,13 @@ while true;do
    TRANSFERS=${TRANSFERS}
    DRIVEUSEDSPACE=${DRIVEUSEDSPACE}
    BANDWITHLIMIT=${BANDWITHLIMIT}
-
    if ! [ ${BANDWITHLIMIT} =~ $re ]; then
       BWLIMIT=""
    else
-      BANDWITHLIMIT=${BANDWITHLIMIT}
       BWLIMIT="--bwlimit=${BANDWITHLIMIT}"
    fi
-
    pathglobal=/mnt/downloads
    local="down:${pathglobal}"
-
    DRIVEPERCENT=$(df --output=pcent ${pathglobal} | tr -dc '0-9')
    if [[ ${DRIVEUSEDSPACE} =~ $re ]]; then
       while true; do
@@ -137,9 +133,7 @@ while true;do
    rm -f ${CHK} ${DIFF}; }
    log "DIFFMOVE FINISHED moving differential files from ${local} to GDSA$[used]${CRYPTED}:"
    used=$(("${used}" + 1))
-
-   echo "${version}" | tee "./$i/${app}/OVERLAY_VERSION" > /dev/null
-   echo ${used} > /system/uploader/.keys/lasteservicekey
+   echo "${used}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
 
 sleep 60
 
