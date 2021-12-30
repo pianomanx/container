@@ -24,31 +24,37 @@ function log() {
 }
 
 log "dockserver.io Uploader started"
-rm -rf /app/uploader/pid/ \
-       /system/uploader/vfsforget/ \
-       /system/uploader/logs/ \
-       /app/uploader/json/
-
-find ${downloadpath} -type f -name '*.lck' -delete
-
 rjson=/system/servicekeys/rclonegdsa.conf
+
 if `rclone config show --config=${rjson} | grep ":/encrypt" &>/dev/null`;then CRYPTED=C;fi
 if ! `rclone config show --config=${rjson} | grep "local" &>/dev/null`;then
    rclone config create down local nunc 'true' --config=${rjson}
 fi
 
-path=/system/servicekeys/keys/
-ARRAY=($(ls -1v ${path} | egrep '(PG|GD|GS)'))
-COUNT=$(expr ${#ARRAY[@]} - 1)
-
-if [[ ! -f "/system/uploader/.keys/lasteservicekey" ]]; then
-  used=0
+if `rclone config show --config=${rjson} | grep "GDSA" &>/dev/null`;then
+  KEY=GDSA
+elif `rclone config show --config=${rjson} | head -n1 | grep -Po '\[.*?]' | sed 's/.*\[\([^]]*\)].*/\1/' | sed '/GDSA/d'`;then
+  KEY=""
 else
-  used=$(cat /system/uploader/.keys/lasteservicekey)
+  echo " no match found of GDSA[01=~100] or [01=~100]"
+  sleep infinity
 fi
 
-if [[ ! -f /system/uploader/rclone.exclude ]]; then
-   cat > /system/uploader/rclone.exclude << EOF; $(echo)
+path=/system/servicekeys/keys/
+ARRAY=($(ls -1v ${path} | egrep '(PG|GD|GS|0)'))
+COUNT=$(expr ${#ARRAY[@]} - 1)
+
+if test -f "/system/uploader/.keys/lasteservicekey"; then
+  used=0 && echo "0" | tee /system/uploader/.keys/lasteservicekey > /dev/null
+else
+  used=$(cat /system/uploader/.keys/lasteservicekey)
+  echo "${used}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
+fi
+
+EXCLUDE=/system/uploader/rclone.exclude
+
+if [[ ! -f ${EXCLUDE} ]]; then
+   cat > ${EXCLUDE} << EOF; $(echo)
 *-vpn/**
 torrent/**
 nzb/**
@@ -65,7 +71,9 @@ deluge/**
 EOF
 fi
 
-LOGFILE=/tmp/rclone.json
+LOGFILE=rclone.json
+START=/system/uploader/json/upload/
+DONE=/system/uploader/json/done/
 DIFF=/tmp/difflist.txt
 CHK=/tmp/check.log
 EXCLUDE=/system/uploader/rclone.exclude
@@ -77,7 +85,6 @@ while true;do
    else
       used=${used}
    fi
-
    source /system/uploader/uploader.env
    TRANSFERS=${TRANSFERS}
    DRIVEUSEDSPACE=${DRIVEUSEDSPACE}
@@ -104,9 +111,9 @@ while true;do
       done
    fi
    log "STARTING DIFFMOVE FROM LOCAL TO REMOTE"
-   rm -f ${CHK} ${DIFF} ${LOGFILE}
+   rm -f ${CHK} ${DIFF} ${START}/${LOGFILE}
    set -x
-   rclone check ${local} GDSA$[used]${CRYPTED}: --min-age=10m \
+   rclone check ${local} ${KEY}$[used]${CRYPTED}: --min-age=10m \
      --size-only --one-way --fast-list \
      --exclude-from=${EXCLUDE} > ${CHK} 2>&1
    set +x
@@ -114,18 +121,21 @@ while true;do
    num_files=`cat ${CHK} | wc -l`
    log "Number of files to be moved $num_files"
    [ $num_files -gt 0 ] && {
-   log "STARTING RCLONE MOVE from ${local} to GDSA$[used]${CRYPTED}:"
+   log "STARTING RCLONE MOVE from ${local} to ${KEY}$[used]${CRYPTED}:"
    touch ${LOGFILE} 2>&1
-   rclone move --files-from ${CHK} ${local} GDSA$[used]${CRYPTED}: --stats=10s \
+   rclone moveto --files-from ${CHK} ${local} ${KEY}$[used]${CRYPTED}: --stats=10s \
      --drive-use-trash=false --drive-server-side-across-configs=true \
      --transfers ${TRANSFERS} --checkers=16 --use-mmap --cutoff-mode=soft \
-     --use-json-log --log-file=${LOGFILE} --log-level=INFO \
+     --use-json-log --log-file=${START}/${LOGFILE} --log-level=INFO \
      --user-agent=${USERAGENT} ${BWLIMIT} --config=${rjson}  \
      --max-backlog=2000 --tpslimit 32 --tpslimit-burst 32
-   rm -f ${CHK} ${DIFF} ${LOGFILE} ; }
+   mv ${START}/${LOGFILE} ${DONE}/${LOGFILE} 
+   rm -f ${CHK} ${DIFF}; }
    log "DIFFMOVE FINISHED moving differential files from ${local} to GDSA$[used]${CRYPTED}:"
    used=$(("${used}" + 1))
-   echo ${used} > /opt/appdata/system/uploader/.keys/lasteservicekey
+
+   echo "${version}" | tee "./$i/${app}/OVERLAY_VERSION" > /dev/null
+   echo ${used} > /system/uploader/.keys/lasteservicekey
 
 sleep 60
 
