@@ -6,7 +6,6 @@ bc
 curl
 shadow
 linux-headers
-musl
 fuse
 ca-certificates
 findutils
