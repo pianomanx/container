@@ -35,12 +35,4 @@ sed '/^\s*#.*$/d' /app/requirements.txt | \
    while IFS=$'\n' read -r -a myArray; do
      apk add --quiet --no-cache --no-progress ${myArray[0]}
    done
-
-apk add --quiet --no-cache --no-progress --virtual=build-dependencies aria2
-aria2c -x2 -k1M -d /tmp -o rclone.zip https://downloads.rclone.org/v${rclone_version}/${rclone_file}
-cd /tmp/ && unzip rclone.zip
-cd /tmp/rclone-*
-cp rclone /usr/local/bin/ \
-  && rm -rf /tmp/rclone*
-rm -rf /var/cache/apk/* /tmp/*
 #EOF
