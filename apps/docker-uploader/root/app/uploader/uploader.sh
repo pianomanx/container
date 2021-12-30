@@ -119,34 +119,30 @@ while true;do
 
    awk 'BEGIN { FS = ": " } /ERROR/ {print $2}' "${CHK}" > "${DIFF}"
    awk 'BEGIN { FS = ": " } /NOTICE/ {print $2}' "${CHK}" >> "${DIFF}"
-   testcfg
 
    sed -i '1d' "${DIFF}" && sed -i '/Encrypted/d' "${DIFF}" && sed -i '/Failed/d' "${DIFF}"
-   sed '/^\s*#.*$/d' "${DIFF}" | \
-   while IFS=$'\n' read -r -a moud; do
-       chown -cR 1000:1000 "${pathglobal}/${moud[0]}" > /dev/null
-   done
 
    num_files=`cat ${DIFF} | wc -l`
    log "Number of files to be moved $num_files"
-   [ $num_files -gt 0 ] && {
-   log "STARTING RCLONE MOVE from ${SRC} to ${KEY}$[used]${CRYPTED}:"
-   touch ${START}/${LOGFILE} 2>&1
-   rclone moveto --files-from ${DIFF} ${SRC} ${KEY}$[used]${CRYPTED}: \
-     --min-age=${MIN_AGE_UPLOAD}m --stats=10s --config=${rjson} \
-     --drive-use-trash=false --drive-server-side-across-configs=true \
-     --transfers ${TRANSFERS} --checkers=16 --use-mmap --cutoff-mode=soft \
-     --use-json-log --log-file=${START}/${LOGFILE} --log-level=INFO \
-     --user-agent=${USERAGENT} ${BWLIMIT} --max-backlog=20000000 \
-     --tpslimit 32 --tpslimit-burst 32
+   if [ $num_files -gt 0 ]; then
 
-   mv "${START}/${LOGFILE}" "${DONE}/${LOGFILE}"
-   rm -f ${CHK} ${DIFF}; }
-   log "DIFFMOVE FINISHED moving differential files from ${SRC} to ${KEY}$[used]${CRYPTED}:"
-   used=$(("${used}" + 1))
-   echo "${used}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
+      log "STARTING RCLONE MOVE from ${SRC} to ${KEY}$[used]${CRYPTED}:"
+      touch ${START}/${LOGFILE} 2>&1
+      rclone move --files-from ${DIFF} ${SRC} ${KEY}$[used]${CRYPTED}: --config=${rjson} \
+        --min-age=${MIN_AGE_UPLOAD}m --stats=10s --drive-use-trash=false --drive-server-side-across-configs=true \
+        --transfers ${TRANSFERS} --checkers=16 --use-mmap --cutoff-mode=soft --use-json-log \
+        --log-file=${START}/${LOGFILE} --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
+        --max-backlog=20000000 --tpslimit 32 --tpslimit-burst 32
 
-sleep 60
+      mv "${START}/${LOGFILE}" "${DONE}/${LOGFILE}"
+      log "DIFFMOVE FINISHED moving differential files from ${SRC} to ${KEY}$[used]${CRYPTED}:"
+
+      used=$(("${used}" + 1))
+      echo "${used}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
+   else
+      log "Nothing to Upload"
+      sleep 60
+   fi
 
 done
 
