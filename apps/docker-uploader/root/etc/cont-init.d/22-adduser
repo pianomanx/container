@@ -31,29 +31,6 @@ echo "----------------------------------------------------
 
 ----------------------------------------------------"
 
-
-TARGET_FOLDER='/etc/services.d/uploader-tdrive'
-FIND=$(which find)
-FIND_BASE='-type f'
-FIND_FILE='"down"'
-FIND_FILE_ACTION='-name'
-FIND_MINDEPTH='-mindepth 1'
-FIND_ACTION='-delete 1>/dev/null 2>&1'
-command="${FIND} ${TARGET_FOLDER} ${FIND_MINDEPTH} ${FIND_FILE_ACTION} ${FIND_FILE} ${FIND_BASE} ${FIND_ACTION}"
-eval ${command}
-rjson=/system/servicekeys/rclonegdsa.conf
-if `rclone config show --config=${rjson} | grep ":/encrypt" &>/dev/null`;then
-    echo "-->> -------------------- <<--"
-    echo "-->    TCRYPT UPLOADER    <<--"
-    echo "-->       WILL USED       <<--"
-    echo "-->> -------------------- <<--"
-else
-    echo "-->> -------------------- <<--"
-    echo "-->    TDRIVE UPLOADER    <<--"
-    echo "-->       WILL USED       <<--"
-    echo "-->> -------------------- <<--"
-fi
-
 log "-> Setting Permissions || start <-"
 rm -rf /system/uploader/.keys/{usedupload,lastday}
 rm -rf /app/uploader/pid/ \
@@ -63,10 +40,7 @@ rm -rf /app/uploader/pid/ \
        /app/uploader/discord \
        /app/uploader/vfsforget
 
-
-if [[ ! -f /system/uploader/.keys/lasteservicekey ]]; then
-   touch /system/uploader/.keys/lasteservicekey 1>/dev/null 2>&1
-   echo "0" >/system/uploader/.keys/lasteservicekey
-fi
+pathglobal=/mnt/downloads
+find ${pathglobal} -type f -name '*.lck' -delete
 chown -cR abc:abc /system/uploader/.keys 1>/dev/null 2>&1
 #<E-o-F#
