@@ -40,7 +40,7 @@ if `rclone config show --config=${rjson} | grep "GDSA" &>/dev/null`;then
 elif `rclone config show --config=${rjson} | head -n1 | grep -Po '\[.*?]' | sed 's/.*\[\([^]]*\)].*/\1/' | sed '/GDSA/d'`;then
   KEY=""
 else
-  echo " no match found of GDSA[01=~100] or [01=~100]"
+  log "no match found of GDSA[01=~100] or [01=~100]"
   sleep infinity
 fi
 
@@ -83,23 +83,28 @@ CHK=/system/uploader/check.log
 EXCLUDE=/system/uploader/rclone.exclude
 
 while true;do 
+
    if [ "${used}" -eq "${COUNT}" ]; then
       used=1
    else
       used=${used}
    fi
+
    source /system/uploader/uploader.env
    TRANSFERS=${TRANSFERS}
    DRIVEUSEDSPACE=${DRIVEUSEDSPACE}
    BANDWITHLIMIT=${BANDWITHLIMIT}
+
    if [[ ! -z "${BANDWITHLIMIT}" ]]; then
       BWLIMIT=""
    else
       BWLIMIT="--bwlimit=${BANDWITHLIMIT}"
    fi
+
    pathglobal=/mnt/downloads
    SRC="down:${pathglobal}"
    DRIVEPERCENT=$(df --output=pcent ${pathglobal} | tr -dc '0-9')
+
    if [[ ! -z "${DRIVEUSEDSPACE}" ]]; then
       while true; do
         if [[ ${DRIVEPERCENT} -ge ${DRIVEUSEDSPACE} ]]; then
@@ -109,14 +114,18 @@ while true;do
         fi
       done
    fi
+
    log "STARTING DIFFMOVE FROM LOCAL TO REMOTE"
    rm -f "${CHK}" "${DIFF}" "${START}/${LOGFILE}"
+
    rclone check ${SRC} ${KEY}$[used]${CRYPTED}: --min-age=${MIN_AGE_UPLOAD}m \
      --size-only --one-way --fast-list --config=${rjson} --exclude-from=${EXCLUDE} > ${CHK} 2>&1
    testcfg
+
    awk 'BEGIN { FS = ": " } /ERROR/ {print $2}' "${CHK}" > "${DIFF}"
    awk 'BEGIN { FS = ": " } /NOTICE/ {print $2}' "${CHK}" >> "${DIFF}"
    testcfg
+
    num_files=`cat ${DIFF} | wc -l`
    log "Number of files to be moved $num_files"
    [ $num_files -gt 0 ] && {
@@ -126,15 +135,18 @@ while true;do
        chown -cR 1000:1000 ${pathglobal}/${moud[0]} > /dev/null
    done
    testcfg    
+
    log "STARTING RCLONE MOVE from ${SRC} to ${KEY}$[used]${CRYPTED}:"
    touch ${START}/${LOGFILE} 2>&1
-   rclone moveto --files-from ${DIFF} ${SRC} ${KEY}$[used]${CRYPTED}: --stats=10s \
+   rclone moveto --files-from ${DIFF} ${SRC} ${KEY}$[used]${CRYPTED}: \
+     --min-age=${MIN_AGE_UPLOAD}m --stats=10s --config=${rjson} \
      --drive-use-trash=false --drive-server-side-across-configs=true \
      --transfers ${TRANSFERS} --checkers=16 --use-mmap --cutoff-mode=soft \
      --use-json-log --log-file=${START}/${LOGFILE} --log-level=INFO \
-     --user-agent=${USERAGENT} ${BWLIMIT} --config=${rjson}  \
-     --max-backlog=20000000 --tpslimit 32 --tpslimit-burst 32
+     --user-agent=${USERAGENT} ${BWLIMIT} --max-backlog=20000000 \
+     --tpslimit 32 --tpslimit-burst 32
    testcfg
+
    mv "${START}/${LOGFILE}" "${DONE}/${LOGFILE}"
    rm -f ${CHK} ${DIFF}; }
    log "DIFFMOVE FINISHED moving differential files from ${SRC} to ${KEY}$[used]${CRYPTED}:"
