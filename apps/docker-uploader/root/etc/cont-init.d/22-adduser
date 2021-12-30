@@ -36,11 +36,12 @@ rm -rf /system/uploader/.keys/{usedupload,lastday}
 rm -rf /app/uploader/pid/ \
        /system/uploader/vfsforget/ \
        /system/uploader/logs/ \
-       /app/uploader/json/ \
        /app/uploader/discord \
-       /app/uploader/vfsforget
+
+mkdir -p /system/uploader/json/ \
+        /system/uploader/json/{done,upload}
 
 pathglobal=/mnt/downloads
 find ${pathglobal} -type f -name '*.lck' -delete
-chown -cR abc:abc /system/uploader/.keys 1>/dev/null 2>&1
+chown -cR abc:abc /system/uploader/ 1>/dev/null 2>&1
 #<E-o-F#
