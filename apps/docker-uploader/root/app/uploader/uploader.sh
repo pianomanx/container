@@ -108,7 +108,7 @@ while true;do
    log "STARTING DIFFMOVE FROM LOCAL TO REMOTE"
    rm -f "${CHK}" "${DIFF}" "${START}/${LOGFILE}"
    rclone check ${SRC} ${KEY}$[used]${CRYPTED}: --min-age=${MIN_AGE_UPLOAD}m \
-     --size-only --one-way --fast-list --exclude-from=${EXCLUDE} > ${CHK} 2>&1
+     --size-only --one-way --fast-list --config=${rjson} --exclude-from=${EXCLUDE} > ${CHK} 2>&1
    awk 'BEGIN { FS = ": " } /ERROR/ {print $2}' "${CHK}" > "${DIFF}"
    sleep 60
    num_files=`cat ${CHK} | wc -l`
