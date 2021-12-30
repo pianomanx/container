@@ -22,6 +22,35 @@ sed '/^\s*#.*$/d' /app/requirements.txt | \
      apk add --quiet --no-cache --no-progress ${myArray[0]}
    done
 
+rclone_version=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
+
+case "$(arch)" in
+   x86_64)
+      platform=linux-amd64
+      rclone_file=rclone-v${rclone_version}-${platform}.zip
+     ;;
+   armv7l)
+     platform=linux-armv7
+     rclone_file=rclone-v${rclone_version}-linux-arm-v7.zip
+     ;;
+   aarch64)
+     platform=linux-arm64
+     rclone_file=rclone-v${rclone_version}-${platform}.zip
+     ;;
+
+   *)
+     echo "[ERROR] unsupported arch $(arch), exit now"
+     exit 1
+     ;;
+esac
+
+apk add --quiet --no-cache --no-progress --virtual=build-dependencies aria2
+aria2c -x2 -k1M -d /tmp -o rclone.zip https://downloads.rclone.org/v${rclone_version}/${rclone_file}
+cd /tmp/ && unzip rclone.zip
+cd /tmp/rclone-*
+cp rclone /usr/local/bin/ \
+  && rm -rf /tmp/rclone*
+
 if [[ ! -d "/app/language" ]]; then mkdir -p /app/language && git -C /app clone https://github.com/dockserver/language.git; fi
 if [[ ! -d "/system/uploader/json/" ]];then mkdir -p /system/uploader/json/; fi
 if [[ ! -d "/system/uploader/json/done/" ]];then mkdir -p /system/uploader/json/done/; fi
@@ -52,6 +81,7 @@ fi
 rm -rf /var/cache/apk/* \
        /etc/nginx/nginx.conf
 
+# Configure nginx
 cp -r /conf/nginx.conf /etc/nginx/nginx.conf
 cp -r /conf/fpm-pool.conf /etc/php8/php-fpm.d/www.conf
 cp -r /conf/php.j2 /etc/php8/conf.d/custom.ini

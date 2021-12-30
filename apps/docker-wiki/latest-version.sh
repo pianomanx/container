@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-version="$(curl -sX GET "https://api.github.com/repos/dockserver/dockserver/releases/latest" | jq --raw-output '.tag_name')"
+version="$(curl -u $username:$token -X GET "https://api.github.com/repos/dockserver/dockserver/releases/latest" | jq --raw-output '.tag_name')"
 version="${version#*v}"
 version="${version#*release-}"
 printf "%s" "${version}"
