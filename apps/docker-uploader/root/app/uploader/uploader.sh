@@ -108,11 +108,9 @@ while true;do
    fi
    log "STARTING DIFFMOVE FROM LOCAL TO REMOTE"
    rm -f ${CHK} ${DIFF} ${START}/${LOGFILE}
-   set -x
    rclone check ${local} ${KEY}$[used]${CRYPTED}: --min-age=${MIN_AGE_UPLOAD} \
      --size-only --one-way --fast-list \
      --exclude-from=${EXCLUDE} > ${CHK} 2>&1
-   set +x
    awk 'BEGIN { FS = ": " } /ERROR/ {print $2}' ${CHK} > ${DIFF}
    num_files=`cat ${CHK} | wc -l`
    log "Number of files to be moved $num_files"
@@ -122,13 +120,13 @@ while true;do
           chown -cR 1000:1000 ${pathglobal}/${modu[0]} > /dev/null
       done
    log "STARTING RCLONE MOVE from ${local} to ${KEY}$[used]${CRYPTED}:"
-   touch ${LOGFILE} 2>&1
-   rclone moveto --files-from ${CHK} ${local} ${KEY}$[used]${CRYPTED}: --stats=10s \
+   touch ${START}/${LOGFILE} 2>&1
+   rclone move --files-from ${CHK} ${local} ${KEY}$[used]${CRYPTED}: --stats=10s \
      --drive-use-trash=false --drive-server-side-across-configs=true \
      --transfers ${TRANSFERS} --checkers=16 --use-mmap --cutoff-mode=soft \
      --use-json-log --log-file=${START}/${LOGFILE} --log-level=INFO \
      --user-agent=${USERAGENT} ${BWLIMIT} --config=${rjson}  \
-     --max-backlog=2000 --tpslimit 32 --tpslimit-burst 32
+     --max-backlog=20000000 --tpslimit 32 --tpslimit-burst 32
    mv ${START}/${LOGFILE} ${DONE}/${LOGFILE} 
    rm -f ${CHK} ${DIFF}; }
    log "DIFFMOVE FINISHED moving differential files from ${local} to GDSA$[used]${CRYPTED}:"
