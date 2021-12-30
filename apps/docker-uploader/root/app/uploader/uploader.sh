@@ -45,10 +45,10 @@ ARRAY=($(ls -1v ${path} | egrep '(PG|GD|GS|0)'))
 COUNT=$(expr ${#ARRAY[@]} - 1)
 
 if test -f "/system/uploader/.keys/lasteservicekey"; then
-  used=0 && echo "0" | tee /system/uploader/.keys/lasteservicekey > /dev/null
-else
   used=$(cat /system/uploader/.keys/lasteservicekey)
   echo "${used}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
+else
+  used=1 && echo "1" | tee /system/uploader/.keys/lasteservicekey > /dev/null
 fi
 
 EXCLUDE=/system/uploader/rclone.exclude
