@@ -45,6 +45,9 @@ jobs:
         else
              echo " no reponse from Github API ? Maybe down or busted " && exit 0
         fi
+      env:
+        username: ${{ github.actor }}
+        token: ${{ secrets.CR_PAT }}
 
   changes:
     name: Get changes
