@@ -106,10 +106,11 @@ while true;do
       done
    fi
    log "STARTING DIFFMOVE FROM LOCAL TO REMOTE"
-   rm -f ${CHK} ${DIFF} ${START}/${LOGFILE}
+   rm -f "${CHK}" "${DIFF}" "${START}/${LOGFILE}"
    rclone check ${SRC} ${KEY}$[used]${CRYPTED}: --min-age=${MIN_AGE_UPLOAD}m \
      --size-only --one-way --fast-list --exclude-from=${EXCLUDE} > ${CHK} 2>&1
-   awk 'BEGIN { FS = ": " } /ERROR/ {print $2}' ${CHK} > ${DIFF}
+   awk 'BEGIN { FS = ": " } /ERROR/ {print $2}' "${CHK}" > "${DIFF}"
+   sleep 60
    num_files=`cat ${CHK} | wc -l`
    log "Number of files to be moved $num_files"
    [ $num_files -gt 0 ] && {
@@ -121,7 +122,7 @@ while true;do
      --use-json-log --log-file=${START}/${LOGFILE} --log-level=INFO \
      --user-agent=${USERAGENT} ${BWLIMIT} --config=${rjson}  \
      --max-backlog=20000000 --tpslimit 32 --tpslimit-burst 32
-   mv ${START}/${LOGFILE} ${DONE}/${LOGFILE} 
+   mv "${START}/${LOGFILE}" "${DONE}/${LOGFILE}"
    rm -f ${CHK} ${DIFF}; }
    log "DIFFMOVE FINISHED moving differential files from ${SRC} to ${KEY}$[used]${CRYPTED}:"
    used=$(("${used}" + 1))
