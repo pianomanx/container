@@ -24,24 +24,29 @@ function log() {
 }
 
 log "dockserver.io Multi-Thread Uploader started"
-rjson=/system/servicekeys/rclonegdsa.conf
+CONFIG=/system/servicekeys/rclonegdsa.conf
 
-if `rclone config show --config=${rjson} | grep ":/encrypt" &>/dev/null`;then CRYPTED=C;fi
-if ! `rclone config show --config=${rjson} | grep "local" &>/dev/null`;then
-   rclone config create down local nunc 'true' --config=${rjson}
+if `rclone config show --config=${CONFIG} | grep ":/encrypt" &>/dev/null`;then
+  export CRYPTED=C
+else
+  export CRYPTED=""
 fi
 
-if `rclone config show --config=${rjson} | grep "GDSA" &>/dev/null`;then
-  KEY=GDSA
-elif `rclone config show --config=${rjson} | head -n1 | grep -Po '\[.*?]' | sed 's/.*\[\([^]]*\)].*/\1/' | sed '/GDSA/d'`;then
-  KEY=""
+if ! `rclone config show --config=${CONFIG} | grep "local" &>/dev/null`;then
+   rclone config create down local nunc 'true' --config=${CONFIG}
+fi
+
+if `rclone config show --config=${CONFIG} | grep "GDSA" &>/dev/null`;then
+  export KEY=GDSA
+elif `rclone config show --config=${CONFIG} | head -n1 | grep -Po '\[.*?]' | sed 's/.*\[\([^]]*\)].*/\1/' | sed '/GDSA/d'`;then
+  export KEY=""
 else
   log "no match found of GDSA[01=~100] or [01=~100]"
   sleep infinity
 fi
 
-path=/system/servicekeys/keys/
-ARRAY=($(ls -1v ${path} | egrep '(PG|GD|GS|0)'))
+KEY=/system/servicekeys/keys/
+ARRAY=($(ls -1v ${KEY} | egrep '(PG|GD|GS|0)'))
 COUNT=$(expr ${#ARRAY[@]} - 1)
 
 if test -f "/system/uploader/.keys/lasteservicekey"; then
@@ -76,31 +81,22 @@ START=/system/uploader/json/upload
 DONE=/system/uploader/json/done
 DIFF=/system/uploader/difflist.txt
 CHK=/system/uploader/check.log
-EXCLUDE=/system/uploader/rclone.exclude
+DOWN=/mnt/downloads
 
 while true;do 
-
    if [ "${used}" -eq "${COUNT}" ]; then
       used=1
    else
       used=${used}
    fi
-
    source /system/uploader/uploader.env
    TRANSFERS=${TRANSFERS}
    DRIVEUSEDSPACE=${DRIVEUSEDSPACE}
    BANDWITHLIMIT=${BANDWITHLIMIT}
-
-   if [[ ! -z "${BANDWITHLIMIT}" ]]; then
-      BWLIMIT=""
-   else
-      BWLIMIT="--bwlimit=${BANDWITHLIMIT}"
-   fi
-
-   pathglobal=/mnt/downloads
-   SRC="down:${pathglobal}"
-   DRIVEPERCENT=$(df --output=pcent ${pathglobal} | tr -dc '0-9')
-
+   SRC="down:${DOWN}"
+   DRIVEPERCENT=$(df --output=pcent ${DOWN} | tr -dc '0-9')
+   if [[ ! -z "${BANDWITHLIMIT}" ]];then BWLIMIT="";fi
+   if [[ -z "${BANDWITHLIMIT}" ]];then BWLIMIT="--bwlimit=${BANDWITHLIMIT}";fi
    if [[ ! -z "${DRIVEUSEDSPACE}" ]]; then
       while true; do
         if [[ ${DRIVEPERCENT} -ge ${DRIVEUSEDSPACE} ]]; then
@@ -110,40 +106,30 @@ while true;do
         fi
       done
    fi
-
    log "STARTING DIFFMOVE FROM LOCAL TO REMOTE"
    rm -f "${CHK}" "${DIFF}" "${START}/${LOGFILE}"
-
    rclone check ${SRC} ${KEY}$[used]${CRYPTED}: --min-age=${MIN_AGE_UPLOAD}m \
-     --size-only --one-way --fast-list --config=${rjson} --exclude-from=${EXCLUDE} > "${CHK}" 2>&1
-
+     --size-only --one-way --fast-list --config=${CONFIG} --exclude-from=${EXCLUDE} > "${CHK}" 2>&1
    awk 'BEGIN { FS = ": " } /ERROR/ {print $2}' "${CHK}" > "${DIFF}"
    awk 'BEGIN { FS = ": " } /NOTICE/ {print $2}' "${CHK}" >> "${DIFF}"
-
    sed -i '1d' "${DIFF}" && sed -i '/Encrypted/d' "${DIFF}" && sed -i '/Failed/d' "${DIFF}"
-
    num_files=`cat ${DIFF} | wc -l`
-   log "Number of files to be moved $num_files"
    if [ $num_files -gt 0 ]; then
-
       log "STARTING RCLONE MOVE from ${SRC} to ${KEY}$[used]${CRYPTED}:"
       touch "${START}/${LOGFILE}" 2>&1
-      rclone move --files-from-raw=${DIFF} ${SRC} ${KEY}$[used]${CRYPTED}: --config=${rjson} \
+      rclone move --files-from-raw=${DIFF} ${SRC} ${KEY}$[used]${CRYPTED}: --config=${CONFIG} \
         --stats=10s --drive-use-trash=false --drive-server-side-across-configs=true \
         --transfers ${TRANSFERS} --checkers=16 --use-mmap --cutoff-mode=soft --use-json-log \
         --log-file=${START}/${LOGFILE} --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
         --max-backlog=20000000 --tpslimit 32 --tpslimit-burst 32
-
       mv "${START}/${LOGFILE}" "${DONE}/${LOGFILE}"
       log "DIFFMOVE FINISHED moving differential files from ${SRC} to ${KEY}$[used]${CRYPTED}:"
-
       used=$(("${used}" + 1))
       echo "${used}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
    else
-      log "Nothing to Upload"
+      log "DIFFMOVE FINISHED skipped || less then 1 file"
       sleep 60
    fi
-
 done
 
 ##E-o-F##
