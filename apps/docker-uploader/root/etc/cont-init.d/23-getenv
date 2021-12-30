@@ -4,7 +4,7 @@
 # All rights reserved.
 ## function source end
 function log() {
-     echo "[UPLOADER] ${1}"
+     echo "${1}"
 }
 UAGENT=${UAGENT:-null}
 if [[ ${UAGENT} == 'null' ]]; then
@@ -38,19 +38,13 @@ TRANSFERS=${TRANSFERS:-4}
 USERAGENT=${USERAGENT}
 
 ## USER - SETTINGS
-ADDITIONAL_IGNORES=${ADDITIONAL_IGNORES:-null}
 DRIVEUSEDSPACE=${DRIVEUSEDSPACE:-null}
 MIN_AGE_UPLOAD=${MIN_AGE_UPLOAD:-5}
-
-## DISCORD - SETTINGS
-DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL:-null}
-DISCORD_EMBED_TITEL=${DISCORD_EMBED_TITEL:-UPLOAD_COMPLETED}
-DISCORD_ICON_OVERRIDE=${DISCORD_ICON_OVERRIDE:-https://i.imgur.com/MZYwA1I.png}
-DISCORD_NAME_OVERRIDE=${DISCORD_NAME_OVERRIDE:-UPLOADED}
 #-------------------------------------------------------
 #   UPLOADER ENVIROMENTS
 #-------------------------------------------------------" >$uploaderenv
 else
    cp ${sample} ${uploaderenv}
 fi
-#"
+
+#E-O-F
