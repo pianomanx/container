@@ -23,10 +23,6 @@ function log() {
     echo "${1}"
 }
 
-function testcfg() {
-   if [ $? -ge 0 ]; then break;fi
-}
-
 log "dockserver.io Multi-Thread Uploader started"
 rjson=/system/servicekeys/rclonegdsa.conf
 
@@ -120,7 +116,6 @@ while true;do
 
    rclone check ${SRC} ${KEY}$[used]${CRYPTED}: --min-age=${MIN_AGE_UPLOAD}m \
      --size-only --one-way --fast-list --config=${rjson} --exclude-from=${EXCLUDE} > ${CHK} 2>&1
-   testcfg
 
    awk 'BEGIN { FS = ": " } /ERROR/ {print $2}' "${CHK}" > "${DIFF}"
    awk 'BEGIN { FS = ": " } /NOTICE/ {print $2}' "${CHK}" >> "${DIFF}"
@@ -132,9 +127,8 @@ while true;do
    sed -i '1d' "${DIFF}" && sed -i '/Encrypted/d' "${DIFF}" && sed -i '/Failed/d' "${DIFF}"
    sed '/^\s*#.*$/d' "${DIFF}" | \
    while IFS=$'\n' read -r -a moud; do
-       chown -cR 1000:1000 ${pathglobal}/${moud[0]} > /dev/null
-   done
-   testcfg    
+       chown -cR 1000:1000 "${pathglobal}/${moud[0]}" > /dev/null
+   done   
 
    log "STARTING RCLONE MOVE from ${SRC} to ${KEY}$[used]${CRYPTED}:"
    touch ${START}/${LOGFILE} 2>&1
@@ -145,7 +139,6 @@ while true;do
      --use-json-log --log-file=${START}/${LOGFILE} --log-level=INFO \
      --user-agent=${USERAGENT} ${BWLIMIT} --max-backlog=20000000 \
      --tpslimit 32 --tpslimit-burst 32
-   testcfg
 
    mv "${START}/${LOGFILE}" "${DONE}/${LOGFILE}"
    rm -f ${CHK} ${DIFF}; }
