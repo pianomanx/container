@@ -94,7 +94,7 @@ while true;do
       BWLIMIT="--bwlimit=${BANDWITHLIMIT}"
    fi
    pathglobal=/mnt/downloads
-   SRC="local:${pathglobal}"
+   SRC="down:${pathglobal}"
    DRIVEPERCENT=$(df --output=pcent ${pathglobal} | tr -dc '0-9')
    if [[ ! -z "${DRIVEUSEDSPACE}" ]]; then
       while true; do
@@ -113,10 +113,6 @@ while true;do
    num_files=`cat ${CHK} | wc -l`
    log "Number of files to be moved $num_files"
    [ $num_files -gt 0 ] && {
-   sed '/^\s*#.*$/d' ${DIFF} | \
-      while IFS=$'\n' read -r -a modu; do
-          chown -cR 1000:1000 ${pathglobal}/${modu[0]} > /dev/null
-      done
    log "STARTING RCLONE MOVE from ${SRC} to ${KEY}$[used]${CRYPTED}:"
    touch ${START}/${LOGFILE} 2>&1
    rclone move --files-from ${CHK} ${SRC} ${KEY}$[used]${CRYPTED}: --stats=10s \
