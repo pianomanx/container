@@ -24,8 +24,7 @@ else
    USERAGENT=${USERAGENT}
 fi
 ## Create folders
-mkdir -p /system/uploader/{vfsforget,logs,.keys}
-mkdir -p /app/uploader/{pid,logs}
+mkdir -p /system/uploader/.keys
 
 sample=/app/uploader/.sample.uploader.env
 uploaderenv=/system/uploader/uploader.env
