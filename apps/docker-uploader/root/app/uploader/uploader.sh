@@ -79,7 +79,6 @@ CHK=/tmp/check.log
 EXCLUDE=/system/uploader/rclone.exclude
 
 while true;do 
-   re='^[0-9]+$'
    if [ "${used}" -eq "${COUNT}" ]; then
       used=1
    else
@@ -89,7 +88,7 @@ while true;do
    TRANSFERS=${TRANSFERS}
    DRIVEUSEDSPACE=${DRIVEUSEDSPACE}
    BANDWITHLIMIT=${BANDWITHLIMIT}
-   if ! [ ${BANDWITHLIMIT} =~ $re ]; then
+   if [[ ! -z "${BANDWITHLIMIT}" ]]; then
       BWLIMIT=""
    else
       BWLIMIT="--bwlimit=${BANDWITHLIMIT}"
@@ -97,7 +96,7 @@ while true;do
    pathglobal=/mnt/downloads
    local="down:${pathglobal}"
    DRIVEPERCENT=$(df --output=pcent ${pathglobal} | tr -dc '0-9')
-   if [[ ${DRIVEUSEDSPACE} =~ $re ]]; then
+   if [[ ! -z "${DRIVEUSEDSPACE}" ]]; then
       while true; do
         if [[ ${DRIVEPERCENT} -ge ${DRIVEUSEDSPACE} ]]; then
            sleep 1 && break
@@ -108,9 +107,8 @@ while true;do
    fi
    log "STARTING DIFFMOVE FROM LOCAL TO REMOTE"
    rm -f ${CHK} ${DIFF} ${START}/${LOGFILE}
-   rclone check ${local} ${KEY}$[used]${CRYPTED}: --min-age=${MIN_AGE_UPLOAD} \
-     --size-only --one-way --fast-list \
-     --exclude-from=${EXCLUDE} > ${CHK} 2>&1
+   rclone check ${local} ${KEY}$[used]${CRYPTED}: --min-age=${MIN_AGE_UPLOAD}m \
+     --size-only --one-way --fast-list --exclude-from=${EXCLUDE} > ${CHK} 2>&1
    awk 'BEGIN { FS = ": " } /ERROR/ {print $2}' ${CHK} > ${DIFF}
    num_files=`cat ${CHK} | wc -l`
    log "Number of files to be moved $num_files"
