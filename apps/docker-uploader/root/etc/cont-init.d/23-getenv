@@ -1,10 +1,19 @@
 #!/usr/bin/with-contenv bash
 # shellcheck shell=bash
-# Copyright (c) 2020, MrDoob
-# All rights reserved.
-## function source end
+#####################################
+# All rights reserved.              #
+# started from Zero                 #
+# Docker owned dockserver           #
+# Docker Maintainer dockserver      #
+#####################################
+#####################################
+# THIS DOCKER IS UNDER LICENSE      #
+# NO CUSTOMIZING IS ALLOWED         #
+# NO REBRANDING IS ALLOWED          #
+# NO CODE MIRRORING IS ALLOWED      #
+#####################################
 function log() {
-     echo "[UPLOADER] ${1}"
+     echo "${1}"
 }
 UAGENT=${UAGENT:-null}
 if [[ ${UAGENT} == 'null' ]]; then
@@ -15,8 +24,7 @@ else
    USERAGENT=${USERAGENT}
 fi
 ## Create folders
-mkdir -p /system/uploader/{vfsforget,logs,.keys}
-mkdir -p /app/uploader/{pid,logs}
+mkdir -p /system/uploader/.keys
 
 sample=/app/uploader/.sample.uploader.env
 uploaderenv=/system/uploader/uploader.env
@@ -38,19 +46,13 @@ TRANSFERS=${TRANSFERS:-4}
 USERAGENT=${USERAGENT}
 
 ## USER - SETTINGS
-ADDITIONAL_IGNORES=${ADDITIONAL_IGNORES:-null}
 DRIVEUSEDSPACE=${DRIVEUSEDSPACE:-null}
 MIN_AGE_UPLOAD=${MIN_AGE_UPLOAD:-5}
-
-## DISCORD - SETTINGS
-DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL:-null}
-DISCORD_EMBED_TITEL=${DISCORD_EMBED_TITEL:-UPLOAD_COMPLETED}
-DISCORD_ICON_OVERRIDE=${DISCORD_ICON_OVERRIDE:-https://i.imgur.com/MZYwA1I.png}
-DISCORD_NAME_OVERRIDE=${DISCORD_NAME_OVERRIDE:-UPLOADED}
 #-------------------------------------------------------
 #   UPLOADER ENVIROMENTS
 #-------------------------------------------------------" >$uploaderenv
 else
    cp ${sample} ${uploaderenv}
 fi
-#"
+
+#E-O-F

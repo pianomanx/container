@@ -13,19 +13,14 @@ http://dl-cdn.alpinelinux.org/alpine/edge/testing
 EOF
 
 log "**** update system packages ****" && \
-   apk --quiet --no-cache --no-progress update && \
-   apk --quiet --no-cache --no-progress upgrade
+   apk --quiet --no-progress update && \
+   apk --quiet --no-progress upgrade
 
-log "**** install build packages from packages.lock ****"
+log "**** install build packages from requirements ****"
 sed '/^\s*#.*$/d' /app/requirements.txt | \
    while IFS=$'\n' read -r -a myArray; do
-     apk add --quiet --no-cache --no-progress ${myArray[0]}
+     apk add --quiet --no-progress ${myArray[0]}
    done
-
-if [[ ! -d "/app/language" ]]; then mkdir -p /app/language && git -C /app clone https://github.com/dockserver/language.git; fi
-if [[ ! -d "/system/uploader/json/" ]];then mkdir -p /system/uploader/json/; fi
-if [[ ! -d "/system/uploader/json/done/" ]];then mkdir -p /system/uploader/json/done/; fi
-if [[ ! -d "/system/uploader/json/upload/" ]];then mkdir -p /system/uploader/json/upload/; fi
 
 if [[ ! -f "/system/servicekeys/rclonegdsa.conf" ]]; then
    log "-->> [ WARNING ] ----------------------------- [ WARNING ] <<--"
@@ -34,14 +29,18 @@ if [[ ! -f "/system/servicekeys/rclonegdsa.conf" ]]; then
    log "-->> [ WARNING ] ----------------------------- [ WARNING ] <<--"
    sleep infinity
 fi
-####
-JSONDIR="/system/servicekeys/keys/"
-GDSAARRAY=$(ls -l ${JSONDIR} | egrep -c '(GDS|GDSA)')
 
-if [[ ${GDSAARRAY} -lt "1" ]]; then
-   log "-->> [ WARNING ] ---------------- [ WARNING ] <<--"
-   log "-->> [ WARNING ]  No GDSAS found  [ WARNING ] <<--"
-   log "-->> [ WARNING ] ---------------- [ WARNING ] <<--"
+rjson=/system/servicekeys/rclonegdsa.conf
+if `rclone config show --config=${rjson} | grep "GDSA" &>/dev/null`;then
+  KEY="GDSA"
+elif `rclone config show --config=${rjson} | head -n1 | grep -Po '\[.*?]' | sed 's/.*\[\([^]]*\)].*/\1/' | sed '/GDSA/d'`;then
+  KEY=""
+else
+   log "-->> [ WARNING ] ----------------- [ WARNING ] <<--"
+   log "-->> [ WARNING ]  no match found   [ WARNING ] <<--"
+   log "-->> [ WARNING ]  of GDSA[01=~100] [ WARNING ] <<--"
+   log "-->> [ WARNING ]    or [01=~100]   [ WARNING ] <<--"
+   log "-->> [ WARNING ] ----------------- [ WARNING ] <<--"
    sleep infinity
 fi
 ####
@@ -52,6 +51,7 @@ fi
 rm -rf /var/cache/apk/* \
        /etc/nginx/nginx.conf
 
+# Configure nginx
 cp -r /conf/nginx.conf /etc/nginx/nginx.conf
 cp -r /conf/fpm-pool.conf /etc/php8/php-fpm.d/www.conf
 cp -r /conf/php.j2 /etc/php8/conf.d/custom.ini

@@ -6,7 +6,6 @@ bc
 curl
 shadow
 linux-headers
-musl
 fuse
 ca-certificates
 findutils
@@ -18,9 +17,8 @@ openntpd
 grep
 logrotate
 mergerfs
-fuse
+rclone
 libattr
 libgcc
 libstdc++
 musl
-rclone

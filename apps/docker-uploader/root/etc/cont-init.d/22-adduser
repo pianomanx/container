@@ -15,10 +15,13 @@
 function log() {
      echo "[UPLOADER] ${1}"
 }
-PUID=${PUID:-1000}
+
+addgroup -S abc
+adduser -S abc -G abc
 PGID=${PGID:-1000}
-if [ ! "$(id -u abc)" -eq "$PUID" ]; then usermod -o -u "$PUID" abc; fi
-if [ ! "$(id -g abc)" -eq "$PGID" ]; then groupmod -o -g "$PGID" abc; fi
+PUID=${PUID:-1000}
+groupmod -o -g "$PGID" abc
+usermod -o -u "$PUID" abc
 
 echo "----------------------------------------------------
 
@@ -31,48 +34,24 @@ echo "----------------------------------------------------
 
 ----------------------------------------------------"
 
-
-TARGET_FOLDER='/etc/services.d/uploader-tdrive'
-FIND=$(which find)
-FIND_BASE='-type f'
-FIND_FILE='"down"'
-FIND_FILE_ACTION='-name'
-FIND_MINDEPTH='-mindepth 1'
-FIND_ACTION='-delete 1>/dev/null 2>&1'
-command="${FIND} ${TARGET_FOLDER} ${FIND_MINDEPTH} ${FIND_FILE_ACTION} ${FIND_FILE} ${FIND_BASE} ${FIND_ACTION}"
-eval ${command}
-rjson=/system/servicekeys/rclonegdsa.conf
-if grep -q GDSA1C "${rjson}" && grep -q GDSA2C "${rjson}"; then
-    echo "-->> -------------------- <<--"
-    echo "-->    TCRYPT UPLOADER    <<--"
-    echo "-->       WILL USED       <<--"
-    echo "-->> -------------------- <<--"
-else
-    echo "-->> -------------------- <<--"
-    echo "-->    TDRIVE UPLOADER    <<--"
-    echo "-->       WILL USED       <<--"
-    echo "-->> -------------------- <<--"
-    exit 0
-fi
-
 log "-> Setting Permissions || start <-"
-mkdir -p /app/uploader/{pid,discord}
-if [[ ! -f /system/uploader/.keys/lasteservicekey ]]; then
-   touch /system/uploader/.keys/lasteservicekey 1>/dev/null 2>&1
-   echo "0" >/system/uploader/.keys/lasteservicekey
-fi
-if [[ ! -f /system/uploader/.keys/usedupload ]]; then
-   touch /system/uploader/.keys/usedupload 1>/dev/null 2>&1
-   echo "0" >/system/uploader/.keys/usedupload
-fi
+rm -rf /system/uploader/.keys/{usedupload,lastday}
+rm -rf /app/uploader/pid/ \
+       /system/uploader/vfsforget/ \
+       /system/uploader/logs/ \
+       /app/uploader/discord \
 
-if [[ ! -f /system/uploader/.keys/lastday ]]; then
-   touch /system/uploader/.keys/lastday 1>/dev/null 2>&1
-   echo "0" >/system/uploader/.keys/lastday
-fi
+mkdir -p /system/uploader/json/ \
+        /system/uploader/json/{done,upload}
 
-if [[ -d /system/uploader/.keys ]]; then
-   chown -cR abc:abc /system/uploader/.keys 1>/dev/null 2>&1
-fi
+pathglobal=/mnt/downloads
+find ${pathglobal} -type f -name '*.lck' -delete
+
+chown -cR abc:abc \
+	/app \
+	/system/*
+
+chmod -cR 755 /app \
+        /system/*
 
 #<E-o-F#

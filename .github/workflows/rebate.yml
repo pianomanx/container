@@ -1,16 +1,19 @@
 name: Rebase
+
 on:
   workflow_dispatch:
   push:
     branches:
     - master
     paths:
-    - 'base/**'
     - 'apps/**'
+    - 'base/**'
+    - 'nightly/**'
   pull_request:
     paths:
-    - 'base/**'
     - 'apps/**'
+    - 'base/**'
+    - 'nightly/**'
 
 jobs:
   rebase:

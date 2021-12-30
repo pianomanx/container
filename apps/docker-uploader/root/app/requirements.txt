@@ -5,11 +5,9 @@ openssl
 icu-libs
 ca-certificates
 libxml2-dev
-tar
-unzip
 shadow
 bc
-rclone
+tar
 findutils
 coreutils
 logrotate
@@ -23,7 +21,7 @@ nginx-mod-http-brotli
 tzdata
 musl
 wget
-dos2unix
+rclone
 jq
 php8
 php8-dev
