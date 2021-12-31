@@ -57,21 +57,11 @@ fi
 KEYLOCAL=/system/servicekeys/keys/
 ARRAY=($(ls -1v ${KEYLOCAL} | egrep '(PG|GD|GS|0)'))
 COUNT=$(expr ${#ARRAY[@]} - 1)
-
-if [[ -z "/system/uploader/.keys/lasteservicekey" ]]; then
+if [[ -f "/system/uploader/.keys/lasteservicekey" ]]; then
   USED=$(cat /system/uploader/.keys/lasteservicekey)
   echo "${USED}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
 else
-  USED=1
-  echo "${USED}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
-fi
-
-if [[ -z "/system/uploader/.keys/usedupload" ]]; then
-  UPPED=$(cat /system/uploader/.keys/usedupload)
-  echo "${UPPED}" | tee /system/uploader/.keys/usedupload > /dev/null
-else
-  UPPED=1
-  echo "${UPPED}" | tee /system/uploader/.keys/usedupload > /dev/null
+  USED=1 && echo "${USED}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
 fi
 
 EXCLUDE=/system/uploader/rclone.exclude
@@ -133,7 +123,7 @@ while true;do
    sed -i '1d' "${DIFF}" && sed -i '/Encrypted/d' "${DIFF}" && sed -i '/Failed/d' "${DIFF}"
    num_files=`cat ${DIFF} | wc -l`
    if [ $num_files -gt 0 ]; then
-      log "STARTING RCLONE MOVE from ${SRC} to ${KEY}$[used]${CRYPTED}:"
+      log "STARTING RCLONE MOVE from ${SRC} to REMOTE"
       sed '/^\s*#.*$/d' "${DIFF}" | \
       while IFS=$'\n' read -r -a UPP; do
         MOVE=${MOVE:-/}
@@ -141,27 +131,24 @@ while true;do
         DIR=$(dirname "${UPP[0]}" | sed "s#${DOWN}/${MOVE}##g")
         SIZE=$(stat -c %s "${DOWN}/${UPP[0]}" | numfmt --to=iec-i --suffix=B --padding=7)
         STARTZ=$(date +%s)
-        UPPED=${UPPED}
         USED=${USED}
-        FILESIZE=$(stat -c %s "${DOWN}/${UPP[0]}")
         echo "${DOWN}/${UPP[0]}" && touch "${LOGFILE}/${FILE}.txt"
         echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" >"${START}/${FILE}.json"
         rclone moveto "${DOWN}/${UPP[0]}" "${KEY}$[USED]${CRYPTED}:/${UPP[0]}" --config=${CONFIG} \
            --stats=10s --checkers=16 --use-json-log --use-mmap --update \
-           --cutoff-mode=soft --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
-           --log-file="${LOGFILE}/${FILE}.txt" --log-level=INFO --tpslimit 50 --tpslimit-burst 50
-        UPPED=$(echo "${UPPED} + ${FILESIZE}" | bc)
-        echo "${UPPED}" | tee /system/uploader/.keys/usedupload > /dev/null
+           --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
+           --log-file="${LOGFILE}/${FILE}.txt" --tpslimit 50 --tpslimit-burst 50
         ENDZ=$(date +%s)
+        sleep 30
         echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" >"${DONE}/${FILE}.json"
+        sleep 30
+        tail -n 20 "${LOGFILE}/${FILE}.txt" | grep --line-buffered 'googleapi: Error' | while read; do
+            USED=$(("${USED}" + 1))
+            echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
+        done
         rm -f "${LOGFILE}/${FILE}.txt" && chmod 755 "${DONE}/${FILE}.json"
-        sleep 5
-        if [[ ${UPPED} -gt "763831531520" ]]; then
-           USED=$(("${USED}" + 1))
-           echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
-        fi
       done
-      log "DIFFMOVE FINISHED moving differential files from ${SRC} to ${KEY}$[used]${CRYPTED}:"
+      log "DIFFMOVE FINISHED moving differential files from ${SRC} to REMOTE"
    else
       log "DIFFMOVE FINISHED skipped || less then 1 file"
       sleep 60
