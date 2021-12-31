@@ -31,6 +31,10 @@ fi
 log "dockserver.io Multi-Thread Uploader started"
 CONFIG=/system/servicekeys/rclonegdsa.conf
 
+mkdir -p /system/uploader/logs/ \
+         /system/uploader/json/
+mkdir -p /system/uploader/json/{done,upload}
+
 if `rclone config show --config=${CONFIG} | grep ":/encrypt" &>/dev/null`;then
   export CRYPTED=C
 else
