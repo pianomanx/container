@@ -137,10 +137,10 @@ while true;do
            --cutoff-mode=soft --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
            --log-file="${LOGFILE}/${FILE}.txt" --log-level=INFO --tpslimit 50 --tpslimit-burst 50
 
-         END=$(date +%s)
-         echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[used]${CRYPTED}\",\"starttime\": \"${START}\",\"endtime\": \"${END}\"}" >"${DONE}/${FILE}.json"
-         rm -f "${LOGFILE}/${FILE}.txt" && chmod 755 "${DONE}/${FILE}.json"
-         sleep 5
+        END=$(date +%s)
+        echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[used]${CRYPTED}\",\"starttime\": \"${START}\",\"endtime\": \"${END}\"}" >"${DONE}/${FILE}.json"
+        rm -f "${LOGFILE}/${FILE}.txt" && chmod 755 "${DONE}/${FILE}.json"
+        sleep 5
 
       done
       log "DIFFMOVE FINISHED moving differential files from ${SRC} to ${KEY}$[used]${CRYPTED}:"
