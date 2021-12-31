@@ -41,11 +41,12 @@ rm -rf /app/uploader/pid/ \
        /system/uploader/logs/ \
        /app/uploader/discord \
 
-mkdir -p /system/uploader/json/ \
-        /system/uploader/json/{done,upload}
+mkdir -p /system/uploader/logs/ \
+         /system/uploader/json/ \
+         /system/uploader/json/{done,upload}
 
-pathglobal=/mnt/downloads
-find ${pathglobal} -type f -name '*.lck' -delete
+global=/mnt/downloads
+find ${global} -type f -name '*.lck' -delete
 
 chown -cR abc:abc \
 	/app \
