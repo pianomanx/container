@@ -122,10 +122,10 @@ while true;do
       log "STARTING RCLONE MOVE from ${SRC} to ${KEY}$[used]${CRYPTED}:"
       sed '/^\s*#.*$/d' "${DIFF}" | \
       while IFS=$'\n' read -r -a upp; do
-        rclone moveto ${SRC}/${upp[0]} ${KEY}$[used]${CRYPTED}:/${upp[0]} --config=${CONFIG} \
+        rclone moveto "${SRC}/${upp[0]}" "${KEY}$[used]${CRYPTED}:/${upp[0]}" --config=${CONFIG} \
            --stats=10s --checkers=16 --use-json-log --use-mmap \
-           --cutoff-mode=soft --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
-           --log-file=${START}/${upp[0]} --log-level=INFO --tpslimit 32 --tpslimit-burst 32
+           --cutoff-mode=soft --log-level=INFO --user-agent=${USERAGENT} "${BWLIMIT}" \
+           --log-file="${START}/${upp[0]}" --log-level=INFO --tpslimit 50 --tpslimit-burst 50
       mv "${START}/${upp[0]}" "${DONE}/${upp[0]}"
       done
       log "DIFFMOVE FINISHED moving differential files from ${SRC} to ${KEY}$[used]${CRYPTED}:"
