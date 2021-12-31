@@ -111,7 +111,9 @@ while true;do
       done
    fi
    log "CHECKING DIFFMOVE FROM LOCAL TO REMOTE"
-   rm -f "${CHK}" "${DIFF}" "${START}/${LOGFILE}"
+   rm -f "${CHK}" "${DIFF}"
+   echo "${KEY}$[used]${CRYPTED}"
+   sleep 60
    rclone check ${SRC} ${KEY}$[used]${CRYPTED}: --min-age=${MIN_AGE_UPLOAD}m \
      --size-only --one-way --fast-list --config=${CONFIG} --exclude-from=${EXCLUDE} > "${CHK}" 2>&1
    awk 'BEGIN { FS = ": " } /ERROR/ {print $2}' "${CHK}" > "${DIFF}"
@@ -120,12 +122,13 @@ while true;do
    num_files=`cat ${DIFF} | wc -l`
    if [ $num_files -gt 0 ]; then
       log "STARTING RCLONE MOVE from ${SRC} to ${KEY}$[used]${CRYPTED}:"
+      echo "${KEY}$[used]${CRYPTED}"
       sed '/^\s*#.*$/d' "${DIFF}" | \
       while IFS=$'\n' read -r -a upp; do
-        rclone moveto "${SRC}/${upp[0]}" "${KEY}$[used]${CRYPTED}:/${upp[0]}" --config=${CONFIG} \
-           --stats=10s --checkers=16 --use-json-log --use-mmap \
-           --cutoff-mode=soft --log-level=INFO --user-agent=${USERAGENT} "${BWLIMIT}" \
-           --log-file="${START}/${upp[0]}" --log-level=INFO --tpslimit 50 --tpslimit-burst 50
+        rclone moveto ${DOWN}/${upp[0]} ${KEY}$[used]${CRYPTED}:/${upp[0]} --config=${CONFIG} \
+           --stats=10s --checkers=16 --use-json-log --use-mmap --update \
+           --cutoff-mode=soft --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
+           --log-file=${START}/${upp[0]} --log-level=INFO --tpslimit 50 --tpslimit-burst 50
       mv "${START}/${upp[0]}" "${DONE}/${upp[0]}"
       done
       log "DIFFMOVE FINISHED moving differential files from ${SRC} to ${KEY}$[used]${CRYPTED}:"
