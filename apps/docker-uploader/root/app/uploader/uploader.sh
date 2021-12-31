@@ -143,13 +143,14 @@ while true;do
         STARTZ=$(date +%s)
         UPPED=${UPPED}
         USED=${USED}
+        FILESIZE=$(stat -c %s "${DOWN}/${UPP[0]}")
         echo "${DOWN}/${UPP[0]}" && touch "${LOGFILE}/${FILE}.txt"
         echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" >"${START}/${FILE}.json"
         rclone moveto "${DOWN}/${UPP[0]}" "${KEY}$[USED]${CRYPTED}:/${UPP[0]}" --config=${CONFIG} \
            --stats=10s --checkers=16 --use-json-log --use-mmap --update \
            --cutoff-mode=soft --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
            --log-file="${LOGFILE}/${FILE}.txt" --log-level=INFO --tpslimit 50 --tpslimit-burst 50
-        UPPED=$(echo "${UPPED} + ${SIZE}" | bc)
+        UPPED=$(echo "${UPPED} + ${FILESIZE}" | bc)
         echo "${UPPED}" | tee /system/uploader/.keys/usedupload > /dev/null
         ENDZ=$(date +%s)
         echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" >"${DONE}/${FILE}.json"
