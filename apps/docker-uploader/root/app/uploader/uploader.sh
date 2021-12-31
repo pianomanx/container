@@ -95,7 +95,6 @@ while true;do
       used=${used}
    fi
    source /system/uploader/uploader.env
-   TRANSFERS=${TRANSFERS}
    DRIVEUSEDSPACE=${DRIVEUSEDSPACE}
    BANDWITHLIMIT=${BANDWITHLIMIT}
    SRC="down:${DOWN}"
@@ -121,12 +120,14 @@ while true;do
    num_files=`cat ${DIFF} | wc -l`
    if [ $num_files -gt 0 ]; then
       log "STARTING RCLONE MOVE from ${SRC} to ${KEY}$[used]${CRYPTED}:"
-      touch "${START}/${LOGFILE}" 2>&1
-      rclone moveto --files-from ${DIFF} ${SRC} ${KEY}$[used]${CRYPTED}: --config=${CONFIG} \
-        --stats=10s --transfers ${TRANSFERS} --checkers=16 --use-json-log --use-mmap \
-        --cutoff-mode=soft --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
-        --log-file=${START}/${LOGFILE} --log-level=INFO --tpslimit 32 --tpslimit-burst 32
-      mv "${START}/${LOGFILE}" "${DONE}/${LOGFILE}"
+      sed '/^\s*#.*$/d' "${DIFF}" | \
+      while IFS=$'\n' read -r -a upp; do
+        rclone moveto ${SRC}/${upp[0]} ${KEY}$[used]${CRYPTED}:/${upp[0]} --config=${CONFIG} \
+           --stats=10s --checkers=16 --use-json-log --use-mmap \
+           --cutoff-mode=soft --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
+           --log-file=${START}/${upp[0]} --log-level=INFO --tpslimit 32 --tpslimit-burst 32
+      mv "${START}/${upp[0]}" "${DONE}/${upp[0]}"
+      done
       log "DIFFMOVE FINISHED moving differential files from ${SRC} to ${KEY}$[used]${CRYPTED}:"
       used=$(("${used}" + 1))
       echo "${used}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
