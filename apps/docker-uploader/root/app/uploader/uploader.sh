@@ -23,6 +23,11 @@ function log() {
     echo "${1}"
 }
 
+## check if script running > true exit
+if pidof -o %PPID -x "$0"; then
+    exit 1
+fi
+
 log "dockserver.io Multi-Thread Uploader started"
 CONFIG=/system/servicekeys/rclonegdsa.conf
 
