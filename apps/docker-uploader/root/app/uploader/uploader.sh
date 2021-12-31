@@ -124,13 +124,13 @@ while true;do
       ##echo "${KEY}$[used]${CRYPTED}"
       sed '/^\s*#.*$/d' "${DIFF}" | \
       while IFS=$'\n' read -r -a upp; do
-        echo "${DOWN}/${upp[0]}"
-        touch "${START}/${upp[0]}"
+        echo "${DOWN}/${upp[0]}" && touch "${START}/${LOGFILE}"
         rclone moveto "${DOWN}/${upp[0]}" "${KEY}$[used]${CRYPTED}:/${upp[0]}" --config=${CONFIG} \
            --stats=10s --checkers=16 --use-json-log --use-mmap --update \
            --cutoff-mode=soft --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
-           --log-file="${START}/${upp[0]}" --log-level=INFO --tpslimit 50 --tpslimit-burst 50
-      mv "${START}/${upp[0]}" "${DONE}/${upp[0]}"
+           --log-file="${START}/${LOGFILE}" --log-level=INFO --tpslimit 50 --tpslimit-burst 50
+         mv "${START}/${LOGFILE}" "${DONE}/${LOGFILE}"
+         sleep 5
       done
       log "DIFFMOVE FINISHED moving differential files from ${SRC} to ${KEY}$[used]${CRYPTED}:"
       used=$(("${used}" + 1))
