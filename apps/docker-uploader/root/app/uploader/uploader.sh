@@ -80,12 +80,11 @@ sabnzbd/**
 deluge/**
 EOF
 fi
-
 LOGFILE=/system/uploader/logs
 START=/system/uploader/json/upload
 DONE=/system/uploader/json/done
-DIFF=/system/uploader/difflist.txt
-CHK=/system/uploader/check.log
+DIFF=/system/uploader/logs/difflist.txt
+CHK=/system/uploader/logs/check.log
 DOWN=/mnt/downloads
 
 while true;do 
