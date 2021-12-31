@@ -50,8 +50,8 @@ else
   sleep infinity
 fi
 
-KEY=/system/servicekeys/keys/
-ARRAY=($(ls -1v ${KEY} | egrep '(PG|GD|GS|0)'))
+KEYLOCAL=/system/servicekeys/keys/
+ARRAY=($(ls -1v ${KEYLOCAL} | egrep '(PG|GD|GS|0)'))
 COUNT=$(expr ${#ARRAY[@]} - 1)
 
 if test -f "/system/uploader/.keys/lasteservicekey"; then
