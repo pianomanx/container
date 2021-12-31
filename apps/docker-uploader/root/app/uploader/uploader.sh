@@ -58,7 +58,7 @@ KEYLOCAL=/system/servicekeys/keys/
 ARRAY=($(ls -1v ${KEYLOCAL} | egrep '(PG|GD|GS|0)'))
 COUNT=$(expr ${#ARRAY[@]} - 1)
 
-if test -f "/system/uploader/.keys/lasteservicekey"; then
+if [[ -z "/system/uploader/.keys/lasteservicekey" ]]; then
   USED=$(cat /system/uploader/.keys/lasteservicekey)
   echo "${USED}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
 else
@@ -66,7 +66,7 @@ else
   echo "${USED}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
 fi
 
-if test -f "/system/uploader/.keys/usedupload"; then
+if [[ -z "/system/uploader/.keys/usedupload" ]]; then
   UPPED=$(cat /system/uploader/.keys/usedupload)
   echo "${UPPED}" | tee /system/uploader/.keys/usedupload > /dev/null
 else
