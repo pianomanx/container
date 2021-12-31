@@ -106,7 +106,7 @@ while true;do
         fi
       done
    fi
-   log "STARTING DIFFMOVE FROM LOCAL TO REMOTE"
+   log "CHECKING DIFFMOVE FROM LOCAL TO REMOTE"
    rm -f "${CHK}" "${DIFF}" "${START}/${LOGFILE}"
    rclone check ${SRC} ${KEY}$[used]${CRYPTED}: --min-age=${MIN_AGE_UPLOAD}m \
      --size-only --one-way --fast-list --config=${CONFIG} --exclude-from=${EXCLUDE} > "${CHK}" 2>&1
@@ -117,11 +117,10 @@ while true;do
    if [ $num_files -gt 0 ]; then
       log "STARTING RCLONE MOVE from ${SRC} to ${KEY}$[used]${CRYPTED}:"
       touch "${START}/${LOGFILE}" 2>&1
-      rclone move --files-from-raw=${DIFF} ${SRC} ${KEY}$[used]${CRYPTED}: --config=${CONFIG} \
-        --stats=10s --drive-use-trash=false --drive-server-side-across-configs=true \
-        --transfers ${TRANSFERS} --checkers=16 --use-mmap --cutoff-mode=soft --use-json-log \
-        --log-file=${START}/${LOGFILE} --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
-        --max-backlog=20000000 --tpslimit 32 --tpslimit-burst 32
+      rclone moveto --files-from ${DIFF} ${SRC} ${KEY}$[used]${CRYPTED}: --config=${CONFIG} \
+        --stats=10s --transfers ${TRANSFERS} --checkers=16 --use-json-log --use-mmap \
+        --cutoff-mode=soft --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
+        --log-file=${START}/${LOGFILE} --log-level=INFO --tpslimit 32 --tpslimit-burst 32
       mv "${START}/${LOGFILE}" "${DONE}/${LOGFILE}"
       log "DIFFMOVE FINISHED moving differential files from ${SRC} to ${KEY}$[used]${CRYPTED}:"
       used=$(("${used}" + 1))
