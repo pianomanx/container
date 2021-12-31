@@ -123,21 +123,25 @@ while true;do
       ##echo "${KEY}$[used]${CRYPTED}"
       sed '/^\s*#.*$/d' "${DIFF}" | \
       while IFS=$'\n' read -r -a upp; do
+
         MOVE=${MOVE:-/}
         FILE=$(basename "${upp[0]}")
-        DIR=$(dirname "${upp[0]}" | sed "s#${DOWN}/${MOVE_BASE}##g")
+        DIR=$(dirname "${upp[0]}" | sed "s#${DOWN}/${MOVE}##g")
         SIZE=$(stat -c %s "${DOWN}/${upp[0]}" | numfmt --to=iec-i --suffix=B --padding=7)
         START=$(date +%s)
         echo "${DOWN}/${upp[0]}" && touch "${LOGFILE}/${FILE}.txt"
         echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[used]${CRYPTED}\"}" >"${START}/${FILE}.json"
+
         rclone moveto "${DOWN}/${upp[0]}" "${KEY}$[used]${CRYPTED}:/${upp[0]}" --config=${CONFIG} \
            --stats=10s --checkers=16 --use-json-log --use-mmap --update \
            --cutoff-mode=soft --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
            --log-file="${LOGFILE}/${FILE}.txt" --log-level=INFO --tpslimit 50 --tpslimit-burst 50
-          END=$(date +%s)
+
+         END=$(date +%s)
          echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[used]${CRYPTED}\",\"starttime\": \"${START}\",\"endtime\": \"${END}\"}" >"${DONE}/${FILE}.json"
          rm -f "${LOGFILE}/${FILE}.txt" && chmod 755 "${DONE}/${FILE}.json"
          sleep 5
+
       done
       log "DIFFMOVE FINISHED moving differential files from ${SRC} to ${KEY}$[used]${CRYPTED}:"
       used=$(("${used}" + 1))
