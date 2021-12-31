@@ -55,10 +55,19 @@ ARRAY=($(ls -1v ${KEYLOCAL} | egrep '(PG|GD|GS|0)'))
 COUNT=$(expr ${#ARRAY[@]} - 1)
 
 if test -f "/system/uploader/.keys/lasteservicekey"; then
-  used=$(cat /system/uploader/.keys/lasteservicekey)
-  echo "${used}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
+  USED=$(cat /system/uploader/.keys/lasteservicekey)
+  echo "${USED}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
 else
-  used=1 && echo "1" | tee /system/uploader/.keys/lasteservicekey > /dev/null
+  USED=1
+  echo "${USED}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
+fi
+
+if test -f "/system/uploader/.keys/usedupload"; then
+  UPPED=$(cat /system/uploader/.keys/usedupload)
+  echo "${UPPED}" | tee /system/uploader/.keys/usedupload > /dev/null
+else
+  UPPED=1
+  echo "${UPPED}" | tee /system/uploader/.keys/usedupload > /dev/null
 fi
 
 EXCLUDE=/system/uploader/rclone.exclude
@@ -80,6 +89,7 @@ sabnzbd/**
 deluge/**
 EOF
 fi
+
 LOGFILE=/system/uploader/logs
 START=/system/uploader/json/upload
 DONE=/system/uploader/json/done
@@ -88,10 +98,10 @@ CHK=/system/uploader/logs/check.log
 DOWN=/mnt/downloads
 
 while true;do 
-   if [ "${used}" -eq "${COUNT}" ]; then
-      used=1
+   if [ "${USED}" -eq "${COUNT}" ]; then
+      USED=1
    else
-      used=${used}
+      USED=${USED}
    fi
    source /system/uploader/uploader.env
    DRIVEUSEDSPACE=${DRIVEUSEDSPACE}
@@ -111,8 +121,8 @@ while true;do
    fi
    log "CHECKING DIFFMOVE FROM LOCAL TO REMOTE"
    rm -f "${CHK}" "${DIFF}"
-   echo "${KEY}$[used]${CRYPTED}"
-   rclone check ${SRC} ${KEY}$[used]${CRYPTED}: --min-age=${MIN_AGE_UPLOAD}m \
+   echo "${KEY}$[USED]${CRYPTED}"
+   rclone check ${SRC} ${KEY}$[USED]${CRYPTED}: --min-age=${MIN_AGE_UPLOAD}m \
      --size-only --one-way --fast-list --config=${CONFIG} --exclude-from=${EXCLUDE} > "${CHK}" 2>&1
    awk 'BEGIN { FS = ": " } /ERROR/ {print $2}' "${CHK}" > "${DIFF}"
    awk 'BEGIN { FS = ": " } /NOTICE/ {print $2}' "${CHK}" >> "${DIFF}"
@@ -120,32 +130,33 @@ while true;do
    num_files=`cat ${DIFF} | wc -l`
    if [ $num_files -gt 0 ]; then
       log "STARTING RCLONE MOVE from ${SRC} to ${KEY}$[used]${CRYPTED}:"
-      ##echo "${KEY}$[used]${CRYPTED}"
       sed '/^\s*#.*$/d' "${DIFF}" | \
-      while IFS=$'\n' read -r -a upp; do
-
+      while IFS=$'\n' read -r -a UPP; do
         MOVE=${MOVE:-/}
-        FILE=$(basename "${upp[0]}")
-        DIR=$(dirname "${upp[0]}" | sed "s#${DOWN}/${MOVE}##g")
-        SIZE=$(stat -c %s "${DOWN}/${upp[0]}" | numfmt --to=iec-i --suffix=B --padding=7)
+        FILE=$(basename "${UPP[0]}")
+        DIR=$(dirname "${UPP[0]}" | sed "s#${DOWN}/${MOVE}##g")
+        SIZE=$(stat -c %s "${DOWN}/${UPP[0]}" | numfmt --to=iec-i --suffix=B --padding=7)
         STARTZ=$(date +%s)
-        echo "${DOWN}/${upp[0]}" && touch "${LOGFILE}/${FILE}.txt"
-        echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[used]${CRYPTED}\"}" >"${START}/${FILE}.json"
-
-        rclone moveto "${DOWN}/${upp[0]}" "${KEY}$[used]${CRYPTED}:/${upp[0]}" --config=${CONFIG} \
+        UPPED=${UPPED}
+        USED=${USED}
+        echo "${DOWN}/${UPP[0]}" && touch "${LOGFILE}/${FILE}.txt"
+        echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" >"${START}/${FILE}.json"
+        rclone moveto "${DOWN}/${UPP[0]}" "${KEY}$[USED]${CRYPTED}:/${UPP[0]}" --config=${CONFIG} \
            --stats=10s --checkers=16 --use-json-log --use-mmap --update \
            --cutoff-mode=soft --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
            --log-file="${LOGFILE}/${FILE}.txt" --log-level=INFO --tpslimit 50 --tpslimit-burst 50
-
+        UPPED=$(echo "${UPPED} + ${SIZE}" | bc)
+        echo "${UPPED}" | tee /system/uploader/.keys/usedupload > /dev/null
         ENDZ=$(date +%s)
-        echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[used]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" >"${DONE}/${FILE}.json"
+        echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" >"${DONE}/${FILE}.json"
         rm -f "${LOGFILE}/${FILE}.txt" && chmod 755 "${DONE}/${FILE}.json"
         sleep 5
-
+        if [[ ${UPPED} -gt "763831531520" ]]; then
+           USED=$(("${USED}" + 1))
+           echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
+        fi
       done
       log "DIFFMOVE FINISHED moving differential files from ${SRC} to ${KEY}$[used]${CRYPTED}:"
-      used=$(("${used}" + 1))
-      echo "${used}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
    else
       log "DIFFMOVE FINISHED skipped || less then 1 file"
       sleep 60
