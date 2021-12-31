@@ -134,8 +134,8 @@ while true;do
         echo "${DOWN}/${UPP[0]}" && touch "${LOGFILE}/${FILE}.txt"
         echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" >"${START}/${FILE}.json"
         rclone move "${DOWN}/${UPP[0]}" "${KEY}$[USED]${CRYPTED}:/${UPP[0]}" --config=${CONFIG} \
-           --stats=10s --checkers=16 --use-json-log --use-mmap --update \
-           --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} \
+           --stats=10s --checkers=16 --use-json-log --use-mmap --update --no-traverse \
+           --log-level=INFO --user-agent=${USERAGENT} ${BWLIMIT} --delete-empty-src-dirs \
            --log-file="${LOGFILE}/${FILE}.txt" --tpslimit 50 --tpslimit-burst 50
         ENDZ=$(date +%s)
         echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" >"${DONE}/${FILE}.json"
