@@ -101,8 +101,7 @@ while true;do
       done
    fi
    log "CHECKING LOCAL SOURCE FOLDERS"
-   rclone ls ${SRC} --min-age=${MIN_AGE_UPLOAD}m \
-          --fast-list --config=${CONFIG} --exclude-from=${EXCLUDE} | awk '{print $2}' > "${CHK}" 2>&1
+   rclone ls ${SRC} --min-age=${MIN_AGE_FILE} --fast-list --config=${CONFIG} --exclude-from=${EXCLUDE} | awk '{print $2}' > "${CHK}" 2>&1
    if [ `cat ${CHK} | wc -l` -gt 0 ]; then
       log "STARTING RCLONE MOVE from ${SRC} to REMOTE"
       sed '/^\s*#.*$/d' | while IFS=$'\n' read -r -a UPP; do
