@@ -35,27 +35,18 @@ echo "----------------------------------------------------
 ----------------------------------------------------"
 
 log "-> Setting Permissions || start <-"
-rm -rf /system/uploader/.keys/{usedupload,lastday}
-rm -rf /app/uploader/pid/ \
-       /system/uploader/vfsforget/ \
-       /system/uploader/logs/ \
-       /app/uploader/discord \
-
+rm -rf /system/uploader/.keys/{usedupload,lastday} \
+       /app/uploader/{pid,discord} \
+       /system/uploader/vfsforget/ 
 
 mkdir -p /system/uploader/.keys \
-         /system/uploader/logs/ \
-         /system/uploader/json/ \
+         /system/uploader/{logs,json} \
          /system/uploader/json/{done,upload}
 
 global=/mnt/downloads
 find ${global} -type f -name '*.lck' -delete
-
-chown -cR abc:abc \
-	/app \
-	/system/*
-
-chmod -cR 755 /app \
-        /system/*
+chown -cR abc:abc /app /system/* > /dev/null
+chmod -cR 755 /app /system/* > /dev/null
 
 UAGENT=${UAGENT:-null}
 if [[ ${UAGENT} == 'null' ]]; then
@@ -81,6 +72,7 @@ PGID=${PGID:-1000}
 BANDWITHLIMIT=${BANDWITHLIMIT:-null}
 LOG_LEVEL=${LOG_LEVEL:-INFO}
 USERAGENT=${USERAGENT}
+DLFOLDER=${DLFOLDER:-/mnt/downloads}
 
 ## USER - SETTINGS
 DRIVEUSEDSPACE=${DRIVEUSEDSPACE:-null}
