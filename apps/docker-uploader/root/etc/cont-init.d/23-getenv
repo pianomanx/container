@@ -73,7 +73,6 @@ if [[ -f ${uploaderenv} ]]; then
    echo -e "#-------------------------------------------------------
 #   UPLOADER ENVIROMENTS
 #-------------------------------------------------------
-
 ## USER VALUES
 PUID=${PUID:-1000}
 PGID=${PGID:-1000}
@@ -85,7 +84,7 @@ USERAGENT=${USERAGENT}
 
 ## USER - SETTINGS
 DRIVEUSEDSPACE=${DRIVEUSEDSPACE:-null}
-MIN_AGE_UPLOAD=${MIN_AGE_UPLOAD:-5}
+MIN_AGE_FILE={MIN_AGE_FILE:-10m}
 #-------------------------------------------------------
 #   UPLOADER ENVIROMENTS
 #-------------------------------------------------------" >$uploaderenv
