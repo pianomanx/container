@@ -15,6 +15,46 @@
 function log() {
      echo "${1}"
 }
+
+addgroup -S abc
+adduser -S abc -G abc
+PGID=${PGID:-1000}
+PUID=${PUID:-1000}
+groupmod -o -g "$PGID" abc
+usermod -o -u "$PUID" abc
+
+echo "----------------------------------------------------
+
+ ____             _                                 
+|  _ \  ___   ___| | _____  ___ _ ____   _____ _ __ 
+| | | |/ _ \ / __| |/ / __|/ _ \ '__\ \ / / _ \ '__|
+| |_| | (_) | (__|   <\__ \  __/ |   \ V /  __/ |   
+|____/ \___/ \___|_|\_\___/\___|_|    \_/ \___|_|
+
+
+----------------------------------------------------"
+
+log "-> Setting Permissions || start <-"
+rm -rf /system/uploader/.keys/{usedupload,lastday}
+rm -rf /app/uploader/pid/ \
+       /system/uploader/vfsforget/ \
+       /system/uploader/logs/ \
+       /app/uploader/discord \
+
+mkdir -p /system/uploader/logs/ \
+         /system/uploader/json/ \
+         /system/uploader/json/{done,upload}
+
+global=/mnt/downloads
+find ${global} -type f -name '*.lck' -delete
+
+chown -cR abc:abc \
+	/app \
+	/system/*
+
+chmod -cR 755 /app \
+        /system/*
+
 UAGENT=${UAGENT:-null}
 if [[ ${UAGENT} == 'null' ]]; then
    UAGENT=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
