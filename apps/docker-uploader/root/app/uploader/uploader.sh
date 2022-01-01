@@ -83,20 +83,20 @@ LOGFILE=/system/uploader/logs
 START=/system/uploader/json/upload
 DONE=/system/uploader/json/done
 CHK=/system/uploader/logs/check.log
-DOWN=/mnt/downloads
 
 while true;do 
    if [ "${USED}" -eq "${COUNT}" ]; then USED=1 ;else USED=${USED}; fi
    source /system/uploader/uploader.env
+   DLFOLDER=${DLFOLDER}
+   SRC="down:${DLFOLDER}"
    BWLIMIT=""
-   SRC="down:${DOWN}"
    if [[ "${BANDWITHLIMIT}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then
       BWLIMIT="--bwlimit=${BANDWITHLIMIT}"
    fi
    if [[ "${DRIVEUSEDSPACE}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then
       source /system/uploader/uploader.env
       while true;do 
-         LCT=$(df --output=pcent ${DOWN} | tail -n 1 | cut -d'%' -f1)
+         LCT=$(df --output=pcent ${DLFOLDER} | tail -n 1 | cut -d'%' -f1)
          if [ $DRIVEUSEDSPACE \> $LCT ]; then sleep 60 && continue;else sleep 5 && break;fi
       done
    fi
@@ -107,13 +107,13 @@ while true;do
       sed '/^\s*#.*$/d' | while IFS=$'\n' read -r -a UPP; do
          MOVE=${MOVE:-/}
          FILE=$(basename "${UPP[@]}")
-         DIR=$(dirname "${UPP[@]}" | sed "s#${DOWN}/${MOVE}##g")
-         SIZE=$(stat -c %s "${DOWN}/${UPP[@]}" | numfmt --to=iec-i --suffix=B --padding=7)
+         DIR=$(dirname "${UPP[@]}" | sed "s#${DLFOLDER}/${MOVE}##g")
+         SIZE=$(stat -c %s "${DLFOLDER}/${UPP[@]}" | numfmt --to=iec-i --suffix=B --padding=7)
          STARTZ=$(date +%s)
          USED=${USED}
          touch "${LOGFILE}/${FILE}.txt"
          echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" >"${START}/${FILE}.json"
-         rclone move "${DOWN}/${UPP[@]}" "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --config=${CONFIG} --stats=1s --checkers=16 --use-mmap --no-traverse --check-first \
+         rclone move "${DLFOLDER}/${UPP[@]}" "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --config=${CONFIG} --stats=1s --checkers=16 --use-mmap --no-traverse --check-first \
                 --log-level=${LOG_LEVEL} --user-agent=${USERAGENT} ${BWLIMIT} --delete-empty-src-dirs --log-file="${LOGFILE}/${FILE}.txt" --tpslimit 50 --tpslimit-burst 50
          ENDZ=$(date +%s)
          echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" >"${DONE}/${FILE}.json"
