@@ -97,7 +97,7 @@ while true;do
       source /system/uploader/uploader.env
       while true;do 
          LCT=$(df --output=pcent ${DOWN} | tail -n 1 | cut -d'%' -f1)
-         if [ $DRIVEUSEDSPACE \> $LCT ]; then sleep 5 && continue;else sleep 5 && break;fi
+         if [ $DRIVEUSEDSPACE \> $LCT ]; then sleep 60 && continue;else sleep 5 && break;fi
       done
    fi
    log "CHECKING LOCAL SOURCE FOLDERS"
@@ -127,7 +127,7 @@ while true;do
       done
       log "MOVE FINISHED moving $num_files files from ${SRC} to REMOTE"
    else
-      log "MOVE skipped || less then 1 file" && sleep 60
+      log "MOVE skipped || less then 1 file" && sleep 180
    fi
 done
 
