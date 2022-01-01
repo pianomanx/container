@@ -1,6 +1,4 @@
 #####################################
-# Original coder PhysK              #
-#####################################
 # All rights reserved.              #
 # started from Zero                 #
 # Docker owned dockserver           #
