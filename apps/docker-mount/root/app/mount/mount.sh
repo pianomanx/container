@@ -17,7 +17,7 @@ if pidof -o %PPID -x "$0"; then
 fi
 
 function fusercommand() {
-    fusermount -uzq "$1"
+    fusermount -uzq "${1}"
 }
 function rcx() {
 # environment
