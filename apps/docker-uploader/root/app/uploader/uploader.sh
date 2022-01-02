@@ -93,7 +93,7 @@ while true;do
    rclone lsf --files-only --recursive --format "p" --order-by "modtime" --min-age=${MIN_AGE_FILE} --config=${CONFIG} --exclude-from=${EXCLUDE} "${DLFOLDER}" > "${CHK}" 2>&1
    if [ `cat ${CHK} | wc -l` -gt 0 ]; then
       log "STARTING RCLONE MOVE from ${SRC} to REMOTE"
-      sed '/^\s*#.*$/d' | while IFS=$'\n' read -r -a UPP; do
+      cat "${CHK}" | while IFS=$'\n' read -r -a UPP; do
          MOVE=${MOVE:-/}
          FILE=$(basename "${UPP[@]}")
          DIR=$(dirname "${UPP[@]}" | sed "s#${DLFOLDER}/${MOVE}##g")
@@ -115,7 +115,7 @@ while true;do
                USED=$(( $USED+$MINSA ))
                if [[ "${USED}" -eq "${MAXSA}" ]]; then USED=$MINSA && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null ;fi
             elif [[ $MAXT -gt $DIFF ]]; then
-               tail -n 20 "${LOGFILE}/${FILE}.txt" | grep --line-buffered 'googleapi: Error' | while read; do
+               tail -n 20 "${LOGFILE}/${FILE}.txt" | grep --line-buffered 'googleapi: Error' | while read -r; do
                    USED=$(( $USED+$MINSA )) && 
                    if [[ "${USED}" -eq "${MAXSA}" ]];then USED=$MINSA && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null ;fi
                done
