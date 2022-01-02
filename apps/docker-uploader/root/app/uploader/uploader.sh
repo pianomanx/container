@@ -32,10 +32,9 @@ DONE=/system/uploader/json/done
 CHK=/system/uploader/logs/check.log
 EXCLUDE=/system/uploader/rclone.exclude
 MAXT=730
-NEXT=0
-KEYMIN=1
 CRYPTED=""
-KEY=""
+DIFF=0
+MINSA=1
 BWLIMIT=""
 USERAGENT=""
 
@@ -70,17 +69,17 @@ deluge/**
 EOF
 fi
 
-ARRAY=($(ls -1v ${KEYLOCAL} | egrep '(PG|GD|GS|0)'))
-COUNT=$(expr ${#ARRAY[@]} - 1)
+ARRAY=$(ls -1v ${KEYLOCAL} | wc -l )
+MAXSA=$(expr ${#ARRAY[@]})
 if [[ -f "/system/uploader/.keys/lasteservicekey" ]]; then
   USED=$(cat /system/uploader/.keys/lasteservicekey)
   echo "${USED}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
 else
-  USED=$KEYMIN && echo "${KEYMIN}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
+  USED=$MINSA && echo "${MINSA}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
 fi
 
 while true;do 
-   if [ "${USED}" -eq "${COUNT}" ]; then USED=$KEYMIN ;else USED=${USED}; fi
+   if [ "${USED}" -eq "${MAXSA}" ]; then USED=$MINSA ;else USED=${USED}; fi
    source /system/uploader/uploader.env
    DLFOLDER=${DLFOLDER}
    if [[ "${BANDWITHLIMIT}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then
@@ -112,17 +111,17 @@ while true;do
          ENDZ=$(date +%s)
          echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" >"${DONE}/${FILE}.json"
          sleep 5
-         upfile=`eval rclone size "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --json | cut -d ":" -f3 | cut -d "}" -f1`
-         upfileGB=$(( $upfile/1024**3 ))
-         diff=$(( $MAXT-$upfileGB ))
-         if [ $diff -gt $NEXT ];then 
-             USED=$(( "${USED}" + $KEYMIN )) && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
+         UPFILE=`eval rclone size "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --json | cut -d ":" -f3 | cut -d "}" -f1`
+         FILEGB=$(( $UPFILE/1024**3 ))
+         DIFF=$(( $DIFF+$FILEGB ))
+         if [ $DIFF -gt $MAXT ];then 
+            USED=$(( $USED+$MINSA )) && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
          elif
-             tail -n 20 "${LOGFILE}/${FILE}.txt" | grep --line-buffered 'googleapi: Error' | while read; do
-                USED=$(( "${USED}" + $KEYMIN )) && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
-             done
+            tail -n 20 "${LOGFILE}/${FILE}.txt" | grep --line-buffered 'googleapi: Error' | while read; do
+                USED=$(( $USED+$MINSA )) && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
+            done
          else
-             MAXT=$MAXT
+            MAXT=$MAXT
          fi
          rm -f "${START}/${FILE}.json" "${LOGFILE}/${FILE}.txt" && chmod 755 "${DONE}/${FILE}.json"
       done
