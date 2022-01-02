@@ -11,15 +11,10 @@
 # NO REBRANDING IS ALLOWED          #
 # NO CODE MIRRORING IS ALLOWED      #
 #####################################
-# shellcheck disable=SC2003
-# shellcheck disable=SC2006
-# shellcheck disable=SC2207
-# shellcheck disable=SC2012
-# shellcheck disable=SC2086
-# shellcheck disable=SC2196
 function log() {
     echo "${1}"
 }
+
 if pidof -o %PPID -x "$0"; then exit 1; fi
 
 log "dockserver.io Multi-Thread Uploader started"
