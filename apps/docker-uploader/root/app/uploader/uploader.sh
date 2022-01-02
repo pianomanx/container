@@ -79,7 +79,6 @@ else
 fi
 
 while true;do 
-   if [ "${USED}" -eq "${MAXSA}" ]; then USED=$MINSA ;else USED=${USED}; fi
    source /system/uploader/uploader.env
    DLFOLDER=${DLFOLDER}
    if [[ "${BANDWITHLIMIT}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then
@@ -115,15 +114,22 @@ while true;do
          FILEGB=$(( $UPFILE/1024**3 ))
          DIFF=$(( $DIFF+$FILEGB ))
          if [ $DIFF -gt $MAXT ];then 
-            USED=$(( $USED+$MINSA )) && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
+            USED=$(( $USED+$MINSA ))
+            if [ "${USED}" -eq "${MAXSA}" ];then
+               USED=$MINSA && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
+            fi
          elif
             tail -n 20 "${LOGFILE}/${FILE}.txt" | grep --line-buffered 'googleapi: Error' | while read; do
-                USED=$(( $USED+$MINSA )) && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
+                USED=$(( $USED+$MINSA )) && 
+                if [ "${USED}" -eq "${MAXSA}" ];then
+                   USED=$MINSA && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
+                fi
             done
          else
-            MAXT=$MAXT
+            DIFF=$DIFF
          fi
          rm -f "${START}/${FILE}.json" "${LOGFILE}/${FILE}.txt" && chmod 755 "${DONE}/${FILE}.json"
+         if [ $DRIVEUSEDSPACE \> $LCT ]; then rm -rf "${CHK}" && sleep 5 && break;fi
       done
       log "MOVE FINISHED moving $num_files files from ${SRC} to REMOTE"
    else
