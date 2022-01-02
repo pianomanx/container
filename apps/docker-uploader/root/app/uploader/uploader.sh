@@ -113,12 +113,12 @@ while true;do
          UPFILE=`eval rclone size "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --json | cut -d ":" -f3 | cut -d "}" -f1`
          FILEGB=$(( $UPFILE/1024**3 ))
          DIFF=$(( $DIFF+$FILEGB ))
-         if [ $DIFF -gt $MAXT ];then 
+         if [[ $DIFF -gt $MAXT ]];then 
             USED=$(( $USED+$MINSA ))
-            if [ "${USED}" -eq "${MAXSA}" ];then
+            if [[ "${USED}" -eq "${MAXSA}" ]]; then
                USED=$MINSA && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
             fi
-         elif
+         elif [[ $MAXT -gt $DIFF ]]; then
             tail -n 20 "${LOGFILE}/${FILE}.txt" | grep --line-buffered 'googleapi: Error' | while read; do
                 USED=$(( $USED+$MINSA )) && 
                 if [ "${USED}" -eq "${MAXSA}" ];then
