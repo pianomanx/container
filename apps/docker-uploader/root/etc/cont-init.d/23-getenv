@@ -47,18 +47,10 @@ global=/mnt/downloads
 find ${global} -type f -name '*.lck' -delete
 chown -cR abc:abc /app /system/* > /dev/null
 chmod -cR 755 /app /system/* > /dev/null
-
 sample=/app/uploader/.sample.uploader.env
 uploaderenv=/system/uploader/uploader.env
-if [[ -f "${uploaderenv}" ]]; then
-   grep -vf ${uploaderenv} ${sample} > ${uploaderenv}
-   cat "${uploaderenv}" | tee "${uploaderenv}" > /dev/null
-else
-   grep -vf "${uploaderenv}" "${sample}" > "${uploaderenv}"
-   cat "${uploaderenv}" | tee "${uploaderenv}" > /dev/null
-fi
-
-#E-O-F
-
-
+[[ -f "${uploaderenv}" ]] && rm -f "${uploaderenv}"
+cat "${sample}" | while read line; do
+    echo -e "$line" >> "${uploaderenv}"
+done
 #E-O-F
