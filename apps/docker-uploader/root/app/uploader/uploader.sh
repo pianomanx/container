@@ -37,6 +37,7 @@ KEYMIN=1
 CRYPTED=""
 KEY=""
 BWLIMIT=""
+USERAGENT=""
 
 find ${BASE} -type f -name '*.log' -delete
 mkdir -p "${LOGFILE}" "${START}" "${DONE}"
@@ -103,6 +104,7 @@ while true;do
          SIZE=$(stat -c %s "${DLFOLDER}/${UPP[@]}" | numfmt --to=iec-i --suffix=B --padding=7)
          STARTZ=$(date +%s)
          USED=${USED}
+         USERAGENT=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
          touch "${LOGFILE}/${FILE}.txt"
          echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" >"${START}/${FILE}.json"
          rclone move "${DLFOLDER}/${UPP[@]}" "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --config=${CONFIG} --stats=1s --checkers=32 --use-mmap --no-traverse --check-first --delete-empty-src-dirs \
