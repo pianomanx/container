@@ -6,7 +6,6 @@
 # Docker owned dockserver           #
 # Docker Maintainer dockserver      #
 #####################################
-#####################################
 # THIS DOCKER IS UNDER LICENSE      #
 # NO CUSTOMIZING IS ALLOWED         #
 # NO REBRANDING IS ALLOWED          #
@@ -18,28 +17,31 @@
 # shellcheck disable=SC2012
 # shellcheck disable=SC2086
 # shellcheck disable=SC2196
-
 function log() {
     echo "${1}"
 }
-if pidof -o %PPID -x "$0"; then
-    exit 1
-fi
+if pidof -o %PPID -x "$0"; then exit 1; fi
 
 log "dockserver.io Multi-Thread Uploader started"
 BASE=/system/uploader
-find ${BASE} -type f -name '*.log' -delete
 CONFIG=/system/servicekeys/rclonegdsa.conf
-mkdir -p /system/uploader/{logs,done}
-mkdir -p /system/uploader/json/{done,upload}
+KEYLOCAL=/system/servicekeys/keys/
+LOGFILE=/system/uploader/logs
+START=/system/uploader/json/upload
+DONE=/system/uploader/json/done
+CHK=/system/uploader/logs/check.log
+EXCLUDE=/system/uploader/rclone.exclude
+MAXT=730
+NEXT=0
+KEYMIN=1
+CRYPTED=""
+KEY=""
+BWLIMIT=""
 
+find ${BASE} -type f -name '*.log' -delete
+mkdir -p "${LOGFILE}" "${START}" "${DONE}"
 if `rclone config show --config=${CONFIG} | grep ":/encrypt" &>/dev/null`;then
   export CRYPTED=C
-else
-  export CRYPTED=""
-fi
-if ! `rclone config show --config=${CONFIG} | grep "local" &>/dev/null`;then
-   rclone config create down local nunc 'true' --config=${CONFIG}
 fi
 if `rclone config show --config=${CONFIG} | grep "GDSA" &>/dev/null`;then
   export KEY=GDSA
@@ -49,18 +51,6 @@ else
   log "no match found of GDSA[01=~100] or [01=~100]"
   sleep infinity
 fi
-
-KEYLOCAL=/system/servicekeys/keys/
-ARRAY=($(ls -1v ${KEYLOCAL} | egrep '(PG|GD|GS|0)'))
-COUNT=$(expr ${#ARRAY[@]} - 1)
-if [[ -f "/system/uploader/.keys/lasteservicekey" ]]; then
-  USED=$(cat /system/uploader/.keys/lasteservicekey)
-  echo "${USED}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
-else
-  USED=1 && echo "${USED}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
-fi
-
-EXCLUDE=/system/uploader/rclone.exclude
 if [[ ! -f ${EXCLUDE} ]]; then
    cat > ${EXCLUDE} << EOF; $(echo)
 *-vpn/**
@@ -79,17 +69,19 @@ deluge/**
 EOF
 fi
 
-LOGFILE=/system/uploader/logs
-START=/system/uploader/json/upload
-DONE=/system/uploader/json/done
-CHK=/system/uploader/logs/check.log
+ARRAY=($(ls -1v ${KEYLOCAL} | egrep '(PG|GD|GS|0)'))
+COUNT=$(expr ${#ARRAY[@]} - 1)
+if [[ -f "/system/uploader/.keys/lasteservicekey" ]]; then
+  USED=$(cat /system/uploader/.keys/lasteservicekey)
+  echo "${USED}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
+else
+  USED=$KEYMIN && echo "${KEYMIN}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
+fi
 
 while true;do 
-   if [ "${USED}" -eq "${COUNT}" ]; then USED=1 ;else USED=${USED}; fi
+   if [ "${USED}" -eq "${COUNT}" ]; then USED=$KEYMIN ;else USED=${USED}; fi
    source /system/uploader/uploader.env
    DLFOLDER=${DLFOLDER}
-   SRC="down:${DLFOLDER}"
-   BWLIMIT=""
    if [[ "${BANDWITHLIMIT}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then
       BWLIMIT="--bwlimit=${BANDWITHLIMIT}"
    fi
@@ -101,7 +93,7 @@ while true;do
       done
    fi
    log "CHECKING LOCAL SOURCE FOLDERS"
-   rclone ls ${SRC} --min-age=${MIN_AGE_FILE} --fast-list --config=${CONFIG} --exclude-from=${EXCLUDE} | awk '{print $2}' > "${CHK}" 2>&1
+   rclone lsf --files-only --recursive --format "p" --order-by "modtime" --min-age=${MIN_AGE_FILE} --config=${CONFIG} --exclude-from=${EXCLUDE} "${DLFOLDER}" > "${CHK}" 2>&1
    if [ `cat ${CHK} | wc -l` -gt 0 ]; then
       log "STARTING RCLONE MOVE from ${SRC} to REMOTE"
       sed '/^\s*#.*$/d' | while IFS=$'\n' read -r -a UPP; do
@@ -113,17 +105,24 @@ while true;do
          USED=${USED}
          touch "${LOGFILE}/${FILE}.txt"
          echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" >"${START}/${FILE}.json"
-         rclone move "${DLFOLDER}/${UPP[@]}" "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --config=${CONFIG} --stats=1s --checkers=16 --use-mmap --no-traverse --check-first \
-                --log-level=${LOG_LEVEL} --user-agent=${USERAGENT} ${BWLIMIT} --delete-empty-src-dirs --log-file="${LOGFILE}/${FILE}.txt" --tpslimit 50 --tpslimit-burst 50
+         rclone move "${DLFOLDER}/${UPP[@]}" "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --config=${CONFIG} --stats=1s --checkers=32 --use-mmap --no-traverse --check-first --delete-empty-src-dirs \
+           --drive-chunk-size=64M --log-level=${LOG_LEVEL} --user-agent=${USERAGENT} ${BWLIMIT} --log-file="${LOGFILE}/${FILE}.txt" --tpslimit 50 --tpslimit-burst 50
          ENDZ=$(date +%s)
          echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" >"${DONE}/${FILE}.json"
          sleep 5
-         tail -n 20 "${LOGFILE}/${FILE}.txt" | grep --line-buffered 'googleapi: Error' | while read; do
-             USED=$(( "${USED}" + 1 ))
-             echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
-         done
-         rm -f "${START}/${FILE}.json" "${LOGFILE}/${FILE}.txt"
-         chmod 755 "${DONE}/${FILE}.json"
+         upfile=`eval rclone size "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --json | cut -d ":" -f3 | cut -d "}" -f1`
+         upfileGB=$(( $upfile/1024**3 ))
+         diff=$(( $MAXT-$upfileGB ))
+         if [ $diff -gt $NEXT ];then 
+             USED=$(( "${USED}" + $KEYMIN )) && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
+         elif
+             tail -n 20 "${LOGFILE}/${FILE}.txt" | grep --line-buffered 'googleapi: Error' | while read; do
+                USED=$(( "${USED}" + $KEYMIN )) && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
+             done
+         else
+             MAXT=$MAXT
+         fi
+         rm -f "${START}/${FILE}.json" "${LOGFILE}/${FILE}.txt" && chmod 755 "${DONE}/${FILE}.json"
       done
       log "MOVE FINISHED moving $num_files files from ${SRC} to REMOTE"
    else
