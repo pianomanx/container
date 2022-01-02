@@ -41,15 +41,15 @@ USERAGENT=""
 find ${BASE} -type f -name '*.log' -delete
 mkdir -p "${LOGFILE}" "${START}" "${DONE}"
 if `rclone config show --config=${CONFIG} | grep ":/encrypt" &>/dev/null`;then
-  export CRYPTED=C
+   export CRYPTED=C
 fi
 if `rclone config show --config=${CONFIG} | grep "GDSA" &>/dev/null`;then
-  export KEY=GDSA
+   export KEY=GDSA
 elif `rclone config show --config=${CONFIG} | head -n1 | grep -Po '\[.*?]' | sed 's/.*\[\([^]]*\)].*/\1/' | sed '/GDSA/d'`;then
-  export KEY=""
+   export KEY=""
 else
-  log "no match found of GDSA[01=~100] or [01=~100]"
-  sleep infinity
+   log "no match found of GDSA[01=~100] or [01=~100]"
+   sleep infinity
 fi
 if [[ ! -f ${EXCLUDE} ]]; then
    cat > ${EXCLUDE} << EOF; $(echo)
@@ -72,18 +72,16 @@ fi
 ARRAY=$(ls -1v ${KEYLOCAL} | wc -l )
 MAXSA=$(expr ${#ARRAY[@]})
 if [[ -f "/system/uploader/.keys/lasteservicekey" ]]; then
-  USED=$(cat /system/uploader/.keys/lasteservicekey)
-  echo "${USED}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
+   USED=$(cat /system/uploader/.keys/lasteservicekey)
+   echo "${USED}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
 else
-  USED=$MINSA && echo "${MINSA}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
+   USED=$MINSA && echo "${MINSA}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
 fi
 
 while true;do 
    source /system/uploader/uploader.env
    DLFOLDER=${DLFOLDER}
-   if [[ "${BANDWITHLIMIT}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then
-      BWLIMIT="--bwlimit=${BANDWITHLIMIT}"
-   fi
+   if [[ "${BANDWITHLIMIT}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then BWLIMIT="--bwlimit=${BANDWITHLIMIT}" ;fi
    if [[ "${DRIVEUSEDSPACE}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then
       source /system/uploader/uploader.env
       while true;do 
@@ -104,34 +102,30 @@ while true;do
          USED=${USED}
          USERAGENT=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
          touch "${LOGFILE}/${FILE}.txt"
-         echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" >"${START}/${FILE}.json"
+            echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" >"${START}/${FILE}.json"
          rclone move "${DLFOLDER}/${UPP[@]}" "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --config=${CONFIG} --stats=1s --checkers=32 --use-mmap --no-traverse --check-first --delete-empty-src-dirs \
            --drive-chunk-size=64M --log-level=${LOG_LEVEL} --user-agent=${USERAGENT} ${BWLIMIT} --log-file="${LOGFILE}/${FILE}.txt" --tpslimit 50 --tpslimit-burst 50
          ENDZ=$(date +%s)
-         echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" >"${DONE}/${FILE}.json"
+            echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" >"${DONE}/${FILE}.json"
          sleep 5
          UPFILE=`eval rclone size "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --json | cut -d ":" -f3 | cut -d "}" -f1`
          FILEGB=$(( $UPFILE/1024**3 ))
          DIFF=$(( $DIFF+$FILEGB ))
-         if [[ $DIFF -gt $MAXT ]];then 
-            USED=$(( $USED+$MINSA ))
-            if [[ "${USED}" -eq "${MAXSA}" ]]; then
-               USED=$MINSA && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
+            if [[ $DIFF -gt $MAXT ]]; then 
+               USED=$(( $USED+$MINSA ))
+               if [[ "${USED}" -eq "${MAXSA}" ]]; then USED=$MINSA && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null ;fi
+            elif [[ $MAXT -gt $DIFF ]]; then
+               tail -n 20 "${LOGFILE}/${FILE}.txt" | grep --line-buffered 'googleapi: Error' | while read; do
+                   USED=$(( $USED+$MINSA )) && 
+                   if [[ "${USED}" -eq "${MAXSA}" ]];then USED=$MINSA && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null ;fi
+               done
+            else
+               DIFF=$DIFF
             fi
-         elif [[ $MAXT -gt $DIFF ]]; then
-            tail -n 20 "${LOGFILE}/${FILE}.txt" | grep --line-buffered 'googleapi: Error' | while read; do
-                USED=$(( $USED+$MINSA )) && 
-                if [ "${USED}" -eq "${MAXSA}" ];then
-                   USED=$MINSA && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
-                fi
-            done
-         else
-            DIFF=$DIFF
-         fi
          rm -f "${START}/${FILE}.json" "${LOGFILE}/${FILE}.txt" && chmod 755 "${DONE}/${FILE}.json"
          if [ $DRIVEUSEDSPACE \> $LCT ]; then rm -rf "${CHK}" && sleep 5 && break;fi
       done
-      log "MOVE FINISHED moving $num_files files from ${SRC} to REMOTE"
+      log "MOVE FINISHED from ${SRC} to REMOTE"
    else
       log "MOVE skipped || less then 1 file" && sleep 180
    fi
