@@ -90,7 +90,7 @@ while true;do
       done
    fi
    log "CHECKING LOCAL SOURCE FOLDERS"
-   rclone lsf --files-only --recursive --format "p" --order-by "modtime" --min-age=${MIN_AGE_FILE} --config=${CONFIG} --exclude-from=${EXCLUDE} "${DLFOLDER}" > "${CHK}" 2>&1
+   rclone lsf --files-only --recursive --min-age=${MIN_AGE_FILE} --format="p" --order-by="modtime" --config=${CONFIG} --exclude-from=${EXCLUDE} "${DLFOLDER}" > "${CHK}" 2>&1
    if [ `cat ${CHK} | wc -l` -gt 0 ]; then
       log "STARTING RCLONE MOVE from ${SRC} to REMOTE"
       cat "${CHK}" | while IFS=$'\n' read -r -a UPP; do
