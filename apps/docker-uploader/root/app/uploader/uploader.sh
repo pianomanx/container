@@ -90,7 +90,7 @@ while true;do
       done
    fi
    log "CHECKING LOCAL SOURCE FOLDERS"
-   rclone lsf --files-only --recursive --format="p" --order-by="modtime" --config=${CONFIG} --exclude-from=${EXCLUDE} "${DLFOLDER}" > "${CHK}" 2>&1
+   rclone lsf --files-only --recursive --min-age="${MIN_AGE_FILE}" --format="p" --order-by="modtime" --config="${CONFIG}" --exclude-from="${EXCLUDE}" "${DLFOLDER}" > "${CHK}" 2>&1
    if [ `cat ${CHK} | wc -l` -gt 0 ]; then
       log "STARTING RCLONE MOVE from ${SRC} to REMOTE"
       cat "${CHK}" | while IFS=$'\n' read -r -a UPP; do
@@ -103,8 +103,8 @@ while true;do
          USERAGENT=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
          touch "${LOGFILE}/${FILE}.txt"
             echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" >"${START}/${FILE}.json"
-         rclone move "${DLFOLDER}/${UPP[@]}" "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --config=${CONFIG} --stats=1s --checkers=32 --use-mmap --no-traverse --check-first --delete-empty-src-dirs \
-           --drive-chunk-size=64M --min-age=${MIN_AGE_FILE} --log-level=${LOG_LEVEL} --user-agent=${USERAGENT} ${BWLIMIT} --log-file="${LOGFILE}/${FILE}.txt" --tpslimit 50 --tpslimit-burst 50
+         rclone move "${DLFOLDER}/${UPP[@]}" "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --config="${CONFIG}" --stats=1s --checkers=32 --use-mmap --no-traverse --check-first --delete-empty-src-dirs \
+           --drive-chunk-size=64M --min-age="${MIN_AGE_FILE}" --log-level="${LOG_LEVEL}" --user-agent="${USERAGENT}" ${BWLIMIT} --log-file="${LOGFILE}/${FILE}.txt" --tpslimit 50 --tpslimit-burst 50
          ENDZ=$(date +%s)
             echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" >"${DONE}/${FILE}.json"
          sleep 5
