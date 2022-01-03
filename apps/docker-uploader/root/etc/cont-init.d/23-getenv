@@ -49,7 +49,7 @@ chown -cR abc:abc /app /system/* > /dev/null
 chmod -cR 755 /app /system/* > /dev/null
 sample=/app/uploader/.sample.uploader.env
 uploaderenv=/system/uploader/uploader.env
-[[ -f "${uploaderenv}" ]] && rm -f "${uploaderenv}"
+if [[ -f "${uploaderenv}" ]]; then rm -f "${uploaderenv}";fi
 cat "${sample}" | while read line; do
     echo -e "$line" >> "${uploaderenv}"
 done
