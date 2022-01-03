@@ -15,44 +15,42 @@
 function log() {
      echo "${1}"
 }
-UAGENT=${UAGENT:-null}
-if [[ ${UAGENT} == 'null' ]]; then
-   UAGENT=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-   USERAGENT=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-else
-   UAGENT=${UAGENT}
-   USERAGENT=${USERAGENT}
-fi
-## Create folders
-mkdir -p /system/uploader/.keys
 
+addgroup -S abc
+adduser -S abc -G abc
+PGID=${PGID:-1000}
+PUID=${PUID:-1000}
+groupmod -o -g "$PGID" abc
+usermod -o -u "$PUID" abc
+
+echo "----------------------------------------------------
+
+ ____             _                                 
+|  _ \  ___   ___| | _____  ___ _ ____   _____ _ __ 
+| | | |/ _ \ / __| |/ / __|/ _ \ '__\ \ / / _ \ '__|
+| |_| | (_) | (__|   <\__ \  __/ |   \ V /  __/ |   
+|____/ \___/ \___|_|\_\___/\___|_|    \_/ \___|_|
+
+
+----------------------------------------------------"
+
+log "-> Setting Permissions || start <-"
+rm -rf /system/uploader/.keys/{usedupload,lastday} \
+       /app/uploader/{pid,discord} \
+       /system/uploader/vfsforget/ 
+
+mkdir -p /system/uploader/.keys \
+         /system/uploader/{logs,json} \
+         /system/uploader/json/{done,upload}
+
+global=/mnt/downloads
+find ${global} -type f -name '*.lck' -delete
+chown -cR abc:abc /app /system/* > /dev/null
+chmod -cR 755 /app /system/* > /dev/null
 sample=/app/uploader/.sample.uploader.env
 uploaderenv=/system/uploader/uploader.env
-if [[ -f ${uploaderenv} ]]; then
-   source $uploaderenv
-   echo -e "#-------------------------------------------------------
-#   UPLOADER ENVIROMENTS
-#-------------------------------------------------------
-
-## USER VALUES
-PUID=${PUID:-1000}
-PGID=${PGID:-1000}
-TIMEZONE=${TZ:-UTC}
-
-## RCLONE - SETTINGS
-BANDWITHLIMIT=${BANDWITHLIMIT:-null}
-LOG_LEVEL=${LOG_LEVEL:-INFO}
-TRANSFERS=${TRANSFERS:-4}
-USERAGENT=${USERAGENT}
-
-## USER - SETTINGS
-DRIVEUSEDSPACE=${DRIVEUSEDSPACE:-null}
-MIN_AGE_UPLOAD=${MIN_AGE_UPLOAD:-5}
-#-------------------------------------------------------
-#   UPLOADER ENVIROMENTS
-#-------------------------------------------------------" >$uploaderenv
-else
-   cp ${sample} ${uploaderenv}
-fi
-
+if [[ -f "${uploaderenv}" ]]; then rm -f "${uploaderenv}";fi
+cat "${sample}" | while read line; do
+    echo -e "$line" >> "${uploaderenv}"
+done
 #E-O-F

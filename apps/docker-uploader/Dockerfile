@@ -1,6 +1,4 @@
 #####################################
-# Original coder PhysK              #
-#####################################
 # All rights reserved.              #
 # started from Zero                 #
 # Docker owned dockserver           #
@@ -13,7 +11,7 @@
 # NO CODE MIRRORING IS ALLOWED      #
 #####################################
 ARG VERSION
-FROM docker.dockserver.io/dockserver/docker-alpine:latest
+FROM ghcr.io/linuxserver/baseimage-alpine:${VERSION}
 VOLUME [ "/system" ]
 COPY ./apps/docker-uploader/root/ /
 ENTRYPOINT [ "/init" ]
