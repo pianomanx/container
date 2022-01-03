@@ -36,6 +36,7 @@ USERAGENT=""
 
 mkdir -p "${LOGFILE}" "${START}" "${DONE}" 
 find "${BASE}" -type f -name '*.log' -delete
+find "${BASE}" -type f -name '*.txt' -delete
 find "${START}" -type f -name '*.json' -delete
 
 if `rclone config show --config=${CONFIG} | grep ":/encrypt" &>/dev/null`;then
@@ -97,8 +98,8 @@ while true;do
          DIR=$(dirname "${UPP[@]}" | sed "s#${DLFOLDER}/${MOVE}##g")
          STARTZ=$(date +%s)
          USED=${USED}
-         SIZE=`eval stat -c %s "${DLFOLDER}/${UPP[@]}" | numfmt --to=iec-i --suffix=B --padding=7`
-         UPFILE=`eval rclone size "${DLFOLDER}/${UPP[@]}" --config="${CONFIG}" --json | cut -d ":" -f3 | cut -d "}" -f1`
+         SIZE=$(stat -c %s "${DLFOLDER}/${UPP[@]}" | numfmt --to=iec-i --suffix=B --padding=7)
+         UPFILE=$(rclone size "${DLFOLDER}/${UPP[@]}" --config="${CONFIG}" --json | cut -d ":" -f3 | cut -d "}" -f1)
          touch "${LOGFILE}/${FILE}.txt"
             echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" > "${START}/${FILE}.json"
          rclone move "${DLFOLDER}/${UPP[@]}" "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --config="${CONFIG}" --stats=1s --checkers=32 --use-mmap --no-traverse --check-first --delete-empty-src-dirs \
