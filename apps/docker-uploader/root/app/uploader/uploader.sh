@@ -18,19 +18,20 @@ function log() {
 if pidof -o %PPID -x "$0"; then exit 1; fi
 
 log "dockserver.io Multi-Thread Uploader started"
-BASE=/system/uploader
-CONFIG=/system/servicekeys/rclonegdsa.conf
-KEYLOCAL=/system/servicekeys/keys/
-LOGFILE=/system/uploader/logs
-START=/system/uploader/json/upload
-DONE=/system/uploader/json/done
-CHK=/system/uploader/logs/check.log
-EXCLUDE=/system/uploader/rclone.exclude
-MAXT=730
-CRYPTED=""
-DIFF=0
-MINSA=1
-BWLIMIT=""
+
+export BASE=/system/uploader \
+CONFIG=/system/servicekeys/rclonegdsa.conf \
+KEYLOCAL=/system/servicekeys/keys/ \
+LOGFILE=/system/uploader/logs \
+START=/system/uploader/json/upload \
+DONE=/system/uploader/json/done \
+CHK=/system/uploader/logs/check.log \
+EXCLUDE=/system/uploader/rclone.exclude \
+MAXT=730 \
+MINSA=1 \
+DIFF=0 \
+CRYPTED="" \
+BWLIMIT="" \
 USERAGENT=""
 
 mkdir -p "${LOGFILE}" "${START}" "${DONE}" 
@@ -74,6 +75,8 @@ if [[ -f "/system/uploader/.keys/lasteservicekey" ]]; then
 else
    USED=$MINSA && echo "${MINSA}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
 fi
+AGENT=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
+export USERAGENT=$AGENT
 
 while true;do 
    source /system/uploader/uploader.env
@@ -89,7 +92,7 @@ while true;do
    log "CHECKING LOCAL SOURCE FOLDERS"
    rclone lsf --files-only --recursive --min-age="${MIN_AGE_FILE}" --format="p" --order-by="modtime" --config="${CONFIG}" --exclude-from="${EXCLUDE}" "${DLFOLDER}" > "${CHK}" 2>&1
    if [ `cat ${CHK} | wc -l` -gt 0 ]; then
-      log "STARTING RCLONE MOVE from ${SRC} to REMOTE"
+      log "STARTING RCLONE MOVE from ${DLFOLDER} to REMOTE"
       cat "${CHK}" | while IFS=$'\n' read -r -a UPP; do
          MOVE=${MOVE:-/}
          FILE=$(basename "${UPP[@]}")
@@ -97,7 +100,6 @@ while true;do
          SIZE=$(stat -c %s "${DLFOLDER}/${UPP[@]}" | numfmt --to=iec-i --suffix=B --padding=7)
          STARTZ=$(date +%s)
          USED=${USED}
-         USERAGENT=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
          touch "${LOGFILE}/${FILE}.txt"
             echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" > "${START}/${FILE}.json"
          rclone move "${DLFOLDER}/${UPP[@]}" "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --config="${CONFIG}" --stats=1s --checkers=32 --use-mmap --no-traverse --check-first --delete-empty-src-dirs \
@@ -122,7 +124,7 @@ while true;do
          rm -f "${START}/${FILE}.json" "${LOGFILE}/${FILE}.txt" && chmod 755 "${DONE}/${FILE}.json"
          if [ $DRIVEUSEDSPACE \> $LCT ]; then rm -rf "${CHK}" && sleep 5 && break;fi
       done
-      log "MOVE FINISHED from ${SRC} to REMOTE"
+      log "MOVE FINISHED from ${DLFOLDER} to REMOTE"
    else
       log "MOVE skipped || less then 1 file" && sleep 180
    fi
