@@ -29,7 +29,7 @@ CHK=/system/uploader/logs/check.log \
 EXCLUDE=/system/uploader/rclone.exclude \
 MAXT=730 \
 MINSA=1 \
-DIFF=0 \
+DIFF=1 \
 CRYPTED="" \
 BWLIMIT="" \
 USERAGENT=""
@@ -95,33 +95,33 @@ while true;do
          MOVE=${MOVE:-/}
          FILE=$(basename "${UPP[@]}")
          DIR=$(dirname "${UPP[@]}" | sed "s#${DLFOLDER}/${MOVE}##g")
-         ####SIZE=$(stat -c %s "${DLFOLDER}/${UPP[@]}" | numfmt --to=iec-i --suffix=B --padding=7)
          STARTZ=$(date +%s)
          USED=${USED}
-         UPFILE=$(rclone size "${DLFOLDER}/${UPP[@]}" --config="${CONFIG}" --json | cut -d ":" -f3 | cut -d "}" -f1)
+         SIZE=`eval stat -c %s "${DLFOLDER}/${UPP[@]}" | numfmt --to=iec-i --suffix=B --padding=7`
+         UPFILE=`eval rclone size "${DLFOLDER}/${UPP[@]}" --config="${CONFIG}" --json | cut -d ":" -f3 | cut -d "}" -f1`
          touch "${LOGFILE}/${FILE}.txt"
-            echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${UPFILE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" > "${START}/${FILE}.json"
+            echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" > "${START}/${FILE}.json"
          rclone move "${DLFOLDER}/${UPP[@]}" "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --config="${CONFIG}" --stats=1s --checkers=32 --use-mmap --no-traverse --check-first --delete-empty-src-dirs \
            --drive-chunk-size=64M --min-age="${MIN_AGE_FILE}" --log-level="${LOG_LEVEL}" --user-agent="${USERAGENT}" ${BWLIMIT} --log-file="${LOGFILE}/${FILE}.txt" --tpslimit 50 --tpslimit-burst 50
          ENDZ=$(date +%s)
-            echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${UPFILE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" > "${DONE}/${FILE}.json"
-         rm -rf "${LOGFILE}/${FILE}.txt" && rm -rf "${START}/${FILE}.json" && chmod 755 "${DONE}/${FILE}.json"
-         ####UPFILE=`rclone size ${KEY}$[USED]${CRYPTED}:/"${DIR}" --json | cut -d ":" -f3 | cut -d "}" -f1`
+            echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" > "${DONE}/${FILE}.json"
          FILEGB=$(( $UPFILE/1024**3 ))
          DIFF=$(( $DIFF+$FILEGB ))
+         LCT=$(df --output=pcent ${DLFOLDER} | tail -n 1 | cut -d'%' -f1)
             if [ $DRIVEUSEDSPACE \> $LCT ]; then
-               rm -rf "${CHK}" && DIFF=0 && sleep 5 && break
-            elif [[ $DIFF -gt $MAXT ]]; then 
+               rm -rf "${CHK}" && DIFF=1 && sleep 5 && break
+            elif [ $DIFF \> $MAXT ]; then 
                USED=$(( $USED+$MINSA ))
-               if [[ "${USED}" -eq "${MAXSA}" ]]; then USED=$MINSA && DIFF=0 && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null ;fi
-            elif [[ $MAXT -gt $DIFF ]]; then
+               if [[ "${USED}" -eq "${MAXSA}" ]]; then USED=$MINSA && DIFF=1 && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null ;fi
+            elif [ $MAXT \> $DIFF ]; then
                tail -n 20 "${LOGFILE}/${FILE}.txt" | grep --line-buffered 'googleapi: Error' | while read -r; do
                    USED=$(( $USED+$MINSA )) && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
-                   if [[ "${USED}" -eq "${MAXSA}" ]];then USED=$MINSA && DIFF=0 && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null ;fi
+                   if [[ "${USED}" -eq "${MAXSA}" ]];then USED=$MINSA && DIFF=1 && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null ;fi
                done
             else
                DIFF=$DIFF
             fi
+         rm -rf "${LOGFILE}/${FILE}.txt" && rm -rf "${START}/${FILE}.json" && chmod 755 "${DONE}/${FILE}.json"
       done
       log "MOVE FINISHED from ${DLFOLDER} to REMOTE"
    else
