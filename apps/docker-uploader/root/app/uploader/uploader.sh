@@ -75,8 +75,6 @@ if [[ -f "/system/uploader/.keys/lasteservicekey" ]]; then
 else
    USED=$MINSA && echo "${MINSA}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
 fi
-AGENT=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
-export USERAGENT=$AGENT
 
 while true;do 
    source /system/uploader/uploader.env
