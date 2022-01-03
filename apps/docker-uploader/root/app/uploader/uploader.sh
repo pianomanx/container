@@ -18,19 +18,20 @@ function log() {
 if pidof -o %PPID -x "$0"; then exit 1; fi
 
 log "dockserver.io Multi-Thread Uploader started"
-BASE=/system/uploader
-CONFIG=/system/servicekeys/rclonegdsa.conf
-KEYLOCAL=/system/servicekeys/keys/
-LOGFILE=/system/uploader/logs
-START=/system/uploader/json/upload
-DONE=/system/uploader/json/done
-CHK=/system/uploader/logs/check.log
-EXCLUDE=/system/uploader/rclone.exclude
-MAXT=730
-CRYPTED=""
-DIFF=0
-MINSA=1
-BWLIMIT=""
+
+export BASE=/system/uploader \
+CONFIG=/system/servicekeys/rclonegdsa.conf \
+KEYLOCAL=/system/servicekeys/keys/ \
+LOGFILE=/system/uploader/logs \
+START=/system/uploader/json/upload \
+DONE=/system/uploader/json/done \
+CHK=/system/uploader/logs/check.log \
+EXCLUDE=/system/uploader/rclone.exclude \
+MAXT=730 \
+MINSA=1 \
+DIFF=0 \
+CRYPTED="" \
+BWLIMIT="" \
 USERAGENT=""
 
 mkdir -p "${LOGFILE}" "${START}" "${DONE}" 
