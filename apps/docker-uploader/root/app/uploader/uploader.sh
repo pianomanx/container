@@ -108,8 +108,8 @@ while true;do
          FILEGB=$(( $UPFILE/1024**3 ))
          DIFF=$(( $DIFF+$FILEGB ))
          LCT=$(df --output=pcent ${DLFOLDER} | tail -n 1 | cut -d'%' -f1)
-            if [ $DRIVEUSEDSPACE \> $LCT ]; then
-               rm -rf "${CHK}" && DIFF=1 && sleep 5 && break
+            if [[ "${DRIVEUSEDSPACE}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then
+               if [ $DRIVEUSEDSPACE \> $LCT ]; then rm -rf "${CHK}" && DIFF=1 && sleep 5 && break; fi
             elif [ $DIFF \> $MAXT ]; then 
                USED=$(( $USED+$MINSA ))
                if [[ "${USED}" -eq "${MAXSA}" ]]; then USED=$MINSA && DIFF=1 && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null ;fi
