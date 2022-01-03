@@ -89,7 +89,7 @@ while true;do
    log "CHECKING LOCAL SOURCE FOLDERS"
    rclone lsf --files-only --recursive --min-age="${MIN_AGE_FILE}" --format="p" --order-by="modtime" --config="${CONFIG}" --exclude-from="${EXCLUDE}" "${DLFOLDER}" > "${CHK}" 2>&1
    if [ `cat ${CHK} | wc -l` -gt 0 ]; then
-      log "STARTING RCLONE MOVE from ${SRC} to REMOTE"
+      log "STARTING RCLONE MOVE from ${DLFOLDER} to REMOTE"
       cat "${CHK}" | while IFS=$'\n' read -r -a UPP; do
          MOVE=${MOVE:-/}
          FILE=$(basename "${UPP[@]}")
@@ -122,7 +122,7 @@ while true;do
          rm -f "${START}/${FILE}.json" "${LOGFILE}/${FILE}.txt" && chmod 755 "${DONE}/${FILE}.json"
          if [ $DRIVEUSEDSPACE \> $LCT ]; then rm -rf "${CHK}" && sleep 5 && break;fi
       done
-      log "MOVE FINISHED from ${SRC} to REMOTE"
+      log "MOVE FINISHED from ${DLFOLDER} to REMOTE"
    else
       log "MOVE skipped || less then 1 file" && sleep 180
    fi
