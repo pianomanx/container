@@ -88,10 +88,8 @@ while true;do
          if [ $DRIVEUSEDSPACE \> $LCT ]; then sleep 60 && continue;else sleep 5 && break;fi
       done
    fi
-   log "CHECKING LOCAL SOURCE FOLDERS"
    rclone lsf --files-only --recursive --min-age="${MIN_AGE_FILE}" --format="p" --order-by="modtime" --config="${CONFIG}" --exclude-from="${EXCLUDE}" "${DLFOLDER}" > "${CHK}" 2>&1
    if [ `cat ${CHK} | wc -l` -gt 0 ]; then
-      log "STARTING RCLONE MOVE from ${DLFOLDER} to REMOTE"
       cat "${CHK}" | while IFS=$'\n' read -r -a UPP; do
          MOVE=${MOVE:-/}
          FILE=$(basename "${UPP[@]}")
@@ -99,11 +97,16 @@ while true;do
          STARTZ=$(date +%s)
          USED=${USED}
          SIZE=$(stat -c %s "${DLFOLDER}/${UPP[@]}" | numfmt --to=iec-i --suffix=B --padding=7)
+         while true;do
+            SUMSTART=$(stat -c %s "${DLFOLDER}/${UPP[@]}") && sleep 5 && SUMTEST=$(stat -c %s "${DLFOLDER}/${UPP[@]}")
+            if [[ "$SUMSTART" -eq "$SUMTEST" ]]; then sleep 1 && break; else sleep 5 && continue;fi
+         done
          UPFILE=$(rclone size "${DLFOLDER}/${UPP[@]}" --config="${CONFIG}" --json | cut -d ":" -f3 | cut -d "}" -f1)
          touch "${LOGFILE}/${FILE}.txt"
             echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" > "${START}/${FILE}.json"
-         rclone move "${DLFOLDER}/${UPP[@]}" "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --config="${CONFIG}" --stats=1s --checkers=32 --use-mmap --no-traverse --check-first --delete-empty-src-dirs \
-           --drive-chunk-size=64M --min-age="${MIN_AGE_FILE}" --log-level="${LOG_LEVEL}" --user-agent="${USERAGENT}" ${BWLIMIT} --log-file="${LOGFILE}/${FILE}.txt" --tpslimit 50 --tpslimit-burst 50
+         cd "${DLFOLDER}/${DIR}"
+         rclone move "${FILE}" "${KEY}$[USED]${CRYPTED}:/${DIR}/" --config="${CONFIG}" --stats=1s --checkers=32 --use-mmap --no-traverse --check-first \
+          --drive-chunk-size=64M --log-level="${LOG_LEVEL}" --user-agent="${USERAGENT}" ${BWLIMIT} --log-file="${LOGFILE}/${FILE}.txt" --tpslimit 50 --tpslimit-burst 50
          ENDZ=$(date +%s)
             echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" > "${DONE}/${FILE}.json"
          FILEGB=$(( $UPFILE/1024**3 ))
