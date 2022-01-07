@@ -19,19 +19,20 @@ if pidof -o %PPID -x "$0"; then exit 1; fi
 
 log "dockserver.io Multi-Thread Uploader started"
 
-export BASE=/system/uploader \
-CONFIG=/system/servicekeys/rclonegdsa.conf \
-KEYLOCAL=/system/servicekeys/keys/ \
-LOGFILE=/system/uploader/logs \
-START=/system/uploader/json/upload \
-DONE=/system/uploader/json/done \
-CHK=/system/uploader/logs/check.log \
-EXCLUDE=/system/uploader/rclone.exclude \
-MAXT=730 \
-MINSA=1 \
-DIFF=1 \
-CRYPTED="" \
-BWLIMIT="" \
+BASE=/system/uploader
+CONFIG=/system/servicekeys/rclonegdsa.conf
+KEYLOCAL=/system/servicekeys/keys/
+LOGFILE=/system/uploader/logs
+START=/system/uploader/json/upload
+DONE=/system/uploader/json/done
+CHK=/system/uploader/logs/check.log
+EXCLUDE=/system/uploader/rclone.exclude
+LTKEY=/system/uploader/.keys/last
+MAXT=730
+MINSA=1
+DIFF=1
+CRYPTED=""
+BWLIMIT=""
 USERAGENT=""
 
 mkdir -p "${LOGFILE}" "${START}" "${DONE}" 
@@ -69,13 +70,10 @@ EOF
 fi
 
 ARRAY=$(ls -1v ${KEYLOCAL} | wc -l )
-MAXSA=$(expr ${#ARRAY[@]})
-if [[ -f "/system/uploader/.keys/lasteservicekey" ]]; then
-   USED=$(cat /system/uploader/.keys/lasteservicekey)
-   echo "${USED}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
-else
-   USED=$MINSA && echo "${MINSA}" | tee /system/uploader/.keys/lasteservicekey > /dev/null
-fi
+MAXSA=${ARRAY}
+USED=$(cat ${LTKEY})
+if [[ "${USED}" != "" ]]; then USED=${USED} && echo "${USED}" > "${LTKEY}" ; else USED=${MINSA} && echo "${MINSA}" > "${LTKEY}" ; fi
+if [[ "${USED}" -eq "${MAXSA}" ]]; then USED=$MINSA && DIFF=1 && echo "${USED}" > "${LTKEY}" ; fi
 
 while true;do 
    source /system/uploader/uploader.env
@@ -83,15 +81,13 @@ while true;do
    if [[ "${BANDWITHLIMIT}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then BWLIMIT="--bwlimit=${BANDWITHLIMIT}" ;fi
    if [[ "${DRIVEUSEDSPACE}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then
       source /system/uploader/uploader.env
-      while true;do 
+      while true; do 
          LCT=$(df --output=pcent ${DLFOLDER} | tail -n 1 | cut -d'%' -f1)
-         if [ $DRIVEUSEDSPACE \> $LCT ]; then sleep 60 && continue;else sleep 5 && break;fi
+         if [ $DRIVEUSEDSPACE \> $LCT ]; then sleep 60 && continue ; else sleep 5 && break ; fi
       done
    fi
-   log "CHECKING LOCAL SOURCE FOLDERS"
    rclone lsf --files-only --recursive --min-age="${MIN_AGE_FILE}" --format="p" --order-by="modtime" --config="${CONFIG}" --exclude-from="${EXCLUDE}" "${DLFOLDER}" > "${CHK}" 2>&1
    if [ `cat ${CHK} | wc -l` -gt 0 ]; then
-      log "STARTING RCLONE MOVE from ${DLFOLDER} to REMOTE"
       cat "${CHK}" | while IFS=$'\n' read -r -a UPP; do
          MOVE=${MOVE:-/}
          FILE=$(basename "${UPP[@]}")
@@ -99,25 +95,28 @@ while true;do
          STARTZ=$(date +%s)
          USED=${USED}
          SIZE=$(stat -c %s "${DLFOLDER}/${UPP[@]}" | numfmt --to=iec-i --suffix=B --padding=7)
+         while true;do
+            SUMSTART=$(stat -c %s "${DLFOLDER}/${UPP[@]}") && sleep 5 && SUMTEST=$(stat -c %s "${DLFOLDER}/${UPP[@]}")
+            if [[ "$SUMSTART" -eq "$SUMTEST" ]]; then sleep 1 && break ; else sleep 5 && continue ; fi
+         done
          UPFILE=$(rclone size "${DLFOLDER}/${UPP[@]}" --config="${CONFIG}" --json | cut -d ":" -f3 | cut -d "}" -f1)
          touch "${LOGFILE}/${FILE}.txt"
             echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" > "${START}/${FILE}.json"
-         rclone move "${DLFOLDER}/${UPP[@]}" "${KEY}$[USED]${CRYPTED}:/${UPP[@]}" --config="${CONFIG}" --stats=1s --checkers=32 --use-mmap --no-traverse --check-first --delete-empty-src-dirs \
-           --drive-chunk-size=64M --min-age="${MIN_AGE_FILE}" --log-level="${LOG_LEVEL}" --user-agent="${USERAGENT}" ${BWLIMIT} --log-file="${LOGFILE}/${FILE}.txt" --tpslimit 50 --tpslimit-burst 50
+         rclone move "${DLFOLDER}/${UPP[@]}" "${KEY}$[USED]${CRYPTED}:/${DIR}/" --config="${CONFIG}" --stats=1s --checkers=32 --use-mmap --no-traverse --check-first \
+          --drive-chunk-size=64M --log-level="${LOG_LEVEL}" --user-agent="${USERAGENT}" ${BWLIMIT} --log-file="${LOGFILE}/${FILE}.txt" --tpslimit 50 --tpslimit-burst 50
          ENDZ=$(date +%s)
             echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" > "${DONE}/${FILE}.json"
          FILEGB=$(( $UPFILE/1024**3 ))
          DIFF=$(( $DIFF+$FILEGB ))
          LCT=$(df --output=pcent ${DLFOLDER} | tail -n 1 | cut -d'%' -f1)
             if [[ "${DRIVEUSEDSPACE}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then
-               if [ $DRIVEUSEDSPACE \> $LCT ]; then rm -rf "${CHK}" && DIFF=1 && sleep 5 && break; fi
-            elif [ $DIFF \> $MAXT ]; then 
-               USED=$(( $USED+$MINSA ))
-               if [[ "${USED}" -eq "${MAXSA}" ]]; then USED=$MINSA && DIFF=1 && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null ;fi
-            elif [ $MAXT \> $DIFF ]; then
+               if [ $DRIVEUSEDSPACE \> $LCT ]; then rm -rf "${CHK}" && DIFF=1 && sleep 5 && break ; fi
+            fi
+            if [[ "${USED}" -eq "${MAXSA}" ]]; then USED=$MINSA && DIFF=1 && echo "${USED}" > "${LTKEY}" ; fi
+            if [ $MAXT \> $DIFF ]; then
                tail -n 20 "${LOGFILE}/${FILE}.txt" | grep --line-buffered 'googleapi: Error' | while read -r; do
-                   USED=$(( $USED+$MINSA )) && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null
-                   if [[ "${USED}" -eq "${MAXSA}" ]];then USED=$MINSA && DIFF=1 && echo "${USED}" | tee "/system/uploader/.keys/lasteservicekey" > /dev/null ;fi
+                   USED=$(( $USED+$MINSA ))
+                   if [[ "${USED}" -eq "${MAXSA}" ]];then USED=$MINSA && DIFF=1 && echo "${USED}" > "${LTKEY}" ; else echo "${USED}" > "${LTKEY}" ; fi
                done
             else
                DIFF=$DIFF
