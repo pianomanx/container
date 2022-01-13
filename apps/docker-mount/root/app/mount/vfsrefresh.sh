@@ -16,6 +16,10 @@
 # shellcheck disable=SC2002
 # shellcheck disable=SC2006
 
+if pidof -o %PPID -x "$(basename $0)"; then
+   exit 1
+fi
+
 source /system/mount/mount.env
 source /app/mount/function.sh
 
