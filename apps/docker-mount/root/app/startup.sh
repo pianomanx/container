@@ -18,6 +18,9 @@
 function log() {
    echo "[Mount] ${1}"
 }
+if pidof -o %PPID -x "$(basename $0)"; then
+   exit 1
+fi
 
 source /system/mount/mount.env
 source /app/mount/function.sh
