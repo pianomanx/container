@@ -15,6 +15,11 @@
 function log() {
    echo "[ROTATION] ${1}"
 }
+
+if pidof -o %PPID -x "$(basename $0)"; then
+   exit 1
+fi
+
 source /app/mount/function.sh
 
 if pidof -o %PPID -x "$0"; then
