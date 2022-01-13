@@ -16,6 +16,10 @@
 # shellcheck disable=SC2002
 # shellcheck disable=SC2006
 ## GLOBAL SETTINGS
+if pidof -o %PPID -x "$(basename $0)"; then
+   exit 1
+fi
+
 SMOUNT=/app/cleanup
 if [[ -f "${SMOUNT}/nzbcleanup.sh" ]]; then chmod 777 ${SMOUNT}/nzbcleanup.sh; fi
 
