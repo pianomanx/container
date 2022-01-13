@@ -13,8 +13,8 @@
 # NO CODE MIRRORING IS ALLOWED      #
 #####################################
 
-if pidof -o %PPID -x "$0"; then
-    exit 1
+if pidof -o %PPID -x "$(basename $0)"; then
+   exit 1
 fi
 
 source /system/mount/mount.env
