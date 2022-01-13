@@ -15,7 +15,9 @@ function log() {
     echo "${1}"
 }
 
-if pidof -o %PPID -x "$0"; then exit 1; fi
+if pidof -o %PPID -x "$(basename $0)"; then
+   exit 1
+fi
 
 log "dockserver.io Multi-Thread Uploader started"
 
