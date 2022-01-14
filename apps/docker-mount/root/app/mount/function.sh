@@ -176,19 +176,20 @@ function rcx() {
 
 echo -e "#!/usr/bin/with-contenv bash
 
- rclone rc mount/mount \
-     --rc-user=${RC_USER} \
-     --rc-pass=${RC_PASSWORD} \
-     --config=${CONFIG} \
-     --cache-dir=${TMPRCLONE} \
-     fs=remote: \
-     mountPoint=${REMOTE} \
-     mountType=mount \
+ rclone rc mount/mount \\
+     --rc-user=${RC_USER} \\
+     --rc-pass=${RC_PASSWORD} \\
+     --rc-addr=localhost:${RC_ADDRESS} \\
+     --config=${CONFIG} \\
+     --cache-dir=${TMPRCLONE} \\
+     fs=union: \\
+     mountPoint=${REMOTE} \\
+     mountType=mount \\
      logOpt='{
      "File": "/system/mount/logs/rclone-union.log",
      "Format": "date,time",
      "LogSystemdSupport": false
-     }' \
+     }' \\
      mainOpt='{
      "BufferSize": ${BUFFER_SIZE},
      "Checkers": 32,
@@ -199,7 +200,7 @@ echo -e "#!/usr/bin/with-contenv bash
      "UseServerModTime": true,
      "TrackRenames": true,
      "UserAgent": "${UAGENT}"
-     }' \
+     }' \\
      vfsOpt='{
      "CacheMaxAge": ${VFS_CACHE_MAX_AGE},
      "CacheMaxSize": ${VFS_CACHE_MAX_SIZE},
@@ -216,7 +217,7 @@ echo -e "#!/usr/bin/with-contenv bash
      "NoSeek": true,
      "PollInterval": ${POLL_INTERVAL},
      "Umask": ${UMASK}
-     }' \
+     }' \\
      mountOpt='{
      "AllowNonEmpty": true,
      "AllowOther": true,
