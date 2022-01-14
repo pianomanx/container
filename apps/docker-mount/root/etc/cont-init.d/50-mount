@@ -12,6 +12,9 @@
 # NO REBRANDING IS ALLOWED          #
 # NO CODE MIRRORING IS ALLOWED      #
 #####################################
+function log() {
+   echo "[Mount] ${1}"
+}
 
 SDOWN=/mnt/downloads
 SMOUNT=/app/mount
@@ -20,7 +23,6 @@ TMPRCLONE=${TMPRCLONE}
 LOGS=/system/mount/logs
 JSONDIR=/system/mount/keys
 CONFIG=/app/rclone/rclone.conf
-ARRAY=$(ls -l ${JSONDIR} | egrep -c '*.json')
 CSV=/system/mount/drive.csv
 ENDCONFIG=/app/rclone/rclone.conf
 SOURCECONFIG=/system/rclone/rclone.conf
@@ -53,7 +55,7 @@ cat /app/requirements.txt | while IFS=$'\n' read -ra myArray; do
 done
 
 cat /app/requirements-virtual.txt | while IFS=$'\n' read -ra myArray; do 
-   apk add --update --quiet --no-cache --no-progress --virtual .build-deps ${myArray[@]}
+   apk add --update --quiet --no-cache --no-progress ${myArray[@]}
 done
 
 mkdir -p /app/rclone /system/mount/{logs,env,rclone,keys}
@@ -197,7 +199,7 @@ if [[ ! -d "/mnt/downloads" ]]; then mkdir -p ${SDOWN} && chown -hR abc:abc ${SD
 if [[ -d "/mnt/remotes" ]]; then fusermount3 -uzq /mnt/remotes && rm -rf /mnt/remotes ; fi
 
 source /system/mount/mount.env
-
+ARRAY=$(ls -A ${JSONDIR})
 if [[ ${ARRAY} != 0 ]]; then
    if [[ ! -d "/system/mount/.keys" ]]; then
       mkdir -p /system/mount/.keys/ && chown -cR 1000:1000 /system/mount/.keys/
