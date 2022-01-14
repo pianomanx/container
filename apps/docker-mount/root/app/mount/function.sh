@@ -174,59 +174,52 @@ function rcx() {
 
    source /system/mount/mount.env
 
-echo -e "#!/usr/bin/with-contenv bash
-
- rclone rc mount/mount \\
-     --rc-user=${RC_USER} \\
-     --rc-pass=${RC_PASSWORD} \\
-     --rc-addr=localhost:${RC_ADDRESS} \\
-     --config=${CONFIG} \\
-     --cache-dir=${TMPRCLONE} \\
-     fs=union: \\
-     mountPoint=${REMOTE} \\
-     mountType=mount \\
+ rclone rc mount/mount \
+     --rc-user=${RC_USER} \
+     --rc-pass=${RC_PASSWORD} \
+     --rc-addr=localhost:${RC_ADDRESS} \
+     --config=${CONFIG} --cache-dir=${TMPRCLONE} \
+     fs=union: mountPoint=${REMOTE} mountType=mount \
      logOpt='{
      "File": "/system/mount/logs/rclone-union.log",
      "Format": "date,time",
      "LogSystemdSupport": false
-     }' \\
+     }' \
      mainOpt='{
-     "BufferSize": ${BUFFER_SIZE},
+     "BufferSize": '${BUFFER_SIZE}',
      "Checkers": 32,
-     "TPSLimit": ${TPSLIMIT},
-     "TPSLimitBurst": ${TPSBURST},
+     "TPSLimit": '${TPSLIMIT}',
+     "TPSLimitBurst": '${TPSBURST}',
      "UseListR": true,
      "UseMmap": true,
      "UseServerModTime": true,
      "TrackRenames": true,
-     "UserAgent": "${UAGENT}"
-     }' \\
+     "UserAgent": '${UAGENT}'
+     }' \
      vfsOpt='{
-     "CacheMaxAge": ${VFS_CACHE_MAX_AGE},
-     "CacheMaxSize": ${VFS_CACHE_MAX_SIZE},
+     "CacheMaxAge": '${VFS_CACHE_MAX_AGE}',
+     "CacheMaxSize": '${VFS_CACHE_MAX_SIZE}',
      "CacheMode": 3,
-     "CachePollInterval": ${VFS_CACHE_POLL_INTERVAL},
+     "CachePollInterval": '${VFS_CACHE_POLL_INTERVAL}',
      "CaseInsensitive": false,
-     "ChunkSize": ${VFS_READ_CHUNK_SIZE},
-     "ChunkSizeLimit": ${VFS_READ_CHUNK_SIZE_LIMIT},
-     "DirCacheTime": ${DIR_CACHE_TIME},
-     "GID": ${PGID},
-     "UID": ${PUID},
+     "ChunkSize": '${VFS_READ_CHUNK_SIZE}',
+     "ChunkSizeLimit": '${VFS_READ_CHUNK_SIZE_LIMIT}',
+     "DirCacheTime": '${DIR_CACHE_TIME}',
+     "GID": 1000,
+     "UID": 1000,
      "NoChecksum": false,
      "NoModTime": true,
      "NoSeek": true,
-     "PollInterval": ${POLL_INTERVAL},
-     "Umask": ${UMASK}
-     }' \\
+     "PollInterval": '${POLL_INTERVAL}',
+     "Umask": 022
+     }' \
      mountOpt='{
      "AllowNonEmpty": true,
      "AllowOther": true,
      "AsyncRead": true,
      "Daemon": true,
      "AllowOther": true
-     }'" > /tmp/rcunion.sh
-
-bash -xv /tmp/rcunion.sh
+     }'
 
 }
 
