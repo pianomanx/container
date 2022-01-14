@@ -318,20 +318,10 @@ if ! `rclone config show --config=${CONFIG} | grep "local" &>/dev/null`;then
    echo -n "download:/mnt/downloads:RW " >>${value}
 fi
 
-ADDITIONAL_MOUNT=${ADDITIONAL_MOUNT}
-if [[ ${ADDITIONAL_MOUNT} != 'null' ]]; then
-   if [[ ! -d ${ADDITIONAL_MOUNT} ]]; then mkdir -p ${ADDITIONAL_MOUNT}; fi
-   if [[ -d ${ADDITIONAL_MOUNT} ]]; then fusermount3 -uzq ${ADDITIONAL_MOUNT}; fi
-   if ! `rclone config show --config=${CONFIG} | grep "ADDITIONAL" &>/dev/null`;then
-      rclone config create ADDITIONAL local nunc 'true' --config=${CONFIG}
-   echo -n "ADDITIONAL:${ADDITIONAL_MOUNT}:RW " >>${value}
-   fi
-fi
-
 IFS=$'\n'
 filter="$1"
 CONFIG=/app/rclone/rclone.conf
-mapfile -t mounts < <(eval rclone listremotes --config=${CONFIG} | grep "$filter" | sed '/union/d' | sed '/remote/d' | sed '/GDSA/d')
+mapfile -t mounts < <(eval rclone listremotes --config=${CONFIG} | grep "$filter" | sed -e 's/://g' | sed '/union/d' | sed '/remote/d' | sed '/GDSA/d')
 for i in ${mounts[@]}; do
    echo -n "$i:NC " >>${value}
 done
