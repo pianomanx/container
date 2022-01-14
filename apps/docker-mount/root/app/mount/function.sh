@@ -174,12 +174,9 @@ function rcx() {
 
    source /system/mount/mount.env
 
- rclone rc mount/mount \
-     --rc-user=${RC_USER} \
-     --rc-pass=${RC_PASSWORD} \
-     --rc-addr=localhost:${RC_ADDRESS} \
-     --config=${CONFIG} --cache-dir=${TMPRCLONE} \
-     fs=union: mountPoint=${REMOTE} mountType=mount \
+ rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD}  \
+     fs=union: mountPoint=${REMOTE} mountType=mount --config=${CONFIG} \
+     --cache-dir=${TMPRCLONE} \
      logOpt='{
      "File": "/system/mount/logs/rclone-union.log",
      "Format": "date,time",
@@ -220,6 +217,8 @@ function rcx() {
      "Daemon": true,
      "AllowOther": true
      }'
+
+
 
 }
 
