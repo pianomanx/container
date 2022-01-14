@@ -172,31 +172,32 @@ function startup() {
 
 function rcx() {
 
+   source /system/mount/mount.env
+
    rclone rc mount/mount \
      --rc-user=${RC_USER} \
      --rc-pass=${RC_PASSWORD} \
-     --rc-addr=localhost:${RC_ADDRESS} \
      --config=${CONFIG} \
      --cache-dir=${TMPRCLONE} \
      fs=remote: \
      mountPoint=${REMOTE} \
      mountType=mount \
      logOpt='{
-     "File": "${MLOG}",
+     "File": "/system/mount/logs/rclone-union.log",
      "Format": "date,time",
      "LogSystemdSupport": false
-     }'
+     }' \
      mainOpt='{
      "BufferSize": ${BUFFER_SIZE},
      "Checkers": 32,
-     "TPSLimit": $[TPSLIMIT},
+     "TPSLimit": ${TPSLIMIT},
      "TPSLimitBurst": ${TPSBURST},
      "UseListR": true,
      "UseMmap": true,
      "UseServerModTime": true,
      "TrackRenames": true,
      "UserAgent": "${UAGENT}"
-     }'
+     }' \
      vfsOpt='{
      "CacheMaxAge": ${VFS_CACHE_MAX_AGE},
      "CacheMaxSize": ${VFS_CACHE_MAX_SIZE},
@@ -213,7 +214,7 @@ function rcx() {
      "NoSeek": true,
      "PollInterval": ${POLL_INTERVAL},
      "Umask": ${UMASK}
-     }' 
+     }' \
      mountOpt='{
      "AllowNonEmpty": true,
      "AllowOther": true,
@@ -231,7 +232,6 @@ function refreshVFS() {
       --fast-list \
       --rc-user=${RC_USER} \
       --rc-pass=${RC_PASSWORD} \
-      --rc-addr=localhost:${RC_ADDRESS} \
       --config=${CONFIG} \
       --log-file=${RLLOG} \
       --log-level=${LOGLEVEL_RC}
@@ -242,7 +242,6 @@ function rckill() {
 
    rclone rc mount/unmount \
       mountPoint=${REMOTE} \
-      --rc-addr=localhost:${RC_ADDRESS} \
       --config=${CONFIG} \
       --rc-user=${RC_USER} \
       --rc-pass=${RC_PASSWORD} \
@@ -267,7 +266,6 @@ function drivecheck() {
          --fast-list \
          --rc-user=${RC_USER} \
          --rc-pass=${RC_PASSWORD} \
-         --rc-addr=localhost:${RC_ADDRESS} \
          --config=${CONFIG} \
          --log-file=${RLOG} \
          --log-level=${LOGLEVEL_RC}
@@ -277,7 +275,6 @@ function drivecheck() {
          --fast-list \
          --rc-user=${RC_USER} \
          --rc-pass=${RC_PASSWORD} \
-         --rc-addr=localhost:${RC_ADDRESS} \
          --config=${CONFIG} \
          --log-file=${RLOG} \
          --log-level=${LOGLEVEL_RC}
