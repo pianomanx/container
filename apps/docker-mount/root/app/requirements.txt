@@ -1,5 +1,12 @@
 bash
-xz
+curl
+git
+bc
+tar
+grep
+logrotate
+wget
+jq
 openssl
 icu-libs
 ca-certificates
