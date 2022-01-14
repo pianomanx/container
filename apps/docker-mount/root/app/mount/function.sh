@@ -175,6 +175,7 @@ function rcx() {
    rclone rc mount/mount \
      --rc-user=${RC_USER} \
      --rc-pass=${RC_PASSWORD} \
+     --rc-addr=localhost:${RC_ADDRESS} \
      --config=${CONFIG} \
      --cache-dir=${TMPRCLONE} \
      fs=remote: \
@@ -241,6 +242,7 @@ function rckill() {
 
    rclone rc mount/unmount \
       mountPoint=${REMOTE} \
+      --rc-addr=localhost:${RC_ADDRESS} \
       --config=${CONFIG} \
       --rc-user=${RC_USER} \
       --rc-pass=${RC_PASSWORD} \
