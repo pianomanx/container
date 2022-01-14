@@ -174,7 +174,9 @@ function rcx() {
 
    source /system/mount/mount.env
 
-   rclone rc mount/mount \
+echo -e "#!/usr/bin/with-contenv bash
+
+ rclone rc mount/mount \
      --rc-user=${RC_USER} \
      --rc-pass=${RC_PASSWORD} \
      --config=${CONFIG} \
@@ -221,7 +223,9 @@ function rcx() {
      "AsyncRead": true,
      "Daemon": true,
      "AllowOther": true
-     }'
+     }'" > /tmp/rcunion.sh
+
+bash -xv /tmp/rcunion.sh
 
 }
 
