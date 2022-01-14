@@ -51,11 +51,7 @@ rm -rf /var/cache/apk/* /etc/nginx/*
 
 log "**** install build packages from packages.lock ****"
 cat /app/requirements.txt | while IFS=$'\n' read -ra myArray; do
-   apk add --update --quiet --no-cache --no-progress ${myArray[@]}
-done
-
-cat /app/requirements-virtual.txt | while IFS=$'\n' read -ra myArray; do 
-   apk add --update --quiet --no-cache --no-progress ${myArray[@]}
+   apk add --update ${myArray[@]}
 done
 
 mkdir -p /app/rclone /system/mount/{logs,env,rclone,keys}
