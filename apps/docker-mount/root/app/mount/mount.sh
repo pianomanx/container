@@ -22,7 +22,7 @@ source /app/mount/function.sh
 
 mkdir -p "${TMPRCLONE}" "${REMOTE}"
 
-rcdWAKEUP
+rcdWAKEUP &
 
 while true; do
    if [ "$(ls -A /mnt/unionfs)" ] && [ "$(ps aux | grep -i 'rclone rc mount/mount' | grep -v grep)" != "" ]; then
