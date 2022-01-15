@@ -25,8 +25,7 @@ RUN \
      apk --quiet --no-cache --no-progress update && \
      apk --quiet --no-cache --no-progress upgrade && \
   echo "**** install build packages ****" && \
-     apk add --no-cache --virtual=build-dependencies curl patch tar && \
-     bash curl tzdata xz coreutils shadow curl tar jq
+     apk add --no-cache --virtual=build-dependencies tar bash curl tzdata xz coreutils shadow jq
 
 RUN \
   OVERLAY=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') \
