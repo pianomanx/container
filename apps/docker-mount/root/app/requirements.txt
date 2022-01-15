@@ -16,10 +16,10 @@ findutils
 coreutils
 libxml2-utils
 tzdata
+fuse
 fuse3
 fuse3-libs
 fuse-common
 musl
 musl-dev
-rclone
 s6-ipcserver
