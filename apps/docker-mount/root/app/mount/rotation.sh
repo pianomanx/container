@@ -16,15 +16,12 @@ function log() {
    echo "[ROTATION] ${1}"
 }
 
-if pidof -o %PPID -x "$(basename $0)"; then
+if pidof -o %PPID -x "$0"; then
    exit 1
 fi
 
 source /app/mount/function.sh
 
-if pidof -o %PPID -x "$0"; then
-   exit 1
-fi
 if [[ ! -d "/system/mount/.keys" ]]; then
    mkdir -p /system/mount/.keys/
    chown -cR 1000:1000 /system/mount/.keys/
