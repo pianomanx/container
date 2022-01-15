@@ -188,22 +188,17 @@ options/set --json '{"main": {
 "TrackRenames": true,
 "UserAgent": "'${UAGENT}'"}}'
 
-rclone rc \
---rc-user=${RC_USER} \
---rc-pass=${RC_PASSWORD} \
-options/set --json '{"main": {
-
-
 }
-
-
 
 function rcx() {
 
    source /system/mount/mount.env
 
-rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD}  \
-fs=remote: mountPoint='"${REMOTE}"' mountType=mount --config=${CONFIG} \
+rclone rc mount/mount \
+--config=${CONFIG} \
+--rc-user=${RC_USER} \
+--rc-pass=${RC_PASSWORD} \
+fs=remote: mountPoint='"${REMOTE}"' mountType=mount \
 --cache-dir=${TMPRCLONE} \
 logOpt='{ "File": "/system/mount/logs/rclone-union.log",
 "Format": "date,time",
@@ -256,13 +251,12 @@ function refreshVFS() {
 
 function rckill() {
 
+   source /system/mount/mount.env
    rclone rc mount/unmount \
       mountPoint=${REMOTE} \
       --config=${CONFIG} \
       --rc-user=${RC_USER} \
-      --rc-pass=${RC_PASSWORD} \
-      --rc-addr=localhost:${RC_ADDRESS}
-
+      --rc-pass=${RC_PASSWORD}
 }
 
 function rcdWAKEUP() {
@@ -270,11 +264,18 @@ function rcdWAKEUP() {
    source /system/mount/mount.env
    rclone rcd \
       --rc-user=${RC_USER} \
-      --rc-pass=${RC_PASSWORD} \
-      --rc-addr=localhost:${RC_ADDRESS} \
+      --rc-pass=${RC_PASSWORD}
       --cache-dir=${TMPRCLONE}
 
 }
+
+function exec_in_screen() {
+
+    name=$1
+    command=$2
+    screen -dmS $name sh; screen -S $name -X stuff "$command\n";
+
+} 
 
 function drivecheck() {
 
