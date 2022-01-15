@@ -21,11 +21,9 @@ libattr
 libxml2-dev
 libxml2-utils
 libc-utils
-libcrypto
 libintl
 libproc
 libretls
-libssl
 linux-pam
 logrotate
 icu-libs
