@@ -36,7 +36,6 @@ RUN \
   esac && \
   && OVERLAY=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name')  \
   && curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY}/s6-overlay-${ARCH}.tar.gz | tar xvzf - -C /
-  && rm -rf /tmp/*
 
 RUN \
   set -x && ARCH=$(uname -m) && \
