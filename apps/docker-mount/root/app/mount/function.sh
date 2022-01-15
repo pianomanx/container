@@ -225,8 +225,8 @@ vfsOpt='{ "CacheMaxAge": "'${VFS_CACHE_MAX_AGE}'",
 "ChunkSize": "'${VFS_READ_CHUNK_SIZE}'",
 "ChunkSizeLimit": "'${VFS_READ_CHUNK_SIZE_LIMIT}'",
 "DirCacheTime": "'${DIR_CACHE_TIME}'",
-"GID": '"${PGID}"',
-"UID": '"${PUID}"',
+"GID": '"${PGID}'",
+"UID": '"${PUID}'",
 "NoChecksum": false,
 "NoModTime": true,
 "NoSeek": true,
@@ -268,27 +268,11 @@ function rckill() {
 function rcdWAKEUP() {
 
    source /system/mount/mount.env
-
-   rclone --rc --rc-serve --rc-no-auth mount union: ${REMOTE} \
-      --config=${CONFIG} --log-file=${MLOG} --log-level=${LOGLEVEL} \
-      --uid=${PUID} --gid=${PGID} --umask=${UMASK} \
-      --allow-other --allow-non-empty \
-      --timeout=1h --use-mmap --cache-dir=${TMPRCLONE} \
-      --tpslimit=${TPSLIMIT} --tpslimit-burst=${TPSBURST} \
-      --no-modtime --no-seek --drive-use-trash=${DRIVETRASH} \
-      --drive-stop-on-upload-limit \
-      --drive-server-side-across-configs --drive-acknowledge-abuse \
-      --ignore-errors --user-agent=${UAGENT} --no-checksum \
-      --drive-chunk-size=${DRIVE_CHUNK_SIZE} \
-      --buffer-size=${BUFFER_SIZE} \
-      --dir-cache-time=${DIR_CACHE_TIME} \
-      --cache-info-age=${CACHE_INFO_AGE} \
-      --vfs-cache-poll-interval=${VFS_CACHE_POLL_INTERVAL} \
-      --vfs-cache-mode=${VFS_CACHE_MODE} \
-      --vfs-cache-max-age=${VFS_CACHE_MAX_AGE} \
-      --vfs-cache-max-size=${VFS_CACHE_MAX_SIZE} \
-      --vfs-read-chunk-size-limit=${VFS_READ_CHUNK_SIZE_LIMIT} \
-      --vfs-read-chunk-size=${VFS_READ_CHUNK_SIZE} &
+   rclone rcd \
+      --rc-user=${RC_USER} \
+      --rc-pass=${RC_PASSWORD} \
+      --rc-addr=localhost:${RC_ADDRESS} \
+      --cache-dir=${TMPRCLONE}
 
 }
 
