@@ -42,17 +42,17 @@ RUN \
   case "${ARCH}" in \
      x86_64) ARCH='amd64' && echo "no QEMU needed" ;; \
      armv7) \
-        ARCH='arm' 
+        ARCH='arm' && \
         curl -o /usr/bin/qemu-${ARCH}-static -L "https://lsio-ci.ams3.digitaloceanspaces.com/qemu-${ARCH}-static" && \
         chmod +x /usr/bin/qemu-${ARCH}-static; \
      ;; \
      armhf) \
-        ARCH='armhf' 
+        ARCH='armhf' && \
         curl -o /usr/bin/qemu-${ARCH}-static -L "https://lsio-ci.ams3.digitaloceanspaces.com/qemu-${ARCH}-static" && \
         chmod +x /usr/bin/qemu-${ARCH}-static; \
      ;; \
      aarch64) \
-        ARCH='aarch64' 
+        ARCH='aarch64' && \
         curl -o /usr/bin/qemu-${ARCH}-static -L "https://lsio-ci.ams3.digitaloceanspaces.com/qemu-${ARCH}-static" && \
         chmod +x /usr/bin/qemu-${ARCH}-static; \
      ;; \
