@@ -20,14 +20,11 @@ fi
 source /system/mount/mount.env
 source /app/mount/function.sh
 
-mkdir -p "${TMPRCLONE}" "${REMOTE}"
+mkdir -p "${TMPRCLONE}" "${REMOTE}" && echo OK || echo Failed && exit 1
 
-rcdWAKEUP
-sleep 5
-rcset
-sleep 5
-rxc
-sleep 30
+rcdWAKEUP && echo OK && sleep 5 || echo Failed && exit 1
+rcset && echo OK && sleep 5 || echo Failed && exit 1
+rxc && echo OK && sleep 5 || echo Failed && exit 1
 
 while true; do
    if [ "$(ls -A /mnt/unionfs)" ] && [ "$(ps aux | grep -i 'rclone rc mount/mount' | grep -v grep)" != "" ]; then
