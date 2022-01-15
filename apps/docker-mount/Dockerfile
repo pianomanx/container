@@ -20,12 +20,18 @@ ENV PS1="$(whoami)@$(hostname):$(pwd)\\$ " \
 HOME="/root" \
 TERM="xterm"
 
+COPY ./apps/docker-mount/root/app/requirements.txt /tmp/requirements.txt
+
 RUN \
   echo "**** update build packages ****" \
      apk --quiet --no-cache --no-progress update && \
-     apk --quiet --no-cache --no-progress upgrade && \
-  echo "**** install build packages ****" && \
-  cat ./apps/docker-mount/root/app/requirements.txt | while IFS=$'\n' read -ra myArray;do echo ${myArray[@]} && apk add --update ${myArray[@]} ; done && \
+     apk --quiet --no-cache --no-progress upgrade
+
+RUN \
+  echo "**** install build packages ****"  && \
+  cat /tmp/requirements.txt | while IFS=$'\n' read -ra myArray;do echo ${myArray[@]} && apk add --update ${myArray[@]} ; done
+
+RUN \
   set -x && ARCH=$(uname -m) && \
   case "${ARCH}" in \
      x86_64) ARCH='amd64' ;; \
