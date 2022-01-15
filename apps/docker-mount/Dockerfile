@@ -34,13 +34,15 @@ RUN \
      aarch64) ARCH='aarch64' ;; \
      *) echo >&2 "Error: unsupported architecture ($ARCH)"; exit 1 ;; \
   esac && \
+  &&
   OVERLAY=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') && \
   curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY}/s6-overlay-${ARCH}.tar.gz | tar xvzf - -C / && \
   rm -rf /tmp/* && \
-  if [[ ${ARCH} != "x86_64" ]]; then
-     curl -o /usr/bin/qemu-${ARCH}-static -L "https://lsio-ci.ams3.digitaloceanspaces.com/qemu-${ARCH}-static" && \
-     chmod +x /usr/bin/qemu-${ARCH}-static; \
-  fi && apk del --purge build-dependencies && rm -rf /tmp/* && \
+     if [[ ${ARCH} != "x86_64" ]]; then
+        curl -o /usr/bin/qemu-${ARCH}-static -L "https://lsio-ci.ams3.digitaloceanspaces.com/qemu-${ARCH}-static" && \
+        chmod +x /usr/bin/qemu-${ARCH}-static; \
+     fi && \
+  apk del --purge build-dependencies && rm -rf /tmp/* && \
   echo "**** create abc user and make our folders ****" && \
      groupmod -g 1000 users && useradd -u 911 -U -d /config -s /bin/false abc && \
      usermod -G users abc && mkdir -p /app /config /defaults /system
