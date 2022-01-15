@@ -36,7 +36,7 @@ RUN \
   && set -x && ARCH=$(uname -m) \
   && case "${ARCH}" in \
      x86_64) \
-        ARCH='amd64' &&
+        ARCH='amd64' && \
         curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY}/s6-overlay-${ARCH}.tar.gz | tar xvzf - -C / ; \
         ;; \
      armv7) \
