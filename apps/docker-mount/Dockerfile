@@ -25,9 +25,7 @@ RUN \
      apk --quiet --no-cache --no-progress update && \
      apk --quiet --no-cache --no-progress upgrade && \
   echo "**** install build packages ****" && \
-  cat ./apps/docker-mount/root/app/requirements.txt | while IFS=$'\n' read -ra myArray; do
-     echo ${myArray[@]} && apk add --update ${myArray[@]}
-  done && \
+  cat ./apps/docker-mount/root/app/requirements.txt | while IFS=$'\n' read -ra myArray;do echo ${myArray[@]} && apk add --update ${myArray[@]} ; done && \
   set -x && ARCH=$(uname -m) && \
   case "${ARCH}" in \
      x86_64) ARCH='amd64' ;; \
