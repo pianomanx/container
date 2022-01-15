@@ -25,7 +25,7 @@ RUN \
      apk --quiet --no-cache --no-progress update && \
      apk --quiet --no-cache --no-progress upgrade && \
  echo "**** install build packages ****" && \
-     apk add --no-cache --virtual=build-dependencies bash curl tzdata xz coreutils shadow curl tar jq
+     apk add --no-cache bash curl tzdata xz coreutils shadow curl tar jq
 
 RUN \
   OVERLAY=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') \
@@ -57,9 +57,14 @@ RUN \
   esac \
   && \
   apk del --purge build-dependencies && rm -rf /tmp/* && \
-  echo "**** create abc user and make our folders ****"  && \
-     groupmod -g 1000 users && useradd -u 911 -U -d /config -s /bin/false abc && \
-     usermod -G users abc && mkdir -p /app /config /defaults /system
+  echo "**** install build packages ****" && \
+     apk add --no-cache --virtual=build-dependencies curl patch tar && \
+  echo "**** install runtime packages ****" && \
+     apk add --no-cache ca-certificates coreutils procps shadow tzdata bash curl bc findutils && \
+  echo "**** create abc user and make our folders ****" && \
+     groupmod -g 1000 users && \
+     useradd -u 911 -U -d /config -s /bin/false abc && \
+     usermod -G users abc
 
 VOLUME [ "/system" ]
 COPY ./apps/docker-mount/root/ /
