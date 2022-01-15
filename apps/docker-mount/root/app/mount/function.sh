@@ -170,10 +170,74 @@ function startup() {
 
 }
 
+function rcset() {
+
+source /system/mount/mount.env
+rclone rc \
+--rc-user=${RC_USER} \
+--rc-pass=${RC_PASSWORD} \
+options/set --json '{"main": {
+"LogLevel": "DEBUG",
+"BufferSize": "'${BUFFER_SIZE}'", 
+"Checkers": 32,
+"TPSLimit": "'${TPSLIMIT}'",
+"TPSLimitBurst": "'${TPSBURST}'",
+"UseListR": true,
+"UseMmap": true,
+"UseServerModTime": true,
+"TrackRenames": true,
+"UserAgent": "'${UAGENT}'"}}'
+
+rclone rc \
+--rc-user=${RC_USER} \
+--rc-pass=${RC_PASSWORD} \
+options/set --json '{"main": {
+
+
+}
+
+
+
 function rcx() {
 
    source /system/mount/mount.env
-   rclone rc mount/mount fs=union: mountPoint=${REMOTE} mountType=mount
+
+rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD}  \
+fs=remote: mountPoint='"${REMOTE}"' mountType=mount --config=${CONFIG} \
+--cache-dir=${TMPRCLONE} \
+logOpt='{ "File": "/system/mount/logs/rclone-union.log",
+"Format": "date,time",
+"LogSystemdSupport": false }' \
+mainOpt='{ "BufferSize": "'${BUFFER_SIZE}'",
+"Checkers": 32,
+"TPSLimit": "'${TPSLIMIT}'",
+"TPSLimitBurst": "'${TPSBURST}'",
+"UseListR": true,
+"UseMmap": true,
+"UseServerModTime": true,
+"TrackRenames": true,
+"UserAgent": "'${UAGENT}'" }' \
+vfsOpt='{ "CacheMaxAge": "'${VFS_CACHE_MAX_AGE}'",
+"CacheMaxSize": "'${VFS_CACHE_MAX_SIZE}'",
+"CacheMode": 3,
+"CachePollInterval": "'${VFS_CACHE_POLL_INTERVAL}'",
+"CaseInsensitive": false,
+"ChunkSize": "'${VFS_READ_CHUNK_SIZE}'",
+"ChunkSizeLimit": "'${VFS_READ_CHUNK_SIZE_LIMIT}'",
+"DirCacheTime": "'${DIR_CACHE_TIME}'",
+"GID": '"${PGID}"',
+"UID": '"${PUID}"',
+"NoChecksum": false,
+"NoModTime": true,
+"NoSeek": true,
+"PollInterval": "'${POLL_INTERVAL}'",
+"Umask": "'${UMASK}'" }' \
+mountOpt='{
+"AllowNonEmpty": true,
+"AllowOther": true,
+"AsyncRead": true,
+"Daemon": true,
+"AllowOther": true }'
 
 }
 
