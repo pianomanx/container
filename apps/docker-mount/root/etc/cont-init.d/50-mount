@@ -54,6 +54,26 @@ cat /app/requirements.txt | while IFS=$'\n' read -ra myArray; do
    apk add --update ${myArray[@]}
 done
 
+ARCH="$(command arch)"
+if [ "${ARCH}" = "x86_64" ]; then
+   export ARCH="amd64"
+elif [ "${ARCH}" = "aarch64" ]; then
+    ecport ARCH="arm64"
+elif [ "${ARCH}" = "armv7l" ]; then
+    export ARCH="armhf"
+else
+     echo "**** Unsupported Linux architecture ${ARCH} found, exiting... ****"
+     exit 1
+fi
+
+apk add --quiet --no-cache --no-progress --virtual=build-dependencies aria2 curl findutils coreutils unzip jq tzdata
+
+VERSION=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
+aria2c -x2 -k1M -d /tmp -o rclone.zip https://github.com/rclone/rclone/releases/download/v${VERSION}/rclone-v${VERSION}-linux-${ARCH}.zip
+cd /tmp/ && unzip -q /tmp/rclone.zip
+mv /tmp/rclone-*-linux-${ARCH}/rclone /usr/local/bin/
+rm -rf /var/cache/apk/* /tmp/*
+
 mkdir -p /app/rclone /system/mount/{logs,env,rclone,keys}
 truncate -s 0 /system/mount/logs/*.log
 
