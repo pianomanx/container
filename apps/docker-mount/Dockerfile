@@ -10,7 +10,7 @@
 # NO REBRANDING IS ALLOWED          #
 # NO CODE MIRRORING IS ALLOWED      #
 #####################################
-FROM alpine:3.15
+FROM alpine:3.14
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 ARG VERSION
