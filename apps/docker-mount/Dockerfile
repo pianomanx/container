@@ -26,13 +26,6 @@ RUN \
      apk --quiet --no-cache --no-progress upgrade && \
   echo "**** install build packages ****" && \
      apk add --no-cache --virtual=build-dependencies tar bash curl tzdata xz coreutils shadow jq
-
-COPY ./apps/docker-mount/root/app/requirements.txt /tmp/requirements.txt
- 
-RUN \
-  echo "**** install build packages ****"  && \
-  cat /tmp/requirements.txt | while IFS=$'\n' read -ra myArray;do echo ${myArray[@]} && sleep 30 && apk add --update ${myArray[@]} ; done
-
 RUN \
   OVERLAY=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') \
   && set -x && ARCH=$(uname -m) \
@@ -63,10 +56,15 @@ RUN \
   esac \
   && \
   apk del --purge build-dependencies && rm -rf /tmp/* && \
-  echo "**** install build packages ****" && \
-     apk add --no-cache --virtual=build-dependencies curl patch tar && \
   echo "**** install runtime packages ****" && \
-     apk add --no-cache ca-certificates coreutils procps shadow tzdata bash curl bc findutils && \
+     apk add --no-cache \
+       alpine-baselayout alpine-keys apk-tools bash busybox bc ca-certificates ca-certificates-bundle coreutils \
+       curl findutils fuse fuse3 fuse3-libs fuse-common git grep jq \
+       libacl libattr libxml2-dev libxml2-utils \ 
+       libc-utils libcrypto libintl libproc libretls libssl linux-pam logrotate icu-libs \
+       musl musl-dev musl-utils ncurses-libs ncurses-terminfo-base openssl procps pigz readline \
+       s6-ipcserver scanelf shadow skalibs ssl_client tar tzdata wget xz xz-libs zlib \
+       coreutils procps shadow tzdata bash curl bc findutils && \
   echo "**** create abc user and make our folders ****" && \
      groupmod -g 1000 users && \
      useradd -u 911 -U -d /config -s /bin/false abc && \
