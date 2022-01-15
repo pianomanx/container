@@ -16,7 +16,7 @@
 # shellcheck disable=SC2002
 # shellcheck disable=SC2006
 
-if pidof -o %PPID -x "$(basename $0)"; then
+if pidof -o %PPID -x "$0"; then
    exit 1
 fi
 
