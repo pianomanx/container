@@ -36,25 +36,33 @@ RUN \
   esac && \
   && OVERLAY=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name')  \
   && curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY}/s6-overlay-${ARCH}.tar.gz | tar xvzf - -C /
+  && rm -rf /tmp/*
 
 RUN \
-  rm -rf /tmp/* && \
   set -x && ARCH=$(uname -m) && \
   case "${ARCH}" in \
-     x86_64) ARCH='amd64' ;; \
-     armv7) ARCH='arm' ;; \
-     armhf) ARCH='armhf' ;; \
-     aarch64) ARCH='aarch64' ;; \
-     *) echo >&2 "Error: unsupported architecture ($ARCH)"; exit 1 ;; \
-  esac && \
-     if [[ "${ARCH}" != "x86_64" ]]; then
+     x86_64) ARCH='amd64' && echo "no QEMU needed" ;; \
+     armv7) \
+        ARCH='arm' 
         curl -o /usr/bin/qemu-${ARCH}-static -L "https://lsio-ci.ams3.digitaloceanspaces.com/qemu-${ARCH}-static" && \
         chmod +x /usr/bin/qemu-${ARCH}-static; \
-     fi && \
-  apk del --purge build-dependencies && rm -rf /tmp/* && \
-  echo "**** create abc user and make our folders ****" && \
-     groupmod -g 1000 users && useradd -u 911 -U -d /config -s /bin/false abc && \
-     usermod -G users abc && mkdir -p /app /config /defaults /system
+     ;; \
+     armhf) \
+        ARCH='armhf' 
+        curl -o /usr/bin/qemu-${ARCH}-static -L "https://lsio-ci.ams3.digitaloceanspaces.com/qemu-${ARCH}-static" && \
+        chmod +x /usr/bin/qemu-${ARCH}-static; \
+     ;; \
+     aarch64) \
+        ARCH='aarch64' 
+        curl -o /usr/bin/qemu-${ARCH}-static -L "https://lsio-ci.ams3.digitaloceanspaces.com/qemu-${ARCH}-static" && \
+        chmod +x /usr/bin/qemu-${ARCH}-static; \
+     ;; \
+     *) echo >&2 "Error: unsupported architecture ($ARCH)"; exit 1 ;; \
+  esac && \
+  && apk del --purge build-dependencies && rm -rf /tmp/* \
+  && echo "**** create abc user and make our folders ****"  \
+     && groupmod -g 1000 users && useradd -u 911 -U -d /config -s /bin/false abc \
+     && usermod -G users abc && mkdir -p /app /config /defaults /system
 
 VOLUME [ "/system" ]
 COPY ./apps/docker-mount/root/ /
