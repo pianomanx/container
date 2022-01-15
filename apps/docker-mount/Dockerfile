@@ -60,7 +60,7 @@ RUN \
      apk add --no-cache \
        alpine-baselayout alpine-keys apk-tools bash busybox bc ca-certificates ca-certificates-bundle coreutils \
        curl findutils fuse fuse3 fuse3-libs fuse-common git grep jq \
-       libacl libattr libxml2-dev libxml2-utils libc-utils libintl libproc libretls libssl linux-pam logrotate icu-libs \
+       libacl libattr libxml2-dev libxml2-utils libc-utils libintl libproc libretls linux-pam logrotate icu-libs \
        musl musl-dev musl-utils ncurses-libs ncurses-terminfo-base openssl procps pigz readline \
        s6-ipcserver scanelf shadow skalibs ssl_client tar tzdata wget xz xz-libs zlib \
        coreutils procps shadow tzdata bash curl bc findutils && \
