@@ -262,20 +262,12 @@ function rckill() {
 function rcdWAKEUP() {
 
    source /system/mount/mount.env
-   rclone rcd \
+   screen -d -m bash -c "rclone rcd \
       --rc-user=${RC_USER} \
       --rc-pass=${RC_PASSWORD}
-      --cache-dir=${TMPRCLONE}
+      --cache-dir=${TMPRCLONE}";
 
 }
-
-function exec_in_screen() {
-
-    name=$1
-    command=$2
-    screen -dmS $name sh; screen -S $name -X stuff "$command\n";
-
-} 
 
 function drivecheck() {
 
