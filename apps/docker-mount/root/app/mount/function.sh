@@ -200,7 +200,7 @@ rclone rc mount/mount \
 --rc-pass=${RC_PASSWORD} \
 fs=remote: mountPoint='"${REMOTE}"' mountType=mount \
 --cache-dir=${TMPRCLONE} \
-logOpt='{ "File": "/system/mount/logs/rclone-union.log",
+logOpt='{ "File": "'${MLOG}'",
 "Format": "date,time",
 "LogSystemdSupport": false }' \
 mainOpt='{ "BufferSize": "'${BUFFER_SIZE}'",
