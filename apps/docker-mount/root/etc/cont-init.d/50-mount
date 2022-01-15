@@ -29,6 +29,13 @@ SOURCECONFIG=/system/rclone/rclone.conf
 ENDFILE=/system/mount/drive.csv
 TMPCONFIG=/app/rclone/rclonegd.conf
 
+addgroup -S abc
+adduser -S abc -G abc
+PGID=${PGID:-1000}
+PUID=${PUID:-1000}
+groupmod -o -g "$PGID" abc
+usermod -o -u "$PUID" abc
+
 cat > /etc/apk/repositories << EOF; $(echo)
 https://dl-cdn.alpinelinux.org/alpine/v3.15/main
 https://dl-cdn.alpinelinux.org/alpine/v3.15/community
@@ -77,10 +84,6 @@ rm -rf /var/cache/apk/* /tmp/*
 mkdir -p /app/rclone /system/mount/{logs,env,rclone,keys}
 truncate -s 0 /system/mount/logs/*.log
 
-PUID=${PUID:-1000}
-PGID=${PGID:-1000}
-if [ ! "$(id -u abc)" -eq "$PUID" ]; then usermod -o -u "$PUID" abc; fi
-if [ ! "$(id -g abc)" -eq "$PGID" ]; then groupmod -o -g "$PGID" abc; fi
 echo "
 ----------------------------------------------------
  ____             _                                 
