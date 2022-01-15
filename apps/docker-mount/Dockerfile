@@ -20,18 +20,12 @@ ENV PS1="$(whoami)@$(hostname):$(pwd)\\$ " \
 HOME="/root" \
 TERM="xterm"
 
-COPY ./apps/docker-mount/root/app/requirements.txt /tmp/requirements.txt
-
 RUN \
   echo "**** update build packages ****" \
      apk --quiet --no-cache --no-progress update && \
      apk --quiet --no-cache --no-progress upgrade
-
-RUN \
-  echo "**** install build packages ****"  && \
-  cat /tmp/requirements.txt | while IFS=$'\n' read -ra myArray;do echo ${myArray[@]} && apk add --update ${myArray[@]} ; done
-
-RUN \
+ echo "**** install build packages ****" && \
+  apk add --no-cache bash curl tzdata xz coreutils shadow curl tar jq && \
   OVERLAY=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') \
   && set -x && ARCH=$(uname -m) \
   && case "${ARCH}" in \
