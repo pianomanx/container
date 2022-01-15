@@ -49,14 +49,12 @@ mount_max = 20
 user_allow_other
 EOF
 
-log "**** update system packages ****" && \
-   apk --quiet --no-cache --no-progress update && \
-   apk --quiet --no-cache --no-progress upgrade
+apk --quiet --no-cache --no-progress update && \
+apk --quiet --no-cache --no-progress upgrade
 
 apk del --quiet --no-cache nginx && \
 rm -rf /var/cache/apk/* /etc/nginx/*
 
-log "**** install build packages from packages.lock ****"
 cat /app/requirements.txt | while IFS=$'\n' read -ra myArray; do
    apk add --update ${myArray[@]}
 done
@@ -65,20 +63,20 @@ ARCH="$(command arch)"
 if [ "${ARCH}" = "x86_64" ]; then
    export ARCH="amd64"
 elif [ "${ARCH}" = "aarch64" ]; then
-    ecport ARCH="arm64"
+     export ARCH="arm64"
 elif [ "${ARCH}" = "armv7l" ]; then
-    export ARCH="armhf"
+     export ARCH="armhf"
 else
-     echo "**** Unsupported Linux architecture ${ARCH} found, exiting... ****"
-     exit 1
+    echo "**** Unsupported Linux architecture ${ARCH} found, exiting... ****" && exit 1
 fi
 
-apk add --quiet --no-cache --no-progress --virtual=build-dependencies aria2 curl findutils coreutils unzip jq tzdata
-
+apk add --quiet --no-cache --no-progress --virtual=build-dependencies aria2 curl findutils coreutils unzip jq
 VERSION=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
-aria2c -x2 -k1M -d /tmp -o rclone.zip https://github.com/rclone/rclone/releases/download/v${VERSION}/rclone-v${VERSION}-linux-${ARCH}.zip
+aria2c -x2 -k1M -d /tmp -o rclone.zip https://github.com/rclone/rclone/releases/download/v${VERSION}/rclone-v${VERSION}-linux-${ARCH}.zip && \
 cd /tmp/ && unzip -q /tmp/rclone.zip
 mv /tmp/rclone-*-linux-${ARCH}/rclone /usr/local/bin/
+apk del --purge build-dependencies && \
+echo "**** cleanup ****" && \
 rm -rf /var/cache/apk/* /tmp/*
 
 mkdir -p /app/rclone /system/mount/{logs,env,rclone,keys}
@@ -100,20 +98,12 @@ echo "
      User gid:    ${PGID}
 ----------------------------------------------------
 "
-log "-> Setting Permissions || start <-"
-chmod -cR 755 /system/rclone /app /root &>/dev/null
-chown -cR abc:abc /system/rclone /app /root &>/dev/null
-chown -cf abc:abc /root &>/dev/null
-log "-> Setting Permissions & Folder || done <-"
-
 drivespace=$(df -BG /mnt --local | tail -n +2 | awk '{print $4}' | sed -e 's/G//g')
 checkspace=$(echo $(((${drivespace}) / 4 | bc)) | sed -r 's/([^0-9]*([0-9]*)){1}.*/\2/')
 VFS_CACHE_MAX_SIZE=${VFS_CACHE_MAX_SIZE:-null}
-
 rcloneenv=/system/mount/mount.env
 rclonetmp=/tmp/mount.env
 rclonesample=/app/env/sample.env
-
 if [[ ${VFS_CACHE_MAX_SIZE} == 'null' ]]; then
    VFS_CACHE_MAX_SIZE=${checkspace}G
 else
@@ -132,7 +122,6 @@ if [[ ${RC_PASSWORD} == 'null' ]]; then
 else
    RC_PASSWORD=${RC_PASSWORD}
 fi
-
 if [[ ! -f ${rcloneenv} ]]; then
    mv ${rclonesample} ${rclonetmp}
 else
@@ -212,9 +201,9 @@ LANGUAGE=${LANGUAGE:-en}
 if [[ -f ${rclonetmp} ]]; then rm -f ${rclonetmp} ; fi
 
 source ${rcloneenv}
-if [[ ! -d ${TMPRCLONE} ]]; then mkdir -p ${TMPRCLONE} && chown -hR abc:abc ${TMPRCLONE} && chmod -R 775 ${TMPRCLONE}; fi
-if [[ ! -d "/mnt/unionfs" ]]; then mkdir -p ${SUNION} && chown -hR abc:abc ${SUNION} && chmod -R 775 ${SUNION}; fi
-if [[ ! -d "/mnt/downloads" ]]; then mkdir -p ${SDOWN} && chown -hR abc:abc ${SDOWN} && chmod -R 775 ${SDOWN}; fi
+if [[ ! -d ${TMPRCLONE} ]]; then mkdir -p "${TMPRCLONE}" && chown -hR abc:abc "${TMPRCLONE}" && chmod -R 775 "${TMPRCLONE}" ; fi
+if [[ ! -d "/mnt/unionfs" ]]; then mkdir -p "${SUNION}" && chown -hR abc:abc "${SUNION}" && chmod -R 775 "${SUNION}" ; fi
+if [[ ! -d "/mnt/downloads" ]]; then mkdir -p "${SDOWN}" && chown -hR abc:abc "${SDOWN}" && chmod -R 775 "${SDOWN}" ; fi
 if [[ -d "/mnt/remotes" ]]; then fusermount3 -uzq /mnt/remotes && rm -rf /mnt/remotes ; fi
 
 source /system/mount/mount.env
@@ -249,7 +238,6 @@ if [[ ${ARRAY} != 0 ]]; then
 fi
 
 source /system/mount/mount.env
-
 if [[ $ARRAY != 0 ]]; then
    if [[ -f $TMPCONFIG ]]; then rm -rf $TMPCONFIG ; fi
    if [[ ! -f $TMPCONFIG ]]; then awk '$1~search {p=1} NF==0 {p=0}; p' search="gdrive|gcrypt" $SOURCECONFIG >$TMPCONFIG ; fi
@@ -328,19 +316,17 @@ fi
 
 sed -i "s#rotate 4#rotate 1#g" /etc/logrotate.conf
 sed -i "s#weekly#daily#g" /etc/logrotate.conf
-
 value=/tmp/rcunion.union
 if [[ -f ${value} ]]; then rm -rf ${value}; fi
-
 if ! `rclone config show --config=${CONFIG} | grep "local" &>/dev/null`;then
-   rclone config create download local nunc 'true' --config=${CONFIG}
+   rclone config create download local nunc 'true' --config=${CONFIG} && \
    echo -n "download:/mnt/downloads:RW " >>${value}
 fi
 
 IFS=$'\n'
 filter="$1"
 CONFIG=/app/rclone/rclone.conf
-mapfile -t mounts < <(eval rclone listremotes --config=${CONFIG} | grep "$filter" | sed -e 's/://g' | sed '/union/d' | sed '/remote/d' | sed '/GDSA/d')
+mapfile -t mounts < <(eval rclone listremotes --config=${CONFIG} | grep "$filter" | sed -e 's/://g' | sed '/union/d' | sed '/download/d' | sed '/remote/d' | sed '/GDSA/d')
 for i in ${mounts[@]}; do
    echo -n "$i:NC " >>${value}
 done
@@ -348,8 +334,6 @@ mapfile -t mapped < <(eval cat ${value})
 for i in ${mapped[@]}; do
   rclone config create remote union upstreams $i action_policy 'all' create_policy 'all' search_policy 'all' cache_time 120 --config=${CONFIG}
 done
-
-chown -hR abc:abc ${LOGS} && chmod -R 775 ${LOGS}
 
 file1=/system/mount/mount.env
 file2=/tmp/mount.env
@@ -372,3 +356,9 @@ We have take some code from :
        and all other
   If we missed you, sorry..
 ------------------------------"
+
+chmod -cR 755 /system/ /app /root &>/dev/null
+chown -cR abc:abc /system/ /app /root &>/dev/null
+chown -cf abc:abc /root &>/dev/null
+
+#E-o-F#
