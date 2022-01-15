@@ -35,7 +35,7 @@ log "**** update system packages ****" && \
 
 log "**** install build packages from requirements ****" && \
    cat /app/requirements.txt | while IFS=$'\n' read -ra myArray; do
-      apk add --update ${myArray[@]}
+      apk add --quiet --no-progress --update ${myArray[@]}
    done
 
 ARCH="$(command arch)"
@@ -54,7 +54,7 @@ VERSION=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/late
 aria2c -x2 -k1M -d /tmp -o rclone.zip https://github.com/rclone/rclone/releases/download/v${VERSION}/rclone-v${VERSION}-linux-${ARCH}.zip && \
 cd /tmp/ && unzip -q /tmp/rclone.zip
 mv /tmp/rclone-*-linux-${ARCH}/rclone /usr/local/bin/
-apk del --purge build-dependencies && \
+apk del --quiet --purge build-dependencies && \
 echo "**** cleanup ****" && \
 rm -rf /var/cache/apk/* /tmp/*
 
@@ -106,7 +106,6 @@ echo "----------------------------------------------------
 
 ----------------------------------------------------"
 
-log "-> Setting Permissions || start <-"
 rm -rf /system/uploader/.keys/{usedupload,lastday} \
        /app/uploader/{pid,discord} \
        /system/uploader/vfsforget/ 
