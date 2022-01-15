@@ -13,7 +13,7 @@
 # NO CODE MIRRORING IS ALLOWED      #
 #####################################
 
-if pidof -o %PPID -x "$(basename $0)"; then
+if pidof -o %PPID -x "$0"; then
    exit 1
 fi
 
@@ -22,7 +22,8 @@ source /app/mount/function.sh
 
 mkdir -p "${TMPRCLONE}" "${REMOTE}"
 
-rcdWAKEUP &
+rcdWAKEUP
+sleep 120
 
 while true; do
    if [ "$(ls -A /mnt/unionfs)" ] && [ "$(ps aux | grep -i 'rclone rc mount/mount' | grep -v grep)" != "" ]; then
