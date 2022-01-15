@@ -34,9 +34,10 @@ RUN \
      aarch64) ARCH='aarch64' ;; \
      *) echo >&2 "Error: unsupported architecture ($ARCH)"; exit 1 ;; \
   esac && \
-  &&
-  OVERLAY=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') && \
-  curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY}/s6-overlay-${ARCH}.tar.gz | tar xvzf - -C / && \
+  && OVERLAY=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name')  \
+  && curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY}/s6-overlay-${ARCH}.tar.gz | tar xvzf - -C /
+
+RUN \
   rm -rf /tmp/* && \
      if [[ ${ARCH} != "x86_64" ]]; then
         curl -o /usr/bin/qemu-${ARCH}-static -L "https://lsio-ci.ams3.digitaloceanspaces.com/qemu-${ARCH}-static" && \
