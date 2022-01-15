@@ -12,6 +12,14 @@
 #####################################
 ARG VERSION
 FROM ghcr.io/linuxserver/baseimage-alpine:${VERSION}
+RUN \
+ echo "**** update build packages ****" && \
+   apk --quiet --no-cache --no-progress update && \
+   apk --quiet --no-cache --no-progress upgrade && \
+ echo "**** install build packages ****" && \
+   apk add --quiet --no-cache --no-progress bash curl tzdata xz coreutils musl \
+  fuse3 fuse3-dev shadow curl tar jq
+
 VOLUME [ "/system" ]
 COPY ./apps/docker-mount/root/ /
 ENTRYPOINT [ "/init" ]
