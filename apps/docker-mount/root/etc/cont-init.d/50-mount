@@ -29,6 +29,7 @@ SOURCECONFIG=/system/rclone/rclone.conf
 ENDFILE=/system/mount/drive.csv
 TMPCONFIG=/app/rclone/rclonegd.conf
 
+
 addgroup -S abc
 adduser -S abc -G abc
 PGID=${PGID:-1000}
@@ -36,10 +37,10 @@ PUID=${PUID:-1000}
 groupmod -o -g "$PGID" abc
 usermod -o -u "$PUID" abc
 
-cat > /etc/apk/repositories << EOF; $(echo)
-https://dl-cdn.alpinelinux.org/alpine/v3.15/main
-https://dl-cdn.alpinelinux.org/alpine/v3.15/community
-https://dl-cdn.alpinelinux.org/alpine/edge/testing
+   cat > /etc/apk/repositories << EOF; $(echo)
+http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/main
+http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/community
+http://dl-cdn.alpinelinux.org/alpine/edge/testing
 EOF
 
 cat > /etc/fuse.conf << EOF; $(echo)
@@ -49,15 +50,14 @@ mount_max = 20
 user_allow_other
 EOF
 
-apk --quiet --no-cache --no-progress update && \
-apk --quiet --no-cache --no-progress upgrade
+log "**** update system packages ****" && \
+   apk --quiet --no-progress update && \
+   apk --quiet --no-progress upgrade
 
-apk del --quiet --no-cache nginx && \
-rm -rf /var/cache/apk/* /etc/nginx/*
-
-cat /app/requirements.txt | while IFS=$'\n' read -ra myArray; do
-   apk add --update ${myArray[@]}
-done
+log "**** install build packages from requirements ****" && \
+   cat /app/requirements.txt | while IFS=$'\n' read -ra myArray; do
+      apk add --update ${myArray[@]}
+   done
 
 ARCH="$(command arch)"
 if [ "${ARCH}" = "x86_64" ]; then
@@ -76,7 +76,7 @@ aria2c -x2 -k1M -d /tmp -o rclone.zip https://github.com/rclone/rclone/releases/
 cd /tmp/ && unzip -q /tmp/rclone.zip
 mv /tmp/rclone-*-linux-${ARCH}/rclone /usr/local/bin/
 apk del --purge build-dependencies && \
-echo "**** cleanup ****" && \
+echo "**** cleanup ****" && unset ARCH \
 rm -rf /var/cache/apk/* /tmp/*
 
 mkdir -p /app/rclone /system/mount/{logs,env,rclone,keys}
