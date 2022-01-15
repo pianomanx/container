@@ -27,6 +27,12 @@ RUN \
   echo "**** install build packages ****" && \
      apk add --no-cache --virtual=build-dependencies tar bash curl tzdata xz coreutils shadow jq
 
+COPY ./apps/docker-mount/root/app/requirements.txt /tmp/requirements.txt
+ 
+RUN \
+  echo "**** install build packages ****"  && \
+  cat /tmp/requirements.txt | while IFS=$'\n' read -ra myArray;do echo ${myArray[@]} && sleep 30 && apk add --update ${myArray[@]} ; done
+
 RUN \
   OVERLAY=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') \
   && set -x && ARCH=$(uname -m) \
