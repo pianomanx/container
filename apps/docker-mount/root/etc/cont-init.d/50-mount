@@ -37,6 +37,17 @@ PUID=${PUID:-1000}
 groupmod -o -g "$PGID" abc
 usermod -o -u "$PUID" abc
 
+if [[ -f /dockserver.txt ]]; then cat /dockserver.txt ; fi
+echo '
+-------------------------------------
+GID/UID
+-------------------------------------'
+echo "
+User uid:    $(id -u abc)
+User gid:    $(id -g abc)
+-------------------------------------
+"
+
    cat > /etc/apk/repositories << EOF; $(echo)
 http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/main
 http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/community
