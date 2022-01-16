@@ -30,15 +30,4 @@ lang && sleep 5 || exit 1
 rcstart && sleep 5 || exit 1
 rcset && sleep 5 || exit 1
 rcmount && sleep 5 || exit 1
-
-sleep 30
-
-while true; do
-   if [[ "$(ls -A /mnt/unionfs)" ]]; then
-      sleep 360
-   else
-      rckill && sleep 5 && rcstart && refreshVFS && sleep 360
-   fi
-done
-
 #EOF
