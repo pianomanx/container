@@ -68,7 +68,7 @@ fi
 
 ARRAY=$(ls -A ${KEYLOCAL} | wc -l )
 MAXSA=${ARRAY}
-if [[ ! -f "${LTKEY}" ]]; then touch "${LTKEY}" ; fi
+if [[ ! -f "${LTKEY}" ]]; then touch "${LTKEY}" && echo "${MINSA}" > "${LTKEY}" ; fi
 USED=$(cat ${LTKEY})
 if [[ "${USED}" != "" ]]; then USED=${USED} && echo "${USED}" > "${LTKEY}" ; else USED=${MINSA} && echo "${MINSA}" > "${LTKEY}" ; fi
 if [[ "${USED}" -eq "${MAXSA}" ]]; then USED=$MINSA && DIFF=1 && echo "${USED}" > "${LTKEY}" ; fi
