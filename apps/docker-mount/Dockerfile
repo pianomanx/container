@@ -53,7 +53,7 @@ RUN \
   && \
   apk del --purge build-dependencies && rm -rf /tmp/* && \
   echo "**** install runtime packages ****" && \
-     apk add --no-cache apk-tools bash busybox coreutils shadow && \
+     apk add --no-cache apk-tools linux-headers bash busybox coreutils shadow && \
   echo "**** create abc user and make our folders ****" && \
      groupmod -g 1000 users && \
      useradd -u 911 -U -d /config -s /bin/false abc && \
