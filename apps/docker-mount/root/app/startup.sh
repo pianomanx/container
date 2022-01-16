@@ -29,11 +29,11 @@ lang
 LANGUAGE=${LANGUAGE}
 startupmount=$(grep -Po '"startup.mount": *\K"[^"]*"' "${LFOLDER}/${LANGUAGE}.json" | sed 's/"\|,//g')
 log "${startupmount}"
-run "${SCRIPT}"
+bash "${SCRIPT}"
 sleep 120
 
 while true; do
-   if [ "$(ls -A ${REMOTE})" ] && [ "$(ps aux | grep -i 'rclone rc mount/mount' | grep -v grep)" != "" ]; then
+   if [ "$(ls -A ${REMOTE})" ]; then
       log "${startuprcloneworks}"
    else
       startup
