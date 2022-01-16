@@ -17,20 +17,27 @@ if pidof -o %PPID -x "$0"; then
    exit 1
 fi
 
+## Bad rclone
+cp -r /app/rclone/rclone.conf /root/.config/rclone/
+## Bad rclone
+
 source /system/mount/mount.env
 source /app/mount/function.sh
 
-mkdir -p "${TMPRCLONE}" "${REMOTE}" && echo OK || echo Failed && exit 1
+mkdir -p "${TMPRCLONE}" "${REMOTE}" && echo OK || exit 1
 
-rcdWAKEUP && echo OK && sleep 5 || echo Failed && exit 1
-rcset && echo OK && sleep 5 || echo Failed && exit 1
-rxc && echo OK && sleep 5 || echo Failed && exit 1
+lang && sleep 5 || exit 1
+rcstart && sleep 5 || exit 1
+rcset && sleep 5 || exit 1
+rcmount && sleep 5 || exit 1
+
+sleep 30
 
 while true; do
-   if [ "$(ls -A /mnt/unionfs)" ] && [ "$(ps aux | grep -i 'rclone rc mount/mount' | grep -v grep)" != "" ]; then
+   if [[ "$(ls -A /mnt/unionfs)" ]]; then
       sleep 360
    else
-      rckill && sleep 5 && rcx && refreshVFS && sleep 360
+      rckill && sleep 5 && rcstart && refreshVFS && sleep 360
    fi
 done
 
