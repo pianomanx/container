@@ -23,17 +23,26 @@ PUID=${PUID:-1000}
 groupmod -o -g "$PGID" abc
 usermod -o -u "$PUID" abc
 
+if [[ -f /dockserver.txt ]]; then cat /dockserver.txt ; fi
+echo '
+-------------------------------------
+GID/UID
+-------------------------------------'
+echo "
+User uid:    $(id -u abc)
+User gid:    $(id -g abc)
+-------------------------------------
+"
+
    cat > /etc/apk/repositories << EOF; $(echo)
 http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/main
 http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/community
 http://dl-cdn.alpinelinux.org/alpine/edge/testing
 EOF
 
-log "**** update system packages ****" && \
    apk --quiet --no-progress update && \
    apk --quiet --no-progress upgrade
 
-log "**** install build packages from requirements ****" && \
    cat /app/requirements.txt | while IFS=$'\n' read -ra myArray; do
       apk add --quiet --no-progress --update ${myArray[@]}
    done
@@ -79,32 +88,25 @@ else
    log "-->> [ WARNING ] ----------------- [ WARNING ] <<--"
    sleep infinity
 fi
+
+KEYLOCAL=/system/servicekeys/keys/
+ARRAY=$(ls -A ${KEYLOCAL} | wc -l )
+if [[ "${ARRAY}" -eq "0" ]]; then
+   log "-->> [ WARNING ] ----------------- [ WARNING ] <<--"
+   log "-->> [ WARNING ]  no match found   [ WARNING ] <<--"
+   log "-->> [ WARNING ]  of GDSA[01=~100] [ WARNING ] <<--"
+   log "-->> [ WARNING ]    or [01=~100]   [ WARNING ] <<--"
+   log "-->> [ WARNING ] ----------------- [ WARNING ] <<--"
+   sleep infinity
+fi
+
 rootfc=/root/.config/rclone/rclone.conf
 if [[ ! -f "${rootfc}" ]]; then mkdir -p /root/.config/rclone/ && ln -s "${CONF}" "${rootfc}" ; fi
 
-rm -rf /var/cache/apk/* \
-       /etc/nginx/nginx.conf
+rm -rf /var/cache/apk/*
 cp -r /conf/nginx.conf /etc/nginx/nginx.conf
 cp -r /conf/fpm-pool.conf /etc/php8/php-fpm.d/www.conf
 cp -r /conf/php.j2 /etc/php8/conf.d/custom.ini
-
-addgroup -S abc
-adduser -S abc -G abc
-PGID=${PGID:-1000}
-PUID=${PUID:-1000}
-groupmod -o -g "$PGID" abc
-usermod -o -u "$PUID" abc
-
-echo "----------------------------------------------------
-
- ____             _                                 
-|  _ \  ___   ___| | _____  ___ _ ____   _____ _ __ 
-| | | |/ _ \ / __| |/ / __|/ _ \ '__\ \ / / _ \ '__|
-| |_| | (_) | (__|   <\__ \  __/ |   \ V /  __/ |   
-|____/ \___/ \___|_|\_\___/\___|_|    \_/ \___|_|
-
-
-----------------------------------------------------"
 
 rm -rf /system/uploader/.keys/{usedupload,lastday} \
        /app/uploader/{pid,discord} \
