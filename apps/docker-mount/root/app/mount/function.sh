@@ -33,7 +33,6 @@ ARRAY=$(ls -A ${JSONDIR} | wc -l )
 
 #SCRIPTS
 SROTATE=/app/mount/rotation.sh
-SCRIPT=/app/mount/mount.sh
 SDISCORD=/app/discord/discord.sh
 
 #FOLDER
@@ -120,7 +119,7 @@ function envrenew() {
 
    diff -q "$ENVA" "$TMPENV"
    if [ $? -gt 0 ]; then
-      rckill && bash "${SCRIPT}"
+      rckill && rcset && rcmount
     else
       echo "no changes" > "${NLOG}"
    fi
@@ -207,9 +206,22 @@ rclone rc fscache/clear --fast-list \
 
 function drivecheck() {
 
-   if [ "$(ls -A /mnt/unionfs)" ] && [ "$(ps aux | grep -i 'rclone mount' | grep -v grep)" != "" ]; then
+   if [ "$(ls -A /mnt/unionfs)" ]; then
       rcclean && refreshVFS
    fi
+
+}
+
+function testrun() {
+
+while true; do
+   if [ "$(ls -A ${REMOTE})" ]; then
+      log "${startuprcloneworks}"
+   else
+      rckill && rcset && rcmount && rcclean
+   fi
+   envrenew && lang && sleep 360 && checkban
+done
 
 }
 
