@@ -60,12 +60,6 @@ function log() {
 
 }
 
-function run() {
-
-   bash "${1}"
-
-}
-
 function checkban() {
 
    tail -n 1 "${MLOG}" | grep --line-buffered 'googleapi: Error' | while read; do
@@ -76,8 +70,7 @@ function checkban() {
        fi
 
        if [[ ${ARRAY} != 0 ]]; then
-          run "${SROTATE}"
-          log "${startuprotate}" 
+          bash "${SROTATE}" && log "${startuprotate}" 
        fi
    done
 
@@ -90,26 +83,23 @@ function discord() {
    YEAR=$(date "+%Y")
 
    if [[ ${ARRAY} -gt 0 ]]; then
-      MSG1=${startuphitlimit}
-      MSG2=${startuprotate}
-      MSGSEND="${MSG1} and ${MSG2}"
-      rm -rf ${DLOG}
+       MSG1=${startuphitlimit}
+       MSG2=${startuprotate}
+       MSGSEND="${MSG1} and ${MSG2}"
+       rm -rf ${DLOG}
    else
-      MSG1=${startuphitlimit}
-      MSGSEND="${MSG1}"
+       MSG1=${startuphitlimit}
+       MSGSEND="${MSG1}"
    fi
 
-   if [[ ! -d "${FDISCORD}" ]]; then
-      mkdir -p "${FDISCORD}"
-   fi
+   if [[ ! -d "${FDISCORD}" ]]; then mkdir -p "${FDISCORD}" : fi
 
    if [[ ! -f "${SDISCORD}" ]]; then
-      curl --silent -fsSL https://raw.githubusercontent.com/ChaoticWeg/discord.sh/master/discord.sh -o "${SDISCORD}"
-      chmod 755 "${SDISCORD}"
+      curl --silent -fsSL https://raw.githubusercontent.com/ChaoticWeg/discord.sh/master/discord.sh -o "${SDISCORD}" && chmod 755 "${SDISCORD}"
    fi
 
    if [[ ! -f "${DLOG}" ]]; then
-      run "${SDISCORD}" \
+      bash "${SDISCORD}" \
       --webhook-url=${DISCORD_WEBHOOK_URL} \
       --title "${DISCORD_EMBED_TITEL}" \
       --avatar "${DISCORD_ICON_OVERRIDE}" \
@@ -130,7 +120,7 @@ function envrenew() {
 
    diff -q "$ENVA" "$TMPENV"
    if [ $? -gt 0 ]; then
-      rckill && run "${SCRIPT}"
+      rckill && bash "${SCRIPT}"
     else
       echo "no changes" > "${NLOG}"
    fi
@@ -149,138 +139,76 @@ function lang() {
 
    if [[ "$currenttime" > "23:59" ]] || [[ "$currenttime" < "00:01" ]]; then
       if [[ -d "/app/language" ]]; then
-         git -C "${LFOLDER}/" stash --quiet
-         git -C "${LFOLDER}/" pull --quiet
-         cd "${LFOLDER}/"
-         git stash clear
+         git -C "${LFOLDER}/" stash --quiet && git -C "${LFOLDER}/" pull --quiet
+         cd "${LFOLDER}/" && git stash clear
       fi
    fi
 
    if [[ ! -d "/app/language" ]]; then
-      mkdir -p "${LFOLDER}/"
-      git -C /app clone https://github.com/dockserver/language.git
+      mkdir -p "${LFOLDER}/" && git -C /app clone https://github.com/dockserver/language.git
    fi
 
 }
 
-function startup() {
+function rcstart() {
 
-   source /system/mount/mount.env
-   rckill && run "${SCRIPT}"
+source /system/mount/mount.env
+screen -d -m bash -c "rclone rcd --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --cache-dir=${TMPRCLONE}";
 
 }
 
 function rcset() {
 
 source /system/mount/mount.env
-rclone rc \
---config=${CONFIG} \
---rc-user=${RC_USER} \
---rc-pass=${RC_PASSWORD} \
-options/set --json '{"main": {
-"LogLevel": "DEBUG",
-"BufferSize": "'${BUFFER_SIZE}'", 
-"Checkers": 32,
-"UseListR": true,
-"UseMmap": true,
-"UseServerModTime": true,
-"TrackRenames": true,
-"UserAgent": "'${UAGENT}'"}}'
+
+rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
+--json '{"vfs": {"CacheMaxSize": "'${VFS_CACHE_MAX_SIZE}'", "CacheMode": 3, "CaseInsensitive": false, "ChunkSize": "'${VFS_READ_CHUNK_SIZE}'", "ChunkSizeLimit": "'${VFS_READ_CHUNK_SIZE_LIMIT}'", "NoChecksum": false, "NoModTime": true, "NoSeek": true}}'
+
+rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
+--json '{"mount": {"AllowNonEmpty": true, "AllowOther": true, "AsyncRead": true, "Daemon": true, "AllowOther": true }}'
+
+rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
+--json '{"main": { "LogLevel": 10 ,"BufferSize": "'${BUFFER_SIZE}'", "Checkers": 32, "TPSLimit": "'${TPSLIMIT}'", "TPSLimitBurst": "'${TPSBURST}'", "UseListR": true, "UseMmap": true, "UseServerModTime": true, "TrackRenames": true, "UserAgent": "'${UAGENT}'" }}'
+
+rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
+--json '{"log": {"File": "'${MLOG}'", "Format": "date,time", "LogSystemdSupport": false }}'
 
 }
 
-function rcx() {
+function rcmount() {
 
-   source /system/mount/mount.env
-
-rclone rc mount/mount \
---config=${CONFIG} \
---rc-user=${RC_USER} \
---rc-pass=${RC_PASSWORD} \
-fs=remote: mountPoint='"$REMOTE"' mountType=mount \
---cache-dir=${TMPRCLONE} \
-logOpt='{ "File": "'${MLOG}'",
-"Format": "date,time",
-"LogSystemdSupport": false }' \
-mainOpt='{ "BufferSize": "'${BUFFER_SIZE}'",
-"Checkers": 32,
-"TPSLimit": "'${TPSLIMIT}'",
-"TPSLimitBurst": "'${TPSBURST}'",
-"UseListR": true,
-"UseMmap": true,
-"UseServerModTime": true,
-"TrackRenames": true,
-"UserAgent": "'${UAGENT}'" }' \
-vfsOpt='{"CacheMaxSize": "'${VFS_CACHE_MAX_SIZE}'",
-"CacheMode": 3,
-"CaseInsensitive": false,
-"ChunkSize": "'${VFS_READ_CHUNK_SIZE}'",
-"ChunkSizeLimit": "'${VFS_READ_CHUNK_SIZE_LIMIT}'",
-"NoChecksum": false,
-"NoModTime": true,
-"NoSeek": true }' \
-mountOpt='{
-"AllowNonEmpty": true,
-"AllowOther": true,
-"AsyncRead": true,
-"Daemon": true,
-"AllowOther": true }'
+source /system/mount/mount.env
+rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} fs=remote: mountPoint="'${REMOTE}'"
 
 }
 
 function refreshVFS() {
 
-   rclone rc vfs/refresh \
-      recursive=true \
-      --fast-list \
-      --rc-user=${RC_USER} \
-      --rc-pass=${RC_PASSWORD} \
-      --config=${CONFIG} \
-      --log-file=${RLLOG} \
-      --log-level=${LOGLEVEL_RC}
+source /system/mount/mount.env
+rclone rc vfs/refresh recursive=true \
+--fast-list --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
+--log-file=${RLLOG} --log-level=${LOGLEVEL_RC}
 
 }
 
 function rckill() {
 
-   source /system/mount/mount.env
-   rclone rc mount/unmount \
-      mountPoint=${REMOTE} \
-      --config=${CONFIG} \
-      --rc-user=${RC_USER} \
-      --rc-pass=${RC_PASSWORD}
+source /system/mount/mount.env
+rclone rc mount/unmount mountPoint=${REMOTE} --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD}
 }
 
-function rcdWAKEUP() {
+function rcclean() {
 
-   source /system/mount/mount.env
-   screen -d -m bash -c "rclone rcd \
-     --rc-user=${RC_USER} \
-     --config=${CONFIG} \
-     --rc-pass=${RC_PASSWORD} \
-     --cache-dir=${TMPRCLONE}";
+rclone rc fscache/clear --fast-list \
+--rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
+--log-file=${RLOG} --log-level=${LOGLEVEL_RC
 
 }
 
 function drivecheck() {
 
    if [ "$(ls -A /mnt/unionfs)" ] && [ "$(ps aux | grep -i 'rclone mount' | grep -v grep)" != "" ]; then
-      rclone rc fscache/clear \
-         --fast-list \
-         --rc-user=${RC_USER} \
-         --rc-pass=${RC_PASSWORD} \
-         --config=${CONFIG} \
-         --log-file=${RLOG} \
-         --log-level=${LOGLEVEL_RC}
-
-      rclone rc vfs/refresh \
-         recursive=true \
-         --fast-list \
-         --rc-user=${RC_USER} \
-         --rc-pass=${RC_PASSWORD} \
-         --config=${CONFIG} \
-         --log-file=${RLOG} \
-         --log-level=${LOGLEVEL_RC}
+      rcclean && refreshVFS
    fi
 
 }
