@@ -18,12 +18,15 @@ grep
 jq
 libacl
 libattr
+libgcc
+libstdc++
 libxml2-dev
 libxml2-utils
 libc-utils
 libintl
 libproc
 libretls
+linux-headers
 linux-pam
 logrotate
 icu-libs
