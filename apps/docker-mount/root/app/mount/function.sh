@@ -181,8 +181,6 @@ options/set --json '{"main": {
 "LogLevel": "DEBUG",
 "BufferSize": "'${BUFFER_SIZE}'", 
 "Checkers": 32,
-"TPSLimit": "'${TPSLIMIT}'",
-"TPSLimitBurst": "'${TPSBURST}'",
 "UseListR": true,
 "UseMmap": true,
 "UseServerModTime": true,
@@ -199,7 +197,7 @@ rclone rc mount/mount \
 --config=${CONFIG} \
 --rc-user=${RC_USER} \
 --rc-pass=${RC_PASSWORD} \
-fs=remote: mountPoint='"${REMOTE}"' mountType=mount \
+fs=remote: mountPoint='"$REMOTE"' mountType=mount \
 --cache-dir=${TMPRCLONE} \
 logOpt='{ "File": "'${MLOG}'",
 "Format": "date,time",
@@ -213,21 +211,14 @@ mainOpt='{ "BufferSize": "'${BUFFER_SIZE}'",
 "UseServerModTime": true,
 "TrackRenames": true,
 "UserAgent": "'${UAGENT}'" }' \
-vfsOpt='{ "CacheMaxAge": "'${VFS_CACHE_MAX_AGE}'",
-"CacheMaxSize": "'${VFS_CACHE_MAX_SIZE}'",
+vfsOpt='{"CacheMaxSize": "'${VFS_CACHE_MAX_SIZE}'",
 "CacheMode": 3,
-"CachePollInterval": "'${VFS_CACHE_POLL_INTERVAL}'",
 "CaseInsensitive": false,
 "ChunkSize": "'${VFS_READ_CHUNK_SIZE}'",
 "ChunkSizeLimit": "'${VFS_READ_CHUNK_SIZE_LIMIT}'",
-"DirCacheTime": "'${DIR_CACHE_TIME}'",
-"GID": "'${PGID}'",
-"UID": "'${PUID}'",
 "NoChecksum": false,
 "NoModTime": true,
-"NoSeek": true,
-"PollInterval": "'${POLL_INTERVAL}'",
-"Umask": "'${UMASK}'" }' \
+"NoSeek": true }' \
 mountOpt='{
 "AllowNonEmpty": true,
 "AllowOther": true,
