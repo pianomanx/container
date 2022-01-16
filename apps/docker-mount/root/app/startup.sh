@@ -18,13 +18,12 @@
 function log() {
    echo "[Mount] ${1}"
 }
+
 if pidof -o %PPID -x "$0"; then
    exit 1
 fi
 
-## Bad rclone
-cp -r /app/rclone/rclone.conf /root/.config/rclone/
-## Bad rclone
+cp -r /app/rclone/rclone.conf /root/.config/rclone/ && sleep 5 || exit 1
 
 source /system/mount/mount.env
 source /app/mount/function.sh
@@ -40,15 +39,6 @@ rcstart && sleep 5 || exit 1
 rcset && sleep 5 || exit 1
 rcmount && sleep 5 || exit 1
 
-sleep 120
-
-while true; do
-   if [ "$(ls -A ${REMOTE})" ]; then
-      log "${startuprcloneworks}"
-   else
-      startup
-   fi
-   envrenew && lang && sleep 360 && checkban
-done
+testrun
 
 #<EOF>#
