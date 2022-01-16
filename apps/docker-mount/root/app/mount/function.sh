@@ -174,6 +174,7 @@ function rcset() {
 
 source /system/mount/mount.env
 rclone rc \
+--config=${CONFIG} \
 --rc-user=${RC_USER} \
 --rc-pass=${RC_PASSWORD} \
 options/set --json '{"main": {
@@ -263,9 +264,10 @@ function rcdWAKEUP() {
 
    source /system/mount/mount.env
    screen -d -m bash -c "rclone rcd \
-     --rc-user="'${RC_USER}'" \
-     --rc-pass="'${RC_PASSWORD}'" \
-     --cache-dir="'${TMPRCLONE}'"";
+     --rc-user=${RC_USER} \
+     --config=${CONFIG} \
+     --rc-pass=${RC_PASSWORD} \
+     --cache-dir=${TMPRCLONE}";
 
 }
 
