@@ -243,22 +243,40 @@ rclone rc vfs/refresh recursive=true \
 function rckill() {
 
 source /system/mount/mount.env
-rclone rc mount/unmount mountPoint=${REMOTE} --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD}
+rclone rc mount/unmount mountPoint=${REMOTE} \
+--rc-user=${RC_USER} --rc-pass=${RC_PASSWORD}
 fusermount -uzq ${REMOTE}
 
 }
 
 function rcclean() {
 
+source /system/mount/mount.env
 rclone rc fscache/clear --fast-list \
 --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
---log-file=${RLOG} --log-level=${LOGLEVEL_RC
+--log-file=${RLOG} --log-level=${LOGLEVEL_RC}
+
+}
+
+function rcstats() {
+# NOTE LATER
+source /system/mount/mount.env
+rclone rc core/stats --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD}
+
+}
+
+function rctest() {
+
+source /system/mount/mount.env
+mount=$(rclone rc mount/listmounts --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} | jq '.[] | .[] | .MountPoint')
 
 }
 
 function drivecheck() {
 
-   if [ "$(ls -A /mnt/unionfs)" ]; then
+   mount=$(rclone rc mount/listmounts --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} | jq '.[] | .[] | .MountPoint')
+
+   if [ "$(ls -A /mnt/unionfs)" ] && [ "${mount}" == "${REMOTE}" ]; then
       rcclean && refreshVFS
    fi
 
@@ -267,7 +285,8 @@ function drivecheck() {
 function testrun() {
 
 while true; do
-   if [ "$(ls -A ${REMOTE})" ]; then
+   rctest
+   if [ "$(ls -A ${REMOTE})" ] && [ "${mount}" == "${REMOTE}" ]; then
       log "${startuprcloneworks}"
    else
       rckill && rcset && rcmount && rcclean
