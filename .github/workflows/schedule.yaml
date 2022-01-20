@@ -56,9 +56,22 @@ jobs:
     needs: [ get-version, contrib ]
     runs-on: ubuntu-latest
     steps:
+    steps:
     - uses: actions/checkout@v2
       with:
         token: ${{ secrets.CR_PAT }}
-    - name: check-mixed-line-endings
-      uses: ymwymw/check-mixed-line-endings@v2
+        fetch-depth: 0
 
+    - name: Run CRLF changes
+      run: |
+        API=$(curl -H "Authorization: token ${{ secrets.CR_PAT }}" -X GET https://api.github.com/rate_limit | jq --raw-output '.rate.limit')
+        if [[ $API -gt 101 ]]; then
+           echo "Fetch new Versions"
+           if test -f "./.github/crlf.sh"; then
+              bash "./.github/crlf.sh"
+           fi
+        elif [[ $API -lt 100 ]]; then
+             echo " GitHube API busted " && exit 0
+        else
+             echo " no reponse from Github API ? Maybe down or busted " && exit 0
+        fi
