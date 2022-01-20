@@ -80,7 +80,7 @@ while true;do
    if [[ "${DRIVEUSEDSPACE}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then
       source /system/uploader/uploader.env
       while true; do 
-         LCT=$(df --output=pcent ${DLFOLDER} | tail -n 1 | cut -d'%' -f1)
+         LCT=$(df --output=pcent ${DLFOLDER} --exclude={./nzb,./torrent} | tail -n 1 | cut -d'%' -f1)
          if [ $DRIVEUSEDSPACE \> $LCT ]; then sleep 60 && continue ; else sleep 5 && break ; fi
       done
    fi
@@ -107,7 +107,7 @@ while true;do
          FILEGB=$(( $UPFILE/1024**3 ))
          DIFF=$(( $DIFF+$FILEGB ))
          source /system/uploader/uploader.env
-         LCT=$(df --output=pcent ${DLFOLDER} | tail -n 1 | cut -d'%' -f1)
+         LCT=$(df --output=pcent ${DLFOLDER} --exclude={./nzb,./torrent} | tail -n 1 | cut -d'%' -f1)
             if [[ "${DRIVEUSEDSPACE}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then
                if [ $DRIVEUSEDSPACE \> $LCT ]; then rm -rf "${CHK}" && DIFF=1 && sleep 5 && break ; fi
             fi
