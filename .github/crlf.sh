@@ -17,6 +17,7 @@
    git config --global user.name 'github-actions[bot]'
    git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
+   git pull --rebase
    git config core.autocrlf
    git add . -u
    git commit -sam "[CLRF] Saving files before refreshing line endings"
