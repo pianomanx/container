@@ -16,8 +16,6 @@
 
 export username=${username}
 export token=${token}
-git config --global user.name 'github-actions[bot]'
-git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
 folder=$(ls -1p ./ | grep '/$' | sed 's/\/$//')
 
@@ -67,11 +65,6 @@ sleep 5
 if [[ -n $(git status --porcelain) ]]; then
    git config --global user.name 'github-actions[bot]'
    git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-   git config core.autocrlf
-   git add . -u && git commit -sam "[CLRF] Saving files before refreshing line endings"
-   git repack -a -d --depth=5000 --window=5000
-   git add --renormalize .&& git commit -m "[CLRF] Normalize all the line endings"
-   git push --force && git pull --rebase
    git repack -a -d --depth=5000 --window=5000
    git add -A && git commit -sam "[Auto Generation] Adding new release version" || exit 0
    git push --force
