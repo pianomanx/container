@@ -11,7 +11,7 @@ TERM="xterm"
 RUN \
   echo "**** install build packages ****" \
   && apk add --no-cache --virtual=build-dependencies tar curl jq \
-  && OVERLAY=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') \
+  && OVERLAY=2.2.0.3 \
   && set -x && ARCH=$(uname -m) \
   && case "${ARCH}" in \
      x86_64) \
