@@ -11,21 +11,17 @@ RUN \
 # grab base tarball
 RUN \
  mkdir /root-out && \
- curl -o \
-	/rootfs.tar.gz -L \
-	https://partner-images.canonical.com/core/${REL}/current/ubuntu-${REL}-core-cloudimg-${ARCH}-root.tar.gz && \
- tar xf \
-        /rootfs.tar.gz -C \
-        /root-out
+ curl -o /rootfs.tar.gz -L https://partner-images.canonical.com/core/${REL}/current/ubuntu-${REL}-core-cloudimg-${ARCH}-root.tar.gz && \
+ tar xf /rootfs.tar.gz -C /root-out
 
 # Runtime stage
 FROM scratch
 COPY --from=rootfs-stage /root-out/ /
 ARG VERSION
+ARG OVERLAY=v2.2.0.3
 
 RUN \
   apt-get update -yqq && apt-get install -yqq curl tzdata curl tar jq \
-  && OVERLAY_VERSION=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') \
   && OVERLAY_ARCH='amd64' && curl -L -s https://github.com/just-containers/s6-overlay/releases/download/${OVERLAY_VERSION}/s6-overlay-${OVERLAY_ARCH}.tar.gz | tar xvzf - -C / \
   && apt-get autoremove -yqq && apt-get clean \
   && rm -rf \

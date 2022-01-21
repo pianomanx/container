@@ -14,6 +14,7 @@ FROM alpine:3.15
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 ARG VERSION
+ARG OVERLAY=v2.2.0.3
 
 # environment variables
 ENV PS1="$(whoami)@$(hostname):$(pwd)\\$ " \
@@ -23,7 +24,6 @@ TERM="xterm"
 RUN \
   echo "**** install build packages ****" \
   && apk add --no-cache --virtual=build-dependencies tar curl jq \
-  && OVERLAY=$(curl -sL "https://api.github.com/repos/just-containers/s6-overlay/releases/latest" | jq -r '. | .tag_name') \
   && set -x && ARCH=$(uname -m) \
   && case "${ARCH}" in \
      x86_64) \
