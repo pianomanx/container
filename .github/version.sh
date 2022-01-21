@@ -25,7 +25,8 @@ sleep 5
 for i in ${folder[@]}; do
    find ./$i -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read app; do
       if test -f "./$i/${app}/latest-overlay.sh"; then
-         version=$(bash "./$i/${app}/latest-overlay.sh")        
+         ##version=$(bash "./$i/${app}/latest-overlay.sh")
+         version=v2.2.0.3
          if [[ ! -z "${version}" || "${version}" != "" || "${version}" != 'null' ]]; then
             echo "${version}" | tee "./$i/${app}/OVERLAY_VERSION" > /dev/null
             echo "${app} 2.2.0.3"
@@ -35,6 +36,10 @@ for i in ${folder[@]}; do
             echo "${app} failed to update"
             unset version
          fi
+      else
+         echo "${version}" | tee "./$i/${app}/OVERLAY_VERSION" > /dev/null
+         echo "${app} 2.2.0.3"
+         unset version 
       fi
    done
 done
