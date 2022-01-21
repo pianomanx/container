@@ -28,7 +28,7 @@ for i in ${folder[@]}; do
          version=$(bash "./$i/${app}/latest-overlay.sh")        
          if [[ ! -z "${version}" || "${version}" != "" || "${version}" != 'null' ]]; then
             echo "${version}" | tee "./$i/${app}/OVERLAY_VERSION" > /dev/null
-            echo "${app} ${version}"
+            echo "${app} 2.2.0.3"
             unset version
          else
             ##cat "./$i/${app}/OVERLAY_VERSION" | tee "./$i/${app}/OVERLAY_VERSION" > /dev/null
