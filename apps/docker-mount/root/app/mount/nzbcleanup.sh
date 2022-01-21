@@ -16,6 +16,11 @@
 # shellcheck disable=SC2002
 # shellcheck disable=SC2006
 ## GLOBAL SETTINGS
+
+if pidof -o %PPID -x "$0"; then
+   exit 1
+fi
+
 SMOUNT=/app/cleanup
 if [[ -f "${SMOUNT}/nzbcleanup.sh" ]]; then chmod 777 ${SMOUNT}/nzbcleanup.sh; fi
 
@@ -33,14 +38,14 @@ while true; do
 
    if [[ ${NZBCLEANUP} != "false" ]]; then
       if [[ ! ${DRIVEPERCENT} -ge ${DRIVEUSEDPERCENT} ]]; then
-         sleep 120 && continue
+         sleep 120
       else
          $(command -v find) ${NZBBACKUPFOLDER}/* -type d -mmin +${NZBBACKUPTIME} -exec rm -rf {} \; >/dev/null 2>&1
          $(command -v find) ${NZBDOWNLOADFOLDER}/* -type f -mmin +${NZBDOWNLOADTIME} -exec rm -rf {} \; >/dev/null 2>&1
-         sleep 120 && break
+         sleep 120
       fi
    else
-      sleep 120 && continue
+      sleep 120
    fi
 done
 #<EOF>#

@@ -11,8 +11,7 @@ ARG BUILDPLATFORM
 RUN \
     echo "**** update build ****" && \
     apk --quiet --no-cache --no-progress update && \
-    apk --quiet --no-cache --no-progress upgrade
-RUN \
+    apk --quiet --no-cache --no-progress upgrade && \
     echo "**** install build packages ****" && \
     apk --quiet --no-cache --no-progress add bash musl shadow && \
     apk del --quiet --clean-protected --no-progress && \

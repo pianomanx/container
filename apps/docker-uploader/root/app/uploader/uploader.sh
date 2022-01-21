@@ -14,9 +14,6 @@
 function log() {
     echo "${1}"
 }
-
-if pidof -o %PPID -x "$0"; then exit 1; fi
-
 log "dockserver.io Multi-Thread Uploader started"
 
 BASE=/system/uploader
@@ -69,8 +66,9 @@ deluge/**
 EOF
 fi
 
-ARRAY=$(ls -1v ${KEYLOCAL} | wc -l )
+ARRAY=$(ls -A ${KEYLOCAL} | wc -l )
 MAXSA=${ARRAY}
+if [[ ! -f "${LTKEY}" ]]; then touch "${LTKEY}" && echo "${MINSA}" > "${LTKEY}" ; fi
 USED=$(cat ${LTKEY})
 if [[ "${USED}" != "" ]]; then USED=${USED} && echo "${USED}" > "${LTKEY}" ; else USED=${MINSA} && echo "${MINSA}" > "${LTKEY}" ; fi
 if [[ "${USED}" -eq "${MAXSA}" ]]; then USED=$MINSA && DIFF=1 && echo "${USED}" > "${LTKEY}" ; fi
@@ -82,7 +80,7 @@ while true;do
    if [[ "${DRIVEUSEDSPACE}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then
       source /system/uploader/uploader.env
       while true; do 
-         LCT=$(df --output=pcent ${DLFOLDER} | tail -n 1 | cut -d'%' -f1)
+         LCT=$(df --output=pcent ${DLFOLDER} --exclude={./nzb,./torrent} | tail -n 1 | cut -d'%' -f1)
          if [ $DRIVEUSEDSPACE \> $LCT ]; then sleep 60 && continue ; else sleep 5 && break ; fi
       done
    fi
@@ -108,7 +106,8 @@ while true;do
             echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" > "${DONE}/${FILE}.json"
          FILEGB=$(( $UPFILE/1024**3 ))
          DIFF=$(( $DIFF+$FILEGB ))
-         LCT=$(df --output=pcent ${DLFOLDER} | tail -n 1 | cut -d'%' -f1)
+         source /system/uploader/uploader.env
+         LCT=$(df --output=pcent ${DLFOLDER} --exclude={./nzb,./torrent} | tail -n 1 | cut -d'%' -f1)
             if [[ "${DRIVEUSEDSPACE}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then
                if [ $DRIVEUSEDSPACE \> $LCT ]; then rm -rf "${CHK}" && DIFF=1 && sleep 5 && break ; fi
             fi

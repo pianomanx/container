@@ -31,6 +31,7 @@ php8-intl
 php8-fpm
 php8-json
 php8-openssl
+php8-opcache
 php8-curl
 php8-zlib
 php8-xml

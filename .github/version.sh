@@ -17,8 +17,6 @@
 export username=${username}
 export token=${token}
 
-##folder="apps base nightly"
-
 folder=$(ls -1p ./ | grep '/$' | sed 's/\/$//')
 
 echo "${folder}"
@@ -68,9 +66,8 @@ if [[ -n $(git status --porcelain) ]]; then
    git config --global user.name 'github-actions[bot]'
    git config --global user.email 'github-actions[bot]@users.noreply.github.com'
    git repack -a -d --depth=5000 --window=5000
-   git add -A
-   git commit -sam "[Auto Generation] Adding new release version" || exit 0
-   git push
+   git add -A && git commit -sam "[Auto Generation] Adding new release version" || exit 0
+   git push --force
 fi
 
 exit

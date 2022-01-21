@@ -14,9 +14,15 @@
 #####################################
 path=/system/mount/logs
 
+if pidof -o %PPID -x "$0"; then
+   exit 1
+fi
+
 while true; do
   LSTATS=$(stat -c %s ${path}/rclone-union.log)
-  if [[ ${LSTATS} -ge "2000" ]]; then $(command -v truncate) -s 0 ${path}/*.log; fi
+  if [[ ${LSTATS} -ge "2000000" ]]; then
+     $(command -v truncate) -s 0 ${path}/*.log
+  fi
   sleep 6h
 done
 #<EOF>#

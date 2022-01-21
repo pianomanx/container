@@ -19,44 +19,33 @@
 # shellcheck disable=SC2046
 
 cat > /etc/apk/repositories << EOF; $(echo)
-alpine repos#
-http://dl-cdn.alpinelinux.org/alpine/edge/community/
-http://dl-cdn.alpinelinux.org/alpine/edge/main/
-http://dl-cdn.alpinelinux.org/alpine/edge/testing/
+http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/main
+http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/community
+http://dl-cdn.alpinelinux.org/alpine/edge/testing
 EOF
 
    apk --quiet --no-cache --no-progress update && \
-   apk --quiet --no-cache --no-progress upgrade
+   apk --quiet --no-cache --no-progress upgrade && \
+   apk add --quiet --no-cache --no-progress --virtual=build-dependencies \
+      aria2 curl findutils coreutils unzip jq bc unzip shadow musl
 
-   inst=(bc curl unzip shadow musl findutils coreutils aria2)
-   apk add --quiet --no-cache --no-progress --virtual=build-dependencies ${inst[@]}
+ARCH="$(command arch)"
+if [ "${ARCH}" = "x86_64" ]; then
+   export ARCH="amd64"
+elif [ "${ARCH}" = "aarch64" ]; then
+     export ARCH="arm64"
+elif [ "${ARCH}" = "armv7l" ]; then
+     export ARCH="armhf"
+else
+    echo "**** Unsupported Linux architecture ${ARCH} found, exiting... ****" && exit 1
+fi
 
-rclone_version=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
-
-case "$(arch)" in
-   x86_64)
-      platform=linux-amd64
-      rclone_file=rclone-v${rclone_version}-${platform}.zip
-     ;;
-   armv7l)
-     platform=linux-armv7
-     rclone_file=rclone-v${rclone_version}-linux-arm-v7.zip
-     ;;
-   aarch64)
-     platform=linux-arm64
-     rclone_file=rclone-v${rclone_version}-${platform}.zip
-     ;;
-   *)
-     echo "[ERROR] unsupported arch $(arch), exit now"
-     exit 1
-     ;;
-esac
-
-aria2c -x2 -k1M -d /tmp -o rclone.zip https://downloads.rclone.org/v${rclone_version}/${rclone_file}
-cd /tmp/ && unzip rclone.zip
-cd /tmp/rclone-*
-cp rclone /usr/local/bin/ \
-  && rm -rf /tmp/rclone*
+VERSION=$(curl -sX GET "https://api.github.com/repos/rclone/rclone/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | sed -e 's_^v__')
+aria2c -x2 -k1M -d /tmp -o rclone.zip https://github.com/rclone/rclone/releases/download/v${VERSION}/rclone-v${VERSION}-linux-${ARCH}.zip && \
+cd /tmp/ && unzip -q /tmp/rclone.zip
+mv /tmp/rclone-*-linux-${ARCH}/rclone /usr/local/bin/
+apk del --quiet --purge build-dependencies && \
+echo "**** cleanup ****" && \
 rm -rf /var/cache/apk/* /tmp/*
 
 if [ -f "/system/rclone/.env" ] && [ -f "/system/rclone/.token" ]; then
