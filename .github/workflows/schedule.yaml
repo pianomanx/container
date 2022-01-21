@@ -56,7 +56,6 @@ jobs:
     needs: [ get-version, contrib ]
     runs-on: ubuntu-latest
     steps:
-    steps:
     - uses: actions/checkout@v2
       with:
         token: ${{ secrets.CR_PAT }}
