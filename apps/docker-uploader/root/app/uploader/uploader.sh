@@ -33,6 +33,8 @@ CRYPTED=""
 BWLIMIT=""
 USERAGENT=""
 
+cp ${CONFIG} /root/.config/rclone/rclone.conf 
+
 mkdir -p "${LOGFILE}" "${START}" "${DONE}" 
 find "${BASE}" -type f -name '*.log' -delete
 find "${BASE}" -type f -name '*.txt' -delete
