@@ -98,8 +98,8 @@ while true;do
         fi
       done
    fi
-   COUNTFILES=$(rclone lsf --files-only -R --min-age="${MIN_AGE_FILE}" --exclude-from="${EXCLUDE}" "${DLFOLDER}" | wc -l)
-   rclone lsf --files-only -R --min-age="${MIN_AGE_FILE}" --separator "|" --format="tp" --order-by="modtime" --exclude-from="${EXCLUDE}" "${DLFOLDER}" | sort  > "${CHK}" 2>&1
+   COUNTFILES=$(rclone lsf --files-only -R --min-age="${MIN_AGE_FILE}" --config="${CONFIG}" --exclude-from="${EXCLUDE}" "${DLFOLDER}" | wc -l)
+   rclone lsf --files-only -R --min-age="${MIN_AGE_FILE}" --config="${CONFIG}" --separator "|" --format="tp" --order-by="modtime" --exclude-from="${EXCLUDE}" "${DLFOLDER}" | sort  > "${CHK}" 2>&1
    if [ "${COUNTFILES}" -gt 0 ]; then
       cat "${CHK}" | while IFS=$'\n|' read -ra UPP; do
          if [[ -f "${LTKEY}" ]]; then USED=$(cat ${LTKEY}) ; else USED=${USED} ; fi
