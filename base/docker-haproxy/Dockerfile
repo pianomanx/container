@@ -9,12 +9,6 @@ FROM haproxy:${VERSION}
 
 EXPOSE 2375
 
-RUN \
-  apk add --no-cache curl && \
-  curl -o \
-  /usr/local/etc/haproxy/haproxy.cfg -L \
-  "https://raw.githubusercontent.com/Tecnativa/docker-socket-proxy/master/haproxy.cfg"
-
 ENV ALLOW_RESTARTS=0 \
     AUTH=0 \
     BUILD=0 \
@@ -43,4 +37,4 @@ ENV ALLOW_RESTARTS=0 \
     VERSION=1 \
     VOLUMES=0
 
-##COPY ./base/docker-haproxy/root/haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
+COPY ./base/docker-haproxy/root/haproxy.cfg /usr/local/etc/haproxy/haproxy.cfg
