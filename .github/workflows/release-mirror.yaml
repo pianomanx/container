@@ -198,3 +198,54 @@ jobs:
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
+
+    - name: Send notification
+      if: ${{ github.event_name != 'pull_request' }}
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_RLS }}
+        DIGESTS: ${{ steps.build-and-push.outputs.digest }}
+        VERSION: ${{ steps.prep.outputs.version }}
+        COLOR: 3066993
+        BOTNAME: 'DockServerRelease-Bot'
+      shell: bash
+      run: |
+        export DOCKER_CLI_EXPERIMENTAL=enabled
+        if [[ -f "./${CATEGORY}/${{ matrix.container }}/image.png" ]]; then
+           echo "found ${{ matrix.container }} image.png"
+        else
+           ./github/image.png
+        fi
+        json='{
+          "username": "Docker Image Update",
+          "avatar_url": "https://octodex.github.com/images/Terracottocat_Single.png",
+          "embeds": [
+            {
+            "title": "'${{ matrix.container }}'",
+            "color": '${COLOR}',
+            "fields": [
+              {
+                "name": "Message",
+                "value": "'${{ matrix.container }}' update",
+                "inline": true
+              },
+              {
+                "name": "Version",
+                "value": "'${VERSION:----}'",
+                "inline": true
+              },
+              {
+                "name": "Digests",
+                "value": "```'"$(echo "${DIGESTS:----}" | tr '\n' '#' | sed 's/#/\\n/g')"'```"
+              }
+            ],
+            "footer": {
+              "text": "Powered by GitHub Actions"
+             },
+             "timestamp": "'$(date -u +'%FT%T.%3NZ')'",
+             "image": {
+               "url": "attachment://image.png"
+             }
+           }
+          ]
+        }'
+        curl -fsSL --retry 5 -H "Content-Type: multipart/form-data" -F "file=@image.png" -F "payload_json=${json}" "${DISCORD_WEBHOOK}" > /dev/null
