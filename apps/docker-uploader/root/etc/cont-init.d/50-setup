@@ -100,11 +100,12 @@ if [[ "${ARRAY}" -eq "0" ]]; then
    sleep infinity
 fi
 
-cp ${CONFIG} /root/.config/rclone/rclone.conf 
 rm -rf /var/cache/apk/*
+
 cp -r /conf/nginx.conf /etc/nginx/nginx.conf
 cp -r /conf/fpm-pool.conf /etc/php8/php-fpm.d/www.conf
 cp -r /conf/php.j2 /etc/php8/conf.d/custom.ini
+cp -r ${CONF} /root/.config/rclone/rclone.conf
 
 rm -rf /system/uploader/.keys/{usedupload,lastday} \
        /app/uploader/{pid,discord} \
@@ -118,10 +119,12 @@ USERAGENT=${USERAGENT:-null}
 if [[ ${USERAGENT} == 'null' ]]; then
    USERAGENT=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1)
 fi
+
 global=/mnt/downloads
 find ${global} -type f -name '*.lck' -delete
 chown -cR abc:abc /app /system/* > /dev/null
 chmod -cR 755 /app /system/* > /dev/null
+chown -cR abc:abc /root/.config/ > /dev/null
 
 sample=/app/uploader/.sample.uploader.env
 uploaderenv=/system/uploader/uploader.env
