@@ -21,6 +21,10 @@ env:
   PLATFORM: "linux/amd64,linux/arm64"
   LICENSE: "GPL-3.0 DockServer.io"
   CODE_OWNED: "base image LSIO, changes dockserver.io"
+  BOTNAME: "Docker Image Update"
+  LINK: "https://raw.githubusercontent.com/dockserver/container/master"
+  AVATAR: "https://octodex.github.com/images/Terracottocat_Single.png"
+  COLOR: "3066993"
 
 jobs:
   get-version:
@@ -216,27 +220,23 @@ jobs:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_RLS }}
         DIGESTS: ${{ steps.build-and-push.outputs.digest }}
         VERSION: ${{ steps.prep.outputs.version }}
-        COLOR: 3066993
-        BOTNAME: 'Docker Image Update'
-        LINK: https://raw.githubusercontent.com/dockserver/container/master
-        AVATAR: https://octodex.github.com/images/Terracottocat_Single.png
       shell: bash
       run: |
         export DOCKER_CLI_EXPERIMENTAL=enabled
         if [[ ! -f "./images/${{ matrix.container }}.png" ]]; then
-            curl -fsSL --retry 5 "${LINK}/.github/image.png" > image.png
+            curl -fsSL --retry 5 "${{ env.LINK }}/.github/image.png" > image.png
         else
-            curl -fsSL --retry 5 "${LINK}/images/${{ matrix.container }}.png" > image.png
+            curl -fsSL --retry 5 "${{ env.LINK }}/images/${{ matrix.container }}.png" > image.png
         fi
         json='{
-          "username": "'${BOTNAME}'",
-          "avatar_url": "'${AVATAR}'",
+          "username": "'${{ env.BOTNAME }}'",
+          "avatar_url": "'${{ env.AVATAR }}'",
           "embeds": [
             {
             "title": "'${{ matrix.container }}'",
-            "content": "We published a new container image '${{ matrix.container }}' ",
+            "content": "We published a new container image '${{ matrix.container }}'",
             "url": "https://github.com/orgs/'${{ github.repository_owner }}'/packages/container/package/'${{ matrix.container }}'",
-            "color": '${COLOR}',
+            "color": '${{ env.COLOR }}',
             "fields": [
               {
                 "name": "Container Info",
@@ -254,7 +254,7 @@ jobs:
                 "inline": true
               },
               {
-                "name": "Docker Tags Dockserver Registry",
+                "name": "Docker Tags Dockserver Registry ",
                 "value": "docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest or docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'",
                 "inline": true
               },
