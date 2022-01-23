@@ -237,7 +237,7 @@ jobs:
               },
               {
                 "name": "Docker Tags",
-                "value": "docker.dockserver.io/${{ github.repository_owner }}/${{ matrix.container }}:latest\n\n docker.dockserver.io/${{ github.repository_owner }}/${{ matrix.container }}:v${{ steps.prep.outputs.version }}"
+                "value": "docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest\n\n docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'"
               },
               {
                 "name": "Digests",
