@@ -217,18 +217,20 @@ jobs:
         DIGESTS: ${{ steps.build-and-push.outputs.digest }}
         VERSION: ${{ steps.prep.outputs.version }}
         COLOR: 3066993
-        BOTNAME: 'DockServerRelease-Bot'
+        BOTNAME: 'Docker Image Update'
+        LINK: https://raw.githubusercontent.com/dockserver/container/master
+        AVATAR: https://octodex.github.com/images/Terracottocat_Single.png
       shell: bash
       run: |
         export DOCKER_CLI_EXPERIMENTAL=enabled
-        if [[ ! -f "./images/${{ matrix.container }}/image.png" ]]; then
-            curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/.github/image.png" > image.png
+        if [[ ! -f "./images/${{ matrix.container }}.png" ]]; then
+            curl -fsSL --retry 5 "${LINK}/.github/image.png" > image.png
         else
-            mv ./images/${{ matrix.container }}/image.png image.png
+            curl -fsSL --retry 5 "${LINK}/images/${{ matrix.container }}.png" > image.png
         fi
         json='{
-          "username": "Docker Image Update",
-          "avatar_url": "https://octodex.github.com/images/Terracottocat_Single.png",
+          "username": "'${BOTNAME}'",
+          "avatar_url": "'${AVATAR}'",
           "embeds": [
             {
             "title": "'${{ matrix.container }}'",
