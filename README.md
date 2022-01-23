@@ -2,13 +2,22 @@
 
 ---
 
-## WIP 
+We are out of the dev version.
 
-Not all Containers are running smoothly 
-Not all code is working 
+All Containers can be used without breaking.
 
-I don't accept any pull request
+You can use all with dockserver
 
+Don't use the images / dockers on other projects
+This should not work for you.
+
+--- 
+
+## Before open a feature request/ pull_request or issues
+
+1. We don't accept pull_request for other projects.
+1. We don't accept any changes what breaks dockserver.
+1. We dodn't give any help for other projects to run this dockers.
 ---
 
 # NOTE 
@@ -24,7 +33,7 @@ Please check before you run it on other systems
 
 And the best is 
 
-# Fuck XOXO SBOX stealing code to get your product up and running is a bitch move
+Fuck XOXO SBOX stealing code to get your product up and running is a bitch move
 
 
 ---
