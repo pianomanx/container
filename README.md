@@ -52,6 +52,13 @@ Fuck XOXO SBOX stealing code to get your product up and running is a bitch move
 
 ---
 
+SOME fancy stats 
+
+
+![metrics](./github-metrics.svg)
+
+---
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people
