@@ -232,21 +232,31 @@ jobs:
           "embeds": [
             {
             "title": "'${{ matrix.container }}'",
+            "content": "We published a new container image '${{ matrix.container }}' ",
+            "url": "https://github.com/dockserver/'${{ matrix.container }}'/pkgs/container/'${{ matrix.container }}'",
             "color": '${COLOR}',
             "fields": [
               {
-                "name": "Message",
+                "name": "Container Info",
                 "value": "'${{ matrix.container }}' update",
                 "inline": true
               },
               {
                 "name": "Version",
-                "value": "'${VERSION:----}'",
+                "value": "new '${VERSION:----}'",
                 "inline": true
+              },
+              {
+                "name": "Docker Tags",
+                "value": "'${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest\n\n '${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'"
               },
               {
                 "name": "Digests",
                 "value": "```'"$(echo "${DIGESTS:----}" | tr '\n' '#' | sed 's/#/\\n/g')"'```"
+              },
+              {
+                "name": "Thanks!",
+                "value": "Thanks! to all Contributors"
               }
             ],
             "footer": {
