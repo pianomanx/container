@@ -216,24 +216,24 @@ jobs:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_RLS }}
         DIGESTS: ${{ steps.build-and-push.outputs.digest }}
         VERSION: ${{ steps.prep.outputs.version }}
+        COLOR: 3066993
       shell: bash
       run: |
         export DOCKER_CLI_EXPERIMENTAL=enabled
         if [[ ! -f "./images/${{ matrix.container }}.png" ]]; then
-            curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/.github/image.png" > image.png
+            curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/image.png" > image.png
         else
             curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/${{ matrix.container }}.png" > image.png
         fi
-
         json='{
           "username": "Docker Image Update",
           "avatar_url": "https://octodex.github.com/images/Terracottocat_Single.png",
           "embeds": [
             {
             "title": "'${{ matrix.container }}'",
-            "description": "We published a new container image '${{ matrix.container }}'",
+            "content": "We published a new container image '${{ matrix.container }}' ",
             "url": "https://github.com/orgs/'${{ github.repository_owner }}'/packages/container/package/'${{ matrix.container }}'",
-            "color": 3066993,
+            "color": '${COLOR}',
             "fields": [
               {
                 "name": "Container Info",
@@ -242,16 +242,16 @@ jobs:
               },
               {
                 "name": "Version",
-                "value": "new Version public : ${VERSION:----}'",
+                "value": "new Version public : '${VERSION:----}'",
                 "inline": true
               },
               {
-                "name": "Docker Tags '${{ secrets.DOCKER_REGISTRY }}' ",
+                "name": "Docker Tags '${{ secrets.DOCKER_REGISTRY }}'",
                 "value": "'${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest or '${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'",
                 "inline": true
               },
               {
-                "name": "Docker Tags Dockserver Registry ",
+                "name": "Docker Tags Dockserver Registry",
                 "value": "docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest or docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'",
                 "inline": true
               },
