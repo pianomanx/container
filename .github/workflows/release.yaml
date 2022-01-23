@@ -21,10 +21,6 @@ env:
   PLATFORM: "linux/amd64,linux/arm64"
   LICENSE: "GPL-3.0 DockServer.io"
   CODE_OWNED: "base image LSIO, changes dockserver.io"
-  BOTNAME: "Docker Image Update"
-  LINK: "https://raw.githubusercontent.com/dockserver/container/master"
-  AVATAR: "https://octodex.github.com/images/Terracottocat_Single.png"
-  COLOR: "3066993"
 
 jobs:
   get-version:
@@ -224,19 +220,20 @@ jobs:
       run: |
         export DOCKER_CLI_EXPERIMENTAL=enabled
         if [[ ! -f "./images/${{ matrix.container }}.png" ]]; then
-            curl -fsSL --retry 5 "${{ env.LINK }}/.github/image.png" > image.png
+            curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/.github/image.png" > image.png
         else
-            curl -fsSL --retry 5 "${{ env.LINK }}/images/${{ matrix.container }}.png" > image.png
+            curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/${{ matrix.container }}.png" > image.png
         fi
+
         json='{
-          "username": "'${{ env.BOTNAME }}'",
-          "avatar_url": "'${{ env.AVATAR }}'",
+          "username": "Docker Image Update",
+          "avatar_url": "https://octodex.github.com/images/Terracottocat_Single.png",
           "embeds": [
             {
             "title": "'${{ matrix.container }}'",
-            "content": "We published a new container image '${{ matrix.container }}'",
+            "description": "We published a new container image '${{ matrix.container }}'",
             "url": "https://github.com/orgs/'${{ github.repository_owner }}'/packages/container/package/'${{ matrix.container }}'",
-            "color": '${{ env.COLOR }}',
+            "color": 3066993,
             "fields": [
               {
                 "name": "Container Info",
