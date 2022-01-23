@@ -238,12 +238,12 @@ jobs:
             "fields": [
               {
                 "name": "Container Info",
-                "value": "'${{ matrix.container }}' update",
+                "value": "'${{ matrix.container }}'",
                 "inline": true
               },
               {
                 "name": "Version",
-                "value": "new '${VERSION:----}'",
+                "value": "new Version public : ${VERSION:----}'",
                 "inline": true
               },
               {
