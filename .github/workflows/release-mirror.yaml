@@ -226,7 +226,7 @@ jobs:
             "color": '${COLOR}',
             "fields": [
               {
-                "name": "Message",
+                "name": "Container Info",
                 "value": "'${{ matrix.container }}' update",
                 "inline": true
               },
@@ -244,8 +244,8 @@ jobs:
                 "value": "```'"$(echo "${DIGESTS:----}" | tr '\n' '#' | sed 's/#/\\n/g')"'```"
               },
               {
-                "name": "Thanks",
-                "value": "Thabks to all Contributors"
+                "name": "Thanks!",
+                "value": "Thanks! to all Contributors"
               }
             ],
             "footer": {
