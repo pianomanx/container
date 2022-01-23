@@ -52,3 +52,4 @@ jobs:
           plugin_pagespeed_token: ${{ secrets.PAGESPEED }}
           plugin_pagespeed_url: https://dockserver.io 
           token: ${{ secrets.CR_PAT }}
+
