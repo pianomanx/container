@@ -247,8 +247,13 @@ jobs:
                 "inline": true
               },
               {
-                "name": "Docker Tags",
+                "name": "Docker Tags '${{ secrets.DOCKER_REGISTRY }}' ",
                 "value": "'${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest or '${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'",
+                "inline": true
+              },
+              {
+                "name": "Docker Tags Dockserver Registry",
+                "value": "docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest or docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'",
                 "inline": true
               },
               {
