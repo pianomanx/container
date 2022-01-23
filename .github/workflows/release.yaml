@@ -233,7 +233,7 @@ jobs:
             {
             "title": "'${{ matrix.container }}'",
             "content": "We published a new container image '${{ matrix.container }}' ",
-            "url": "https://github.com/dockserver/'${{ matrix.container }}'/pkgs/container/'${{ matrix.container }}'",
+            "url": "https://github.com/orgs/'${{ github.repository_owner }}'/packages/container/package/'${{ matrix.container }}'",
             "color": '${COLOR}',
             "fields": [
               {
@@ -248,7 +248,8 @@ jobs:
               },
               {
                 "name": "Docker Tags",
-                "value": "'${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest\n\n '${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'"
+                "value": "'${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest or '${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'",
+                "inline": true
               },
               {
                 "name": "Digests",
