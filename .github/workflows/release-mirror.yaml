@@ -210,10 +210,10 @@ jobs:
       shell: bash
       run: |
         export DOCKER_CLI_EXPERIMENTAL=enabled
-        if [[ -f "./${CATEGORY}/${{ matrix.container }}/image.png" ]]; then
-           echo "found ${{ matrix.container }} image.png"
+        if [[ ! -f "./${CATEGORY}/${{ matrix.container }}/image.png" ]]; then
+            curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/.github/image.png" > image.png
         else
-           ./.github/image.png
+            mv ./${CATEGORY}/${{ matrix.container }}/image.png image.png
         fi
         json='{
           "username": "Docker Image Update",
