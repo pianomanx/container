@@ -213,7 +213,7 @@ jobs:
         if [[ -f "./${CATEGORY}/${{ matrix.container }}/image.png" ]]; then
            echo "found ${{ matrix.container }} image.png"
         else
-           ./github/image.png
+           ./.github/image.png
         fi
         json='{
           "username": "Docker Image Update",
