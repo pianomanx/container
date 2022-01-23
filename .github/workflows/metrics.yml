@@ -9,7 +9,7 @@ name: Metrics
 
 env:
   owner: ${{ github.repository_owner }}
-  repo: dockserver
+  repo: container
 
 jobs:
   metrics:
