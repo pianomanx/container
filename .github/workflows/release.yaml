@@ -231,33 +231,28 @@ jobs:
           "embeds": [
             {
             "title": "'${{ matrix.container }}'",
-            "content": "We published a new container image '${{ matrix.container }}' ",
             "url": "https://github.com/orgs/'${{ github.repository_owner }}'/packages/container/package/'${{ matrix.container }}'",
             "color": '${COLOR}',
             "fields": [
               {
                 "name": "Container Info",
-                "value": "'${{ matrix.container }}'",
-                "inline": true
+                "value": "We published a new container image '${{ matrix.container }}'"
               },
               {
                 "name": "Version",
-                "value": "new Version public : '${VERSION:----}'",
-                "inline": true
+                "value": "new Version public : '${VERSION:----}'"
               },
               {
-                "name": "Docker Tags '${{ secrets.DOCKER_REGISTRY }}'",
-                "value": "'${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest or '${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'",
-                "inline": true
+                "name": "Docker Tags : '${{ secrets.DOCKER_REGISTRY }}'",
+                "value": "`'${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest`\nor\n`'${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'`"
               },
               {
-                "name": "Docker Tags Dockserver Registry",
-                "value": "docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest or docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'",
-                "inline": true
+                "name": "Docker Tags : Dockserver Registry",
+                "value": "`docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest`\nor\n`docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'`"
               },
               {
                 "name": "Digests",
-                "value": "```'"$(echo "${DIGESTS:----}" | tr '\n' '#' | sed 's/#/\\n/g')"'```"
+                "value": "'${DIGESTS:----}'"
               },
               {
                 "name": "Thanks!",
