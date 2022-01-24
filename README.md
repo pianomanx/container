@@ -93,6 +93,15 @@ Thanks goes to these wonderful people
         </a>
     </td>
     <td align="center" style="word-wrap: break-word; width: 150.0; height: 150.0">
+        <a href=https://github.com/fscorrupt>
+            <img src=https://avatars.githubusercontent.com/u/45659314?v=4 width="100;"  alt=FSCorrupt/>
+            <br />
+            <sub style="font-size:14px"><b>FSCorrupt</b></sub>
+        </a>
+    </td>
+</tr>
+<tr>
+    <td align="center" style="word-wrap: break-word; width: 150.0; height: 150.0">
         <a href=https://github.com/renovate-bot>
             <img src=https://avatars.githubusercontent.com/u/25180681?v=4 width="100;"  alt=WhiteSource Renovate/>
             <br />
