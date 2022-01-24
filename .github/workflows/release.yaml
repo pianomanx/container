@@ -213,7 +213,7 @@ jobs:
     - name: Send notification
       if: ${{ github.event_name != 'pull_request' }}
       env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_RLS }}
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_IMAGES }}
         DIGESTS: ${{ steps.build-and-push.outputs.digest }}
         VERSION: ${{ steps.prep.outputs.version }}
         COLOR: 3066993
