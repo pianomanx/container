@@ -1,5 +1,5 @@
 {
-    "schedule": "daily",
+    "schedule": "hourly",
     "ignoredFiles": [
         "*.svg"
     ],
