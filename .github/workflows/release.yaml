@@ -230,6 +230,9 @@ jobs:
           "avatar_url": "https://octodex.github.com/images/Terracottocat_Single.png",
           "embeds": [
             {
+            "author": {
+              "name": "'${{ github.repository_owner }}'"
+            },
             "title": "'${{ matrix.container }}'",
             "url": "https://github.com/orgs/'${{ github.repository_owner }}'/packages/container/package/'${{ matrix.container }}'",
             "color": '${COLOR}',
@@ -260,7 +263,8 @@ jobs:
               }
             ],
             "footer": {
-              "text": "Powered by GitHub Actions"
+              "text": "Powered by GitHub Actions",
+              "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
              },
              "timestamp": "'$(date -u +'%FT%T.%3NZ')'",
              "image": {
