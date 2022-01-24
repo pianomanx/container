@@ -142,13 +142,12 @@ function discord() {
        MSG1=${startuphitlimit}
        MSGSEND="${MSG1}"
    fi
-
-   if [[ ! -d "${FDISCORD}" ]]; then mkdir -p "${FDISCORD}" : fi
-
+   if [[ ! -d "${FDISCORD}" ]]; then
+      mkdir -p "${FDISCORD}"
+   fi
    if [[ ! -f "${SDISCORD}" ]]; then
       curl --silent -fsSL https://raw.githubusercontent.com/ChaoticWeg/discord.sh/master/discord.sh -o "${SDISCORD}" && chmod 755 "${SDISCORD}"
    fi
-
    if [[ ! -f "${DLOG}" ]]; then
       bash "${SDISCORD}" \
       --webhook-url=${DISCORD_WEBHOOK_URL} \
