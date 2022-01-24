@@ -67,7 +67,7 @@ log "**** update system packages ****" && \
 
 log "**** install build packages from requirements ****" && \
    cat /app/requirements.txt | while IFS=$'\n' read -ra myArray; do
-      apk add --update ${myArray[@]}
+      apk add --quiet --no-progress --update ${myArray[@]}
    done
 
 ARCH="$(command arch)"
@@ -345,7 +345,9 @@ for i in ${mapped[@]}; do
   rclone config create remote union upstreams $i action_policy 'all' create_policy 'all' search_policy 'all' cache_time 5 --config=${CONFIG}
 done
 
-cp -r /app/rclone/rclone.conf /root/.config/rclone/
+apk add --quiet --no-progress --update coreutils
+mkdir -p /root/.config/rclone/
+mount --bind /app/rclone/ /root/.config/rclone/
 
 file1=/system/mount/mount.env
 file2=/tmp/mount.env
@@ -371,6 +373,6 @@ We have take some code from :
 
 chmod -cR 755 /system/ /app /root &>/dev/null
 chown -cR abc:abc /system/ /app /root &>/dev/null
-chown -cf abc:abc /root &>/dev/null
+chown -cR abc:abc /root &>/dev/null
 
 #E-o-F#

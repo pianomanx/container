@@ -23,8 +23,6 @@ if pidof -o %PPID -x "$0"; then
    exit 1
 fi
 
-cp -r /app/rclone/rclone.conf /root/.config/rclone/ && sleep 5 || exit 1
-
 source /system/mount/mount.env
 source /app/mount/function.sh
 
