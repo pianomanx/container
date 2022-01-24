@@ -1,7 +1,7 @@
 name: Metrics
 on:
   workflow_run:
-    workflows: ["Get latest versions"]
+    workflows: ["Release"]
     types:
       - completed
 
