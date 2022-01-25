@@ -213,9 +213,10 @@ if [[ -f ${rclonetmp} ]]; then rm -f ${rclonetmp} ; fi
 
 source ${rcloneenv}
 if [[ ! -d ${TMPRCLONE} ]]; then mkdir -p "${TMPRCLONE}" && chown -hR abc:abc "${TMPRCLONE}" && chmod -R 775 "${TMPRCLONE}" ; fi
+if [[ -d ${TMPRCLONE} ]]; then fusermount -uzq ${TMPRCLONE} ; fi
 if [[ ! -d "/mnt/unionfs" ]]; then mkdir -p "${SUNION}" && chown -hR abc:abc "${SUNION}" && chmod -R 775 "${SUNION}" ; fi
 if [[ ! -d "/mnt/downloads" ]]; then mkdir -p "${SDOWN}" && chown -hR abc:abc "${SDOWN}" && chmod -R 775 "${SDOWN}" ; fi
-if [[ -d "/mnt/remotes" ]]; then fusermount3 -uzq /mnt/remotes && rm -rf /mnt/remotes ; fi
+if [[ -d "/mnt/remotes" ]]; then fusermount -uzq /mnt/remotes && rm -rf /mnt/remotes ; fi
 
 source /system/mount/mount.env
 ARRAY=$(ls -A ${JSONDIR})
