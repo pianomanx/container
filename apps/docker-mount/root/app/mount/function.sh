@@ -182,10 +182,15 @@ function lang() {
    LANGUAGE=${LANGUAGE}
    currenttime=$(date +%H:%M)
 
-   if [[ ! -d "/app/language" ]]; then mkdir -p "${LFOLDER}/" && git -C /app clone https://github.com/dockserver/language.git ; fi
+   if [[ ! -d "/app/language" ]]; then
+      git -C /app clone https://github.com/dockserver/language.git
+   fi
    if [[ "$currenttime" > "23:59" ]] || [[ "$currenttime" < "00:01" ]]; then
       if [[ -d "/app/language" ]]; then
-         git -C "${LFOLDER}/" stash --quiet && git -C "${LFOLDER}/" pull --quiet && cd "${LFOLDER}/" && git stash clear
+         git -C "${LFOLDER}/" stash --quiet
+         git -C "${LFOLDER}/" pull --quiet
+         cd "${LFOLDER}/"
+         git stash clear
       fi
    fi
 
@@ -226,7 +231,7 @@ function rcmount() {
 
 source /system/mount/mount.env
 fusermount -uzq ${REMOTE}
-rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} fs=remote: mountPoint="'${REMOTE}'"
+rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} fs=remote: mountPoint="/mnt/unionfs"
 
 }
 
@@ -265,16 +270,15 @@ rclone rc core/stats --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD}
 }
 
 function rctest() {
-
-source /system/mount/mount.env
-mount=$(rclone rc mount/listmounts --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} | jq '.[] | .[] | .MountPoint')
+##later
+#source /system/mount/mount.env
+#mount=$(rclone rc mount/listmounts --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} | jq '.[] | .[] | .MountPoint')
 
 }
 
 function drivecheck() {
 
    mount=$(rclone rc mount/listmounts --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} | jq '.[] | .[] | .MountPoint')
-
    if [ "$(ls -A /mnt/unionfs)" ] && [ "${mount}" == "${REMOTE}" ]; then
       rcclean && refreshVFS
    fi
@@ -284,8 +288,8 @@ function drivecheck() {
 function testrun() {
 
 while true; do
-   rctest
-   if [ "$(ls -A ${REMOTE})" ] && [ "${mount}" == "${REMOTE}" ]; then
+   mount=$(rclone rc mount/listmounts --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} | jq '.[] | .[] | .MountPoint')
+   if [ "$(ls -A /mnt/unionfs)" ] && [ "${mount}" == "${REMOTE}" ]; then
       log "${startuprcloneworks}"
    else
       rckill && rcset && rcmount && rcclean
