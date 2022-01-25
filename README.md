@@ -31,7 +31,7 @@ This should not work for you.
 
 1. We don't accept pull_request for other projects.
 1. We don't accept any changes what breaks dockserver.
-1. We dodn't give any help for other projects to run this dockers.
+1. We don't give any help for other projects to run this dockers.
 ---
 
 # NOTE 
@@ -53,7 +53,6 @@ Fuck XOXO SBOX stealing code to get your product up and running is a bitch move
 ---
 
 SOME fancy stats 
-
 
 ![metrics](./github-metrics.svg)
 
