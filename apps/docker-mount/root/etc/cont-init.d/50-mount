@@ -29,7 +29,6 @@ SOURCECONFIG=/system/rclone/rclone.conf
 ENDFILE=/system/mount/drive.csv
 TMPCONFIG=/app/rclone/rclonegd.conf
 
-
 addgroup -S abc
 adduser -S abc -G abc
 PGID=${PGID:-1000}
