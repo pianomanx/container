@@ -216,23 +216,23 @@ source /system/mount/mount.env
 
 rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
 --json '{ "vfs": { "CacheMaxSize": "'${VFS_CACHE_MAX_SIZE}'", "CacheMode": 3, "CaseInsensitive": false, "ChunkSize": "'${VFS_READ_CHUNK_SIZE}'", "ChunkSizeLimit": "'${VFS_READ_CHUNK_SIZE_LIMIT}'", "NoChecksum": false, "NoModTime": true, "NoSeek": true }}'
-
+sleep 5
 rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
 --json '{ "mount": { "AllowNonEmpty": true, "AllowOther": true, "AsyncRead": true, "Daemon": true, "AllowOther": true }}'
-
+sleep 5
 rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
 --json '{"main": { "LogLevel": 7, "BufferSize": "'${BUFFER_SIZE}'", "Checkers": 32, "UseListR": true, "UseMmap": true, "UseServerModTime": true, "TrackRenames": true, "UserAgent": "'${UAGENT}'" }}'
-
+sleep 5
 rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
 --json '{ "log": { "File": "'${MLOG}'", "Format": "date,time", "LogSystemdSupport": false }}'
-
+sleep 5
 }
 
 function rcmount() {
 
 source /system/mount/mount.env
 fusermount -uzq ${REMOTE}
-rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} fs=remote: mountPoint="'/mnt/unionfs/'"
+rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} fs=remote: mountPoint="/mnt/unionfs"
 
 }
 
