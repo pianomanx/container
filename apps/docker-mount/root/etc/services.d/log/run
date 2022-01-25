@@ -20,6 +20,6 @@ umask 022
 chown -cR abc:abc /app /system/*
 chmod -cR 755 /app /system/*
 log "-> Starting log <-"
-exec /app/log.sh
+exec /app/mount/log.sh
 
 #EOF#

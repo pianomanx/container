@@ -20,6 +20,6 @@ umask 022
 chown -cR abc:abc /app /system/*
 chmod -cR 755 /app /system/*
 log "-> Starting vfs <-"
-exec /app/vfsrefresh.sh
+exec /app/mount/vfsrefresh.sh
 
 #EOF#
