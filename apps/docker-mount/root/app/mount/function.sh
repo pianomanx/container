@@ -269,12 +269,11 @@ rclone rc core/stats --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD}
 
 }
 
-function rctest() {
+#function rctest() {
 ##later
 #source /system/mount/mount.env
 #mount=$(rclone rc mount/listmounts --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} | jq '.[] | .[] | .MountPoint')
-
-}
+#}
 
 function drivecheck() {
 
