@@ -53,6 +53,7 @@ DLOG=/tmp/discord.dead
 #   know what you're doing.             #
 #########################################
 
+
 function log() {
 
    echo "[Mount] ${1}"
@@ -172,7 +173,7 @@ function envrenew() {
    if [ $? -gt 0 ]; then
       rckill && rcset && rcmount && cp -r "$ENVA" "$TMPENV"
     else
-      echo "no changes" > "${NLOG}"
+      echo "no changes"
    fi
 
 }
@@ -231,7 +232,7 @@ function rcmount() {
 
 source /system/mount/mount.env
 fusermount -uzq ${REMOTE}
-rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} fs=remote: mountPoint="/mnt/unionfs"
+rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} fs=remote: mountPoint="'/mnt/unionfs/'"
 
 }
 
@@ -269,16 +270,10 @@ rclone rc core/stats --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD}
 
 }
 
-#function rctest() {
-##later
-#source /system/mount/mount.env
-#mount=$(rclone rc mount/listmounts --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} | jq '.[] | .[] | .MountPoint')
-#}
-
 function drivecheck() {
 
    mount=$(rclone rc mount/listmounts --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} | jq '.[] | .[] | .MountPoint')
-   if [ "$(ls -A /mnt/unionfs)" ] && [ "${mount}" == "${REMOTE}" ]; then
+   if [ "$(ls -A /mnt/unionfs)" ]; then
       rcclean && refreshVFS
    fi
 
@@ -287,9 +282,9 @@ function drivecheck() {
 function testrun() {
 
 while true; do
-   mount=$(rclone rc mount/listmounts --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} | jq '.[] | .[] | .MountPoint')
-   if [ "$(ls -A /mnt/unionfs)" ] && [ "${mount}" == "${REMOTE}" ]; then
-      log "${startuprcloneworks}"
+   source /system/mount/mount.env
+   if [ "$(ls -A /mnt/unionfs)" ]; then
+      log "${startuprcloneworks}" && sleep 30
    else
       rckill && rcset && rcmount && rcclean
    fi
@@ -304,4 +299,5 @@ done
 #   know what you're doing.             #
 #########################################
      ### DO NOT MAKE ANY CHANGES ###
-### IF YOU DON'T KNOW WHAT YOU'RE DOING ###
+##  IF YOU DON'T KNOW WHAT YOU'RE DOING ##
+##########################################
