@@ -342,7 +342,7 @@ done
 
 mapfile -t mapped < <(eval cat ${value})
 for i in ${mapped[@]}; do
-  rclone config create remote union upstreams $i action_policy 'all' create_policy 'all' search_policy 'all' cache_time 5 --config=${CONFIG}
+  rclone config create remote union upstreams $i --config=${CONFIG}
 done
 
 apk add --quiet --no-progress --update coreutils
@@ -376,3 +376,4 @@ chown -cR abc:abc /system/ /app /root &>/dev/null
 chown -cR abc:abc /root &>/dev/null
 
 #E-o-F#
+##left over action_policy 'all' create_policy 'all' search_policy 'all' cache_time 5 --config=${CONFIG}
