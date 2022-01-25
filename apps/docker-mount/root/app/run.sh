@@ -17,9 +17,6 @@ function log() {
 }
 umask 022
 
-log "-> Starting mounts <-"
-startup="/app/startup.sh"
-sleep 5
 log "-> Starting log purging in auto mode <-"
 lpurge="/app/mount/log.sh"
 sleep 5
@@ -31,7 +28,6 @@ nzb="/app/mount/nzbcleanup.sh"
 sleep 5
 log "-> Starting System <-"
 
-bash $startup
-bash $lpurge 
-bash $vfsrefresh 
-bash $nzb
+bash $lpurge &
+bash $vfsrefresh &
+bash $nzb &
