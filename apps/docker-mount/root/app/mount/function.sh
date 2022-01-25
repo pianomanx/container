@@ -220,7 +220,7 @@ rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
 --json '{"mount": {"AllowNonEmpty": true, "AllowOther": true, "AsyncRead": true, "Daemon": true, "AllowOther": true }}'
 
 rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
---json '{"main": {"BufferSize": "'${BUFFER_SIZE}'", "Checkers": 32, "TPSLimit": "'${TPSLIMIT}'", "TPSLimitBurst": "'${TPSBURST}'", "UseListR": true, "UseMmap": true, "UseServerModTime": true, "TrackRenames": true, "UserAgent": "'${UAGENT}'" }}'
+--json '{"main": {"BufferSize": "'${BUFFER_SIZE}'", "Checkers": 32, "UseListR": true, "UseMmap": true, "UseServerModTime": true, "TrackRenames": true, "UserAgent": "'${UAGENT}'" }}'
 
 rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
 --json '{"log": {"File": "'${MLOG}'", "Format": "date,time", "LogSystemdSupport": false }}'
