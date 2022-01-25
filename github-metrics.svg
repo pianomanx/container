@@ -265,14 +265,14 @@
                         <rect x="0" y="0" width="460" height="8" fill="white" rx="5"/>
                     </mask>
                     <rect mask="url(#languages-bar)" x="0" y="0" width="0" height="8" fill="#d1d5da"/>
-                    <rect mask="url(#languages-bar)" x="0" y="0" width="196.97411630648952" height="8" fill="#89e051"/>
-                    <rect mask="url(#languages-bar)" x="196.97411630648952" y="0" width="130.8859487390503" height="8" fill="#384d54"/>
-                    <rect mask="url(#languages-bar)" x="327.8600650455398" y="0" width="53.56650550354902" height="8" fill="#4F5D95"/>
-                    <rect mask="url(#languages-bar)" x="381.4265705490888" y="0" width="37.88894779739343" height="8" fill="#f0c040"/>
-                    <rect mask="url(#languages-bar)" x="419.31551834648224" y="0" width="26.708632381917024" height="8" fill="#e34c26"/>
-                    <rect mask="url(#languages-bar)" x="446.02415072839926" y="0" width="7.862438970349678" height="8" fill="#f1e05a"/>
-                    <rect mask="url(#languages-bar)" x="453.88658969874894" y="0" width="5.096025258559977" height="8" fill="#563d7c"/>
-                    <rect mask="url(#languages-bar)" x="458.9826149573089" y="0" width="1.017385042691081" height="8" fill="#a52a22"/>
+                    <rect mask="url(#languages-bar)" x="0" y="0" width="196.9085375747478" height="8" fill="#89e051"/>
+                    <rect mask="url(#languages-bar)" x="196.9085375747478" y="0" width="130.91858178033345" height="8" fill="#384d54"/>
+                    <rect mask="url(#languages-bar)" x="327.82711935508127" y="0" width="53.579860932472705" height="8" fill="#4F5D95"/>
+                    <rect mask="url(#languages-bar)" x="381.406980287554" y="0" width="37.89839443096687" height="8" fill="#f0c040"/>
+                    <rect mask="url(#languages-bar)" x="419.30537471852085" y="0" width="26.715291491710957" height="8" fill="#e34c26"/>
+                    <rect mask="url(#languages-bar)" x="446.0206662102318" y="0" width="7.864399267065849" height="8" fill="#f1e05a"/>
+                    <rect mask="url(#languages-bar)" x="453.88506547729764" y="0" width="5.097295821246384" height="8" fill="#563d7c"/>
+                    <rect mask="url(#languages-bar)" x="458.98236129854405" y="0" width="1.0176387014559747" height="8" fill="#a52a22"/>
                 </svg>
                 <div class="row fill-width">
                     <section>
@@ -285,7 +285,7 @@
                             </div>
                             <small>
                                 <div>108 kB</div>
-                                <div>42.82%</div>
+                                <div>42.81%</div>
                             </small>
                         </div>
                         <div class="field language details">
@@ -297,7 +297,7 @@
                             </div>
                             <small>
                                 <div>29.4 kB</div>
-                                <div>11.64%</div>
+                                <div>11.65%</div>
                             </small>
                         </div>
                         <div class="field language details">
@@ -335,7 +335,7 @@
                             </div>
                             <small>
                                 <div>71.9 kB</div>
-                                <div>28.45%</div>
+                                <div>28.46%</div>
                             </small>
                         </div>
                         <div class="field language details">
@@ -621,6 +621,48 @@
                                 <div class="details">
                                     <div>on branch <span class="code">master</span></div>
                                     <div class="commit">
+                                        <div class="sha">#d77e256</div>
+                                        <div class="message">Update function.sh</div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                        <div class="row fill-width">
+                            <section class="activity">
+                                <div class="field">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+                                        <path fill-rule="evenodd" d="M10.5 7.75a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm1.43.75a4.002 4.002 0 01-7.86 0H.75a.75.75 0 110-1.5h3.32a4.001 4.001 0 017.86 0h3.32a.75.75 0 110 1.5h-3.32z"/>
+                                    </svg>
+                                    <div class="content">
+                                        <span class="user">drag0n141</span>
+                                        pushed 1 commit in
+                                        <span class="repo">dockserver/container</span>
+                                    </div>
+                                </div>
+                                <div class="details">
+                                    <div>on branch <span class="code">master</span></div>
+                                    <div class="commit">
+                                        <div class="sha">#38947ca</div>
+                                        <div class="message">Update github-metrics.svg - [Skip GitHub Action]</div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                        <div class="row fill-width">
+                            <section class="activity">
+                                <div class="field">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+                                        <path fill-rule="evenodd" d="M10.5 7.75a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm1.43.75a4.002 4.002 0 01-7.86 0H.75a.75.75 0 110-1.5h3.32a4.001 4.001 0 017.86 0h3.32a.75.75 0 110 1.5h-3.32z"/>
+                                    </svg>
+                                    <div class="content">
+                                        <span class="user">doob187</span>
+                                        pushed 1 commit in
+                                        <span class="repo">dockserver/container</span>
+                                    </div>
+                                </div>
+                                <div class="details">
+                                    <div>on branch <span class="code">master</span></div>
+                                    <div class="commit">
                                         <div class="sha">#ca277e2</div>
                                         <div class="message">Update function.sh</div>
                                     </div>
@@ -669,53 +711,11 @@
                                 </div>
                             </section>
                         </div>
-                        <div class="row fill-width">
-                            <section class="activity">
-                                <div class="field">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-                                        <path fill-rule="evenodd" d="M10.5 7.75a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm1.43.75a4.002 4.002 0 01-7.86 0H.75a.75.75 0 110-1.5h3.32a4.001 4.001 0 017.86 0h3.32a.75.75 0 110 1.5h-3.32z"/>
-                                    </svg>
-                                    <div class="content">
-                                        <span class="user">drag0n141</span>
-                                        pushed 1 commit in
-                                        <span class="repo">dockserver/container</span>
-                                    </div>
-                                </div>
-                                <div class="details">
-                                    <div>on branch <span class="code">master</span></div>
-                                    <div class="commit">
-                                        <div class="sha">#64da5bb</div>
-                                        <div class="message">Update github-metrics.svg - [Skip GitHub Action]</div>
-                                    </div>
-                                </div>
-                            </section>
-                        </div>
-                        <div class="row fill-width">
-                            <section class="activity">
-                                <div class="field">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-                                        <path fill-rule="evenodd" d="M10.5 7.75a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm1.43.75a4.002 4.002 0 01-7.86 0H.75a.75.75 0 110-1.5h3.32a4.001 4.001 0 017.86 0h3.32a.75.75 0 110 1.5h-3.32z"/>
-                                    </svg>
-                                    <div class="content">
-                                        <span class="user">doob187</span>
-                                        pushed 1 commit in
-                                        <span class="repo">dockserver/container</span>
-                                    </div>
-                                </div>
-                                <div class="details">
-                                    <div>on branch <span class="code">master</span></div>
-                                    <div class="commit">
-                                        <div class="sha">#c9b23a6</div>
-                                        <div class="message">Update function.sh</div>
-                                    </div>
-                                </div>
-                            </section>
-                        </div>
                     </section>
                 </div>
             </section>
             <footer>
-                <span>Last updated 25 Jan 2022, 09:34:15 with lowlighter/metrics@3.18.0</span>
+                <span>Last updated 25 Jan 2022, 09:38:02 with lowlighter/metrics@3.18.0</span>
             </footer>
         </div>
         <div xmlns="http://www.w3.org/1999/xhtml" id="metrics-end"></div>
