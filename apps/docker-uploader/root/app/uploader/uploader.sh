@@ -73,20 +73,6 @@ ARRAY=$(ls -A ${KEYLOCAL} | wc -l )
 MAXSA=${ARRAY}
 RANKEY=$(( $RANDOM % ${ARRAY} ))
 
-if [[ ! -f "${LTKEY}" ]]; then
-   touch "${LTKEY}" && echo "$RANKEY" > "${LTKEY}"
-else
-   cat ${LTKEY} | while IFS=$'\n' read -ra KEY; do
-      if [[ "${KEY[@]}" -eq "${MINSA}" ]]; then
-         echo "$RANKEY" > "${LTKEY}"
-      elif [[ "${KEY[@]}" -eq "${MAXSA}" ]]; then
-           echo "${MINSA}" > "${LTKEY}"
-      else
-         echo "${KEY[@]}" > "${LTKEY}"
-      fi
-   done
-fi
-
 while true;do 
    source /system/uploader/uploader.env
    DLFOLDER=${DLFOLDER}
@@ -104,7 +90,6 @@ while true;do
    rclone lsf --files-only -R --min-age="${MIN_AGE_FILE}" --config="${CONFIG}" --separator "|" --format="tp" --order-by="modtime" --exclude-from="${EXCLUDE}" "${DLFOLDER}" | sort  > "${CHK}" 2>&1
    if [ "${COUNTFILES}" -gt 0 ]; then
       cat "${CHK}" | while IFS=$'\n|' read -ra UPP; do
-         if [[ -f "${LTKEY}" ]]; then USED=$(cat ${LTKEY}) ; else USED=${USED} ; fi
          MOVE=${MOVE:-/}
          FILE=$(basename "${UPP[1]}")
          DIR=$(dirname "${UPP[1]}" | sed "s#${DLFOLDER}/${MOVE}##g")
@@ -118,6 +103,8 @@ while true;do
          done
          UPFILE=$(rclone size "${DLFOLDER}/${UPP[1]}" --config="${CONFIG}" --json | cut -d ":" -f3 | cut -d "}" -f1)
          touch "${LOGFILE}/${FILE}.txt"
+         ARRAY=$(ls -A ${KEYLOCAL} | wc -l )
+         USED=$(( $RANDOM % ${ARRAY} ))
             echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" > "${START}/${FILE}.json"
          rclone move "${DLFOLDER}/${UPP[1]}" "${KEY}$[USED]${CRYPTED}:/${DIR}/" --config="${CONFIG}" \
             --stats=1s --checkers=32 --use-mmap --no-traverse --check-first --drive-chunk-size=64M \
@@ -125,39 +112,16 @@ while true;do
             --tpslimit 50 --tpslimit-burst 50 --min-age="${MIN_AGE_FILE}"
          ENDZ=$(date +%s)
             echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\",\"starttime\": \"${STARTZ}\",\"endtime\": \"${ENDZ}\"}" > "${DONE}/${FILE}.json"
-         FILEGB=$(( $UPFILE/1024**3 ))
-         DIFF=$(( $DIFF+$FILEGB ))
          source /system/uploader/uploader.env
             LCT=$(df --output=pcent ${DLFOLDER} --exclude={${DLFOLDER}/nzb,${DLFOLDER}/torrent} | tail -n 1 | cut -d'%' -f1)
             if [[ "${DRIVEUSEDSPACE}" =~ ^[0-9][0-9]+([.][0-9]+)?$ ]]; then
                if [[ ! "${LCT}" -gt "${DRIVEUSEDSPACE}" ]]; then
                   rm -rf "${CHK}" "${LOGFILE}/${FILE}.txt" "${START}/${FILE}.json"
-                  DIFF=1 && chmod 755 "${DONE}/${FILE}.json" 
+                  chmod 755 "${DONE}/${FILE}.json" 
                   break
                fi
-            elif [[ "${USED}" -eq "${MAXSA}" ]]; then
-                 USED=$MINSA && DIFF=1 && echo "${USED}" > "${LTKEY}"
-            elif [[ ! $DIFF -gt $MAXT ]]; then
-                 USED=$(( $USED+$MINSA ))
-                 if [[ "${USED}" -eq "${MAXSA}" ]]; then
-                    USED=$MINSA && DIFF=1 && echo "${USED}" > "${LTKEY}"
-                 else
-                    echo "${USED}" > "${LTKEY}"
-                 fi
-            elif [[ ! "$MAXT" -gt "$DIFF" ]]; then
-                if test -f "${LOGFILE}/${FILE}.txt" ; then
-                   tail -Fn 20 "${LOGFILE}/${FILE}.txt" | while read line; do
-                      echo "$line" | grep "googleapi: Error"
-                      if [ $? = 0 ]; then
-                      USED=$(( $USED+$MINSA ))
-                         if [[ "${USED}" -eq "${MAXSA}" ]]; then
-                            USED=$MINSA && DIFF=1 && echo "${USED}" > "${LTKEY}"
-                         fi
-                      fi
-                   done
-                fi
-           else
-               DIFF=$DIFF && USED=${USED}
+            else
+                log "DRIVEUSEDSPACE  is not used" &>/dev/null
             fi
          rm -rf "${LOGFILE}/${FILE}.txt" "${START}/${FILE}.json" && chmod 755 "${DONE}/${FILE}.json"
       done
