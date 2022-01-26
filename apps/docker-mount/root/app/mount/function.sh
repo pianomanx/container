@@ -45,6 +45,7 @@ LFOLDER=/app/language/mount
 #LOG
 MLOG=/system/mount/logs/rclone-union.log
 RLOG=/system/mount/logs/vfs-refresh.log
+CLOG=/system/mount/logs/vfs-clean.log
 DLOG=/tmp/discord.dead
 
 #########################################
@@ -62,18 +63,20 @@ function log() {
 
 function checkban() {
 
-   tail -Fn0 "${MLOG}" | while read line ; do
-   echo "$line" | grep "downloadQuotaExceeded"
+if [[ `cat "${MLOG}" | wc -l` -gt 0 ]]; then
+   tail -n 20 "${MLOG}" | grep --line-buffered 'downloadQuotaExceeded' | while read ;do
        if [ $? = 0 ]; then
           if [[ ! ${DISCORD_SEND} != "null" ]]; then
              discord
           else
              log "${startuphitlimit}"
           fi
-          if [[ ${ARRAY} != 0 ]]; then rotate && log "${startuprotate}" ; fi
+          if [[ ${ARRAY} != 0 ]]; then
+             rotate && log "${startuprotate}"
+          fi
        fi
    done
-
+fi
 }
 
 function rotate() {
@@ -173,7 +176,7 @@ function envrenew() {
    if [ $? -gt 0 ]; then
       rckill && rcset && rcmount && cp -r "$ENVA" "$TMPENV"
     else
-      echo "no changes"
+      echo "no changes" &>/dev/null
    fi
 
 }
@@ -184,14 +187,13 @@ function lang() {
    currenttime=$(date +%H:%M)
 
    if [[ ! -d "/app/language" ]]; then
-      git -C /app clone https://github.com/dockserver/language.git
+      git -C /app clone --quiet https://github.com/dockserver/language.git
    fi
    if [[ "$currenttime" > "23:59" ]] || [[ "$currenttime" < "00:01" ]]; then
       if [[ -d "/app/language" ]]; then
          git -C "${LFOLDER}/" stash --quiet
          git -C "${LFOLDER}/" pull --quiet
-         cd "${LFOLDER}/"
-         git stash clear
+         cd "${LFOLDER}/" && git stash clear
       fi
    fi
 
@@ -214,42 +216,52 @@ function rcset() {
 
 source /system/mount/mount.env
 
+log ">> Set vfs options <<"
 rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
---json '{ "vfs": { "CacheMaxSize": "'${VFS_CACHE_MAX_SIZE}'", "CacheMode": 3, "CaseInsensitive": false, "ChunkSize": "'${VFS_READ_CHUNK_SIZE}'", "ChunkSizeLimit": "'${VFS_READ_CHUNK_SIZE_LIMIT}'", "NoChecksum": false, "NoModTime": true, "NoSeek": true }}'
+--json '{ "vfs": { "CacheMaxSize": "'${VFS_CACHE_MAX_SIZE}'", "CacheMode": 3, "CaseInsensitive": false, "ChunkSize": "'${VFS_READ_CHUNK_SIZE}'", "ChunkSizeLimit": "'${VFS_READ_CHUNK_SIZE_LIMIT}'", "NoChecksum": false, "NoModTime": true, "NoSeek": true }}' &>/dev/null
 sleep 5
+
+log ">> Set mount  options <<"
 rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
---json '{ "mount": { "AllowNonEmpty": true, "AllowOther": true, "AsyncRead": true, "Daemon": true, "AllowOther": true }}'
+--json '{ "mount": { "AllowNonEmpty": true, "AllowOther": true, "AsyncRead": true, "Daemon": true, "AllowOther": true }}' &>/dev/null
 sleep 5
+
+log ">> Set main options <<"
 rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
---json '{"main": { "LogLevel": 7, "BufferSize": "'${BUFFER_SIZE}'", "Checkers": 32, "UseListR": true, "UseMmap": true, "UseServerModTime": true, "TrackRenames": true, "UserAgent": "'${UAGENT}'" }}'
+--json '{ "main": { "LogLevel": 7, "BufferSize": "'${BUFFER_SIZE}'", "Checkers": 32, "UseListR": true, "UseMmap": true, "UseServerModTime": true, "TrackRenames": true, "UserAgent": "'${UAGENT}'" }}' &>/dev/null
 sleep 5
+
+log ">> Set log options <<"
 rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
---json '{ "log": { "File": "'${MLOG}'", "Format": "date,time", "LogSystemdSupport": false }}'
+--json '{ "log": { "File": "'${MLOG}'", "Format": "date,time", "LogSystemdSupport": false }}'  &>/dev/null
 sleep 5
+
 }
 
 function rcmount() {
 
 source /system/mount/mount.env
 fusermount -uzq ${REMOTE}
-rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} fs=remote: mountPoint="/mnt/unionfs"
+log ">> Starting mount <<"
+rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} fs=remote: mountPoint="/mnt/unionfs" &>/dev/null
 
 }
 
 function refreshVFS() {
 
 source /system/mount/mount.env
+log ">> run vfs refresh <<"
 rclone rc vfs/refresh recursive=true \
 --fast-list --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
---log-file=${RLLOG} --log-level=${LOGLEVEL_RC}
+--log-file=${RLOG} --log-level=${LOGLEVEL_RC} &>/dev/null
 
 }
 
 function rckill() {
-
+log ">> kill it with fire <<"
 source /system/mount/mount.env
 rclone rc mount/unmount mountPoint=${REMOTE} \
---rc-user=${RC_USER} --rc-pass=${RC_PASSWORD}
+--rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} &>/dev/null
 fusermount -uzq ${REMOTE}
 
 }
@@ -257,15 +269,17 @@ fusermount -uzq ${REMOTE}
 function rcclean() {
 
 source /system/mount/mount.env
+log ">> run fs cache clear <<"
 rclone rc fscache/clear --fast-list \
 --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
---log-file=${RLOG} --log-level=${LOGLEVEL_RC}
+--log-file=${CLOG} --log-level=${LOGLEVEL_RC}
 
 }
 
 function rcstats() {
 # NOTE LATER
 source /system/mount/mount.env
+log ">> get rclone stats <<"
 rclone rc core/stats --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD}
 
 }
