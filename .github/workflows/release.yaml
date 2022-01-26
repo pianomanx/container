@@ -220,11 +220,22 @@ jobs:
       shell: bash
       run: |
         export DOCKER_CLI_EXPERIMENTAL=enabled
-        if [[ ! -f "./images/${{ matrix.container }}.png" ]]; then
-            curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/image.png" > image.png
-        else
+
+        #echo "install imaghack" && apt install imagemagick -yqq
+        # for later to manager more as once ##
+        #if [ "${CATEGORY}" == "nightly" ] && [ -f "./images/${{ matrix.container }}.png" ]; then
+        #    curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/nightly.png" > nightly.png
+        #    curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/${{ matrix.container }}.png" > app.png
+        #    convert app.png nightly.png +append -quality 100 'image.png'
+        #    convert app.png nightly.png -background transparent -gravity center -flatten -quality 100 result.png
+        #elif [[ -f "./images/${{ matrix.container }}.png" ]]; then
+
+        if [[ -f "./images/${{ matrix.container }}.png" ]]; then
             curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/${{ matrix.container }}.png" > image.png
+        else
+            curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/image.png" > image.png
         fi
+
         json='{
           "username": "Docker Image Update",
           "avatar_url": "https://octodex.github.com/images/Terracottocat_Single.png",
