@@ -172,6 +172,10 @@ MIN_AGE_FILE=${MIN_AGE_FILE:-10m}
 #-------------------------------------------------------" >$uploaderenv
 fi
 
+apk add --quiet --no-progress --update coreutils
+mkdir -p /root/.config/rclone/
+mount --bind /app/rclone/ /root/.config/rclone/
+
 echo "------------------------------
     _____   _   _  __  __
    |_   _| | | | | \ \/ /
