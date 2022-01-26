@@ -19,8 +19,8 @@ while true; do
      sleep 5
    fi
 done
-chown -cR abc:abc /app /system/* &>/dev/null
-chmod -cR 755 /app /system/* &>/dev/null
+chown -cR abc:abc /root /app /system/* &>/dev/null
+chmod -cR 755 /root /app /system/* &>/dev/null
 command="/app/uploader/uploader.sh"
 echo "-> Starting Multi Thread Uploader <-"
 exec s6-setuidgid abc $command
