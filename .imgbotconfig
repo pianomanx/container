@@ -6,5 +6,6 @@
         "base/*",
         "nightly/*",
     ],
-    "aggressiveCompression": "true"
+    "aggressiveCompression": "true",
+    "minKBReduced": 100
 }
