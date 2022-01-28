@@ -261,7 +261,7 @@ jobs:
               },
               {
                 "name": "Digests & Comment ID",
-                "value": "Digests : `'${DIGESTS:----}'`\nand GitHub Comment ID : `'${SHA8}'`"
+                "value": "Digests : `'${DIGESTS:----}'`\nGitHub Comment ID : `'${SHA8}'`"
               },
               {
                 "name": "Thanks!",
