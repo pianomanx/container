@@ -260,8 +260,8 @@ jobs:
                 "value": "`docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest`\nor\n`docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'`"
               },
               {
-                "name": "Digests & Sha Id",
-                "value": "`'${DIGESTS:----}'`\n"`'${SHA8}'`"
+                "name": "Digests & Comment ID",
+                "value": "Digests : `'${DIGESTS:----}'`\nand GitHub Comment ID : `'${SHA8}'`"
               },
               {
                 "name": "Thanks!",
