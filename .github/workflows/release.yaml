@@ -242,7 +242,7 @@ jobs:
 
         json='{
           "username": "Docker Image Update",
-          "avatar_url": "https://octodex.github.com/images/Terracottocat_Single.png",
+          "avatar_url": "https://raw.githubusercontent.com/dockserver/container/master/images/Logo.png",
           "embeds": [
             {
             "author": {
