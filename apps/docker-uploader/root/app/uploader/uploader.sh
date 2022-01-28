@@ -69,10 +69,6 @@ deluge/**
 EOF
 fi
 
-ARRAY=$(ls -A ${KEYLOCAL} | wc -l )
-MAXSA=${ARRAY}
-RANKEY=$(( $RANDOM % ${ARRAY} ))
-
 while true;do 
    source /system/uploader/uploader.env
    DLFOLDER=${DLFOLDER}
@@ -104,7 +100,7 @@ while true;do
          UPFILE=$(rclone size "${DLFOLDER}/${UPP[1]}" --config="${CONFIG}" --json | cut -d ":" -f3 | cut -d "}" -f1)
          touch "${LOGFILE}/${FILE}.txt"
          ARRAY=$(ls -A ${KEYLOCAL} | wc -l )
-         USED=$(( $RANDOM % ${ARRAY} ))
+         USED=$(( $RANDOM % ${ARRAY} + 1 ))
             echo "{\"filedir\": \"${DIR}\",\"filebase\": \"${FILE}\",\"filesize\": \"${SIZE}\",\"logfile\": \"${LOGFILE}/${FILE}.txt\",\"gdsa\": \"${KEY}$[USED]${CRYPTED}\"}" > "${START}/${FILE}.json"
          rclone move "${DLFOLDER}/${UPP[1]}" "${KEY}$[USED]${CRYPTED}:/${DIR}/" --config="${CONFIG}" \
             --stats=1s --checkers=32 --use-mmap --no-traverse --check-first --drive-chunk-size=64M \
