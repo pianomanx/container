@@ -112,6 +112,7 @@ jobs:
            PLATFORM=$(cat ./${CATEGORY}/${{ matrix.container }}/PLATFORM)
         echo ::set-output name=platform::${PLATFORM}
            CREATED=$(date +'%Y-%m-%dT%H:%M:%SZ')
+        echo ::set-output name=shashort::$(echo ${GITHUB_SHA} | cut -c1-8)
         echo ::set-output name=created::${CREATED}
         echo ::set-output name=source::dockserver.io
         echo ::set-output name=platformout::${{ env.PLATFORM }}
@@ -179,6 +180,7 @@ jobs:
         pull: ${{ steps.prep.outputs.push }}
         tags: |
           ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:latest
+          ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:${{ steps.prep.outputs.shashort }}
           ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:v${{ steps.prep.outputs.version }}
         cache-from: ${{ steps.prep.outputs.cache_from }}
         cache-to: ${{ steps.prep.outputs.cache_to }}
@@ -195,6 +197,7 @@ jobs:
           org.opencontainers.image.platform=${{ steps.prep.outputs.platformout }}
           org.opencontainers.image.license=${{ steps.prep.outputs.linc }}
           org.opencontainers.image.owner=${{ steps.prep.outputs.owndocker }}
+          org.opencontainers.image.shaid=${{ steps.prep.outputs.shashort }}
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
