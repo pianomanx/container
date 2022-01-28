@@ -105,12 +105,14 @@ jobs:
         else
            CATEGORY="base"
         fi
+
         echo ::set-output name=category::${CATEGORY}
            VERSION=$(cat ./${CATEGORY}/${{ matrix.container }}/VERSION)
         echo ::set-output name=version::${VERSION}
            PLATFORM=$(cat ./${CATEGORY}/${{ matrix.container }}/PLATFORM)
         echo ::set-output name=platform::${PLATFORM}
            CREATED=$(date +'%Y-%m-%dT%H:%M:%SZ')
+        echo ::set-output name=shashort::$(echo ${GITHUB_SHA} | cut -c1-8)
         echo ::set-output name=created::${CREATED}
         echo ::set-output name=source::dockserver.io
         echo ::set-output name=platformout::${{ env.PLATFORM }}
@@ -184,6 +186,7 @@ jobs:
         pull: ${{ steps.prep.outputs.push }}
         tags: |
           ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:latest
+          ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:${{ steps.prep.outputs.shashort }}
           ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:v${{ steps.prep.outputs.version }}
         cache-from: ${{ steps.prep.outputs.cache_from }}
         cache-to: ${{ steps.prep.outputs.cache_to }}
@@ -200,6 +203,7 @@ jobs:
           org.opencontainers.image.platform=${{ steps.prep.outputs.platformout }}
           org.opencontainers.image.license=${{ steps.prep.outputs.linc }}
           org.opencontainers.image.owner=${{ steps.prep.outputs.owndocker }}
+          org.opencontainers.image.shaid=${{ steps.prep.outputs.shashort }}
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
@@ -216,24 +220,11 @@ jobs:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_IMAGES }}
         DIGESTS: ${{ steps.build-and-push.outputs.digest }}
         VERSION: ${{ steps.prep.outputs.version }}
+        SHA8: ${{ steps.prep.outputs.shashort }}
         COLOR: 3066993
       shell: bash
       run: |
         export DOCKER_CLI_EXPERIMENTAL=enabled
-
-        #echo "install imaghack" && apt install imagemagick -yqq
-        # for later to manager more as folder ##
-        #if [ "${CATEGORY}" == "nightly" ] && [ -f "./images/${{ matrix.container }}.png" ]; then
-        #    curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/nightly.png" > nightly.png
-        #    curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/${{ matrix.container }}.png" > app.png
-        ##   MERG file
-        #    composite -geometry +250+50 app.png nightly.png -compose Multiply image.png
-        ##   CONVERT File < nightly must be transparent in this case
-        #    convert app.jpg nightly.png -gravity center -composite -format png -quality 90 image.png
-        #elif [[ -f "./images/${{ matrix.container }}.png" ]]; then
-        # Nightly needs white background and better pic !! size and quality 
-        # Use -compose Multiply to drop white from second image
-
         if [[ -f "./images/${{ matrix.container }}.png" ]]; then
             curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/${{ matrix.container }}.png" > image.png
         else
@@ -258,7 +249,7 @@ jobs:
               },
               {
                 "name": "Version",
-                "value": "new Version public : '${VERSION:----}'"
+                "value": "new Version public : `'${VERSION:----}'` with `'${SHA8}'`"
               },
               {
                 "name": "Docker Tags : '${{ secrets.DOCKER_REGISTRY }}'",
@@ -269,8 +260,8 @@ jobs:
                 "value": "`docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest`\nor\n`docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'`"
               },
               {
-                "name": "Digests",
-                "value": "'${DIGESTS:----}'"
+                "name": "Digests & Sha Id",
+                "value": "`'${DIGESTS:----}'`\n"`'${SHA8}'`"
               },
               {
                 "name": "Thanks!",
