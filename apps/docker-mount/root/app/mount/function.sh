@@ -206,9 +206,8 @@ function lang() {
 }
 
 function rcstart() {
-
 source /system/mount/mount.env
-screen -d -m bash -c "rclone rcd --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --cache-dir=${TMPRCLONE}";
+screen -d -m bash -c "rclone rcd --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --config=${CONFIG} --cache-dir=${TMPRCLONE}";
 
 }
 
@@ -217,22 +216,22 @@ function rcset() {
 source /system/mount/mount.env
 
 log ">> Set vfs options <<"
-rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
---json '{ "vfs": { "CacheMaxSize": "'${VFS_CACHE_MAX_SIZE}'", "CacheMode": 3, "CaseInsensitive": false, "ChunkSize": "'${VFS_READ_CHUNK_SIZE}'", "ChunkSizeLimit": "'${VFS_READ_CHUNK_SIZE_LIMIT}'", "NoChecksum": false, "NoModTime": true, "NoSeek": true }}' &>/dev/null
+rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --config=${CONFIG} \
+--json '{ "vfs": { "CacheMaxSize": "'${VFS_CACHE_MAX_SIZE}'", "CacheMode": 3, "GID": '${PGID}',"UID": '${PUID}',"CaseInsensitive": false, "ChunkSize": "'${VFS_READ_CHUNK_SIZE}'", "ChunkSizeLimit": "'${VFS_READ_CHUNK_SIZE_LIMIT}'", "NoChecksum": false, "NoModTime": true, "NoSeek": true }}' &>/dev/null
 sleep 5
 
 log ">> Set mount  options <<"
-rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
---json '{ "mount": { "AllowNonEmpty": true, "AllowOther": true, "AsyncRead": true, "Daemon": true, "AllowOther": true }}' &>/dev/null
+rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --config=${CONFIG} \
+--json '{ "mount": { "AllowNonEmpty": true, "AllowOther": true, "AsyncRead": true, "Daemon": true }}' &>/dev/null
 sleep 5
 
 log ">> Set main options <<"
-rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
+rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --config=${CONFIG} \
 --json '{ "main": { "LogLevel": 7, "BufferSize": "'${BUFFER_SIZE}'", "Checkers": 32, "UseListR": true, "UseMmap": true, "UseServerModTime": true, "TrackRenames": true, "UserAgent": "'${UAGENT}'" }}' &>/dev/null
 sleep 5
 
 log ">> Set log options <<"
-rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
+rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --config=${CONFIG} \
 --json '{ "log": { "File": "'${MLOG}'", "Format": "date,time", "LogSystemdSupport": false }}'  &>/dev/null
 sleep 5
 
@@ -243,7 +242,7 @@ function rcmount() {
 source /system/mount/mount.env
 fusermount -uzq ${REMOTE}
 log ">> Starting mount <<"
-rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} fs=remote: mountPoint="/mnt/unionfs" &>/dev/null
+rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --config=${CONFIG} fs=remote: mountPoint="/mnt/unionfs" vfsOpt='{"GID": '${PGID}',"UID": '${PUID}'}' &>/dev/null
 
 }
 
@@ -251,8 +250,8 @@ function refreshVFS() {
 
 source /system/mount/mount.env
 log ">> run vfs refresh <<"
-rclone rc vfs/refresh recursive=true \
---fast-list --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
+rclone rc vfs/refresh recursive=true --fast-list \
+--rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --config=${CONFIG} \
 --log-file=${RLOG} --log-level=${LOGLEVEL_RC} &>/dev/null
 
 }
@@ -261,7 +260,7 @@ function rckill() {
 log ">> kill it with fire <<"
 source /system/mount/mount.env
 rclone rc mount/unmount mountPoint=${REMOTE} \
---rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} &>/dev/null
+--rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --config=${CONFIG} &>/dev/null
 fusermount -uzq ${REMOTE}
 
 }
@@ -272,7 +271,7 @@ source /system/mount/mount.env
 log ">> run fs cache clear <<"
 rclone rc fscache/clear --fast-list \
 --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} \
---log-file=${CLOG} --log-level=${LOGLEVEL_RC}
+--config=${CONFIG} --log-file=${CLOG} --log-level=${LOGLEVEL_RC}
 
 }
 
@@ -280,7 +279,8 @@ function rcstats() {
 # NOTE LATER
 source /system/mount/mount.env
 log ">> get rclone stats <<"
-rclone rc core/stats --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD}
+rclone rc core/stats \
+--rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --config=${CONFIG}
 
 }
 
