@@ -235,7 +235,7 @@ jobs:
         if [[ ${{ steps.prep.outputs.version }} != "" ]]; then 
         json='{
           "username": "Docker Image Update",
-          "avatar_url": "${{ DISCORD_PIC }}",
+          "avatar_url": "${{ env.DISCORD_PIC }}",
           "embeds": [
             {
             "author": {
@@ -285,7 +285,7 @@ jobs:
         ## FAIL PIC curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/fail.png" > image.png
         json='{
           "username": "Docker Image : ERROR",
-          "avatar_url": "${{ DISCORD_PIC }}",
+          "avatar_url": "${{ env.DISCORD_PIC }}",
           "embeds": [
             {
             "author": {
