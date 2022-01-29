@@ -1,4 +1,4 @@
-FROM ghcr.io/linuxserver/baseimage-mono:LTS
+FROM ghcr.io/linuxserver/baseimage-alpine:3.15
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
