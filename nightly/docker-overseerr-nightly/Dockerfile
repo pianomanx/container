@@ -15,11 +15,11 @@ RUN \
   echo "**** symlink python3 for compatibility ****" && \
   ln -s /usr/bin/python3 /usr/bin/python && \
   echo "**** install runtime packages ****" && \
-  apk add --no-cache  yarn && \
-  export COMMIT_TAG="v${VERSION}" && \
+  apk add --no-cache yarn && \
+  export COMMIT_TAG="${VERSION}" && \
   curl -o /tmp/overseerr.tar.gz -L  "https://github.com/sct/overseerr/archive/refs/tags/v${VERSION}.tar.gz" && \
   mkdir -p /app/overseerr && \
-  tar xzf /tmp/overseerr.tar.gz -C  /app/overseerr/ --strip-components=1 && \
+  tar xzf /tmp/overseerr.tar.gz -C /app/overseerr/ --strip-components=1 && \
   cd /app/overseerr && \
   export NODE_OPTIONS=--max_old_space_size=2048 && \
   yarn --frozen-lockfile --network-timeout 1000000 && \
@@ -41,8 +41,9 @@ RUN \
     /tmp/* \
     /app/overseerr/.next/cache/*
 
+
 # copy local files
-COPY ./apps/docker-overseerr/root/ /
+COPY ./apps/docker-overseerr-nightly/root/ /
 
 # ports and volumes
 EXPOSE 5055
