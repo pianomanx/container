@@ -42,19 +42,9 @@ RUN \
   && \
   apk del --purge build-dependencies && rm -rf /tmp/* && \
   echo "**** starting install sabnzbd packages ****" && \
-  apk add -U --update --no-cache --virtual=build-dependencies \
-    build-base \
-    gcc \
-    libffi-dev \
-    openssl-dev \
-    python3-dev && \
-  apk add  -U --update --no-cache \
-    curl \
-    tar \
-    p7zip \
-    par2cmdline \
-    python3 \
-    py3-pip && \
+     apk add --no-cache apk-tools bash busybox coreutils shadow && \
+  apk add -U --update --no-cache --virtual=build-dependencies build-base gcc libffi-dev openssl-dev python3-dev && \
+  apk add  -U --update --no-cache curl tar p7zip par2cmdline python3 py3-pip && \
   apk add -U --update --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.14/main unrar && \
   SABNZBD_VERSION=$(curl -s https://api.github.com/repos/sabnzbd/sabnzbd/releases/latest | awk '/tag_name/{print $4;exit}' FS='[""]') && \
   mkdir -p /app/sabnzbd && \
@@ -76,9 +66,11 @@ RUN \
   echo "**** cleanup ****" && \
   ln -s /usr/bin/python3 /usr/bin/python && \
   apk del --purge build-dependencies && \
-  rm -rf \
-    /tmp/* \
-    $HOME/.cache
+  echo "**** create abc user and make our folders ****" && \
+     groupmod -g 1000 users && \
+     useradd -u 911 -U -d /config -s /bin/false abc && \
+     usermod -G users abc && \
+     rm -rf /var/cache/apk/* /tmp/* $HOME/.cache
 
 COPY ./apps/docker-sabnzbd/root/ /
 
