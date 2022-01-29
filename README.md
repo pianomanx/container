@@ -32,9 +32,29 @@ This should not work for you.
 1. We don't accept pull_request for other projects.
 1. We don't accept any changes what breaks dockserver.
 1. We don't give any help for other projects to run this dockers.
+
 ---
 
-# NOTE 
+## Notice Nightly Builds
+
+1. radarr
+1. sonarr
+1. sabnzbd
+1. lidarr
+1. readarr
+
+Are using now alpine as base image
+We moved away from Ubuntu and mono
+New dockers are using alpine as images
+
+When all tests are positive !
+
+We moved the normal version also to alpine
+
+
+---
+
+## Ideas and Code
 
 This repository is heavily based on 
 
