@@ -41,9 +41,8 @@ RUN \
     /tmp/* \
     /app/overseerr/.next/cache/*
 
-
 # copy local files
-COPY ./apps/docker-overseerr-nightly/root/ /
+COPY ./nightly/docker-overseerr-nightly/root/ /
 
 # ports and volumes
 EXPOSE 5055
