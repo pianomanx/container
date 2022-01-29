@@ -280,6 +280,7 @@ jobs:
            }
           ]
         }'
+        curl -fsSL --retry 5 -H "Content-Type: multipart/form-data" -F "file=@image.png" -F "payload_json=${json}" "${DISCORD_WEBHOOK}" > /dev/null
         else
         json='{
           "username": "Docker Image Build Failed",
@@ -306,3 +307,5 @@ jobs:
           ]
         }'
       curl -fsSL --retry 5 -H "Content-Type: multipart/form-data" -F "payload_json=${json}" "${DISCORD_WEBHOOK}" > /dev/null
+      fi
+
