@@ -330,7 +330,7 @@ sed -i "s#weekly#daily#g" /etc/logrotate.conf
 value=/tmp/rcunion.union
 if [[ -f ${value} ]]; then rm -rf ${value}; fi
 
-echo -n "/mnt/downloads /mnt/incomplete " >>${value}
+echo -n "/mnt/downloads " >>${value}
 
 IFS=$'\n'
 filter="$1"
