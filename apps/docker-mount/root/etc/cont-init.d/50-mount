@@ -374,6 +374,8 @@ We have take some code from :
 chmod -cR 755 /system/ /app /root &>/dev/null
 chown -cR abc:abc /system/ /app /root &>/dev/null
 chown -cR abc:abc /root &>/dev/null
+chown abc:abc $(which rclone) 1>/dev/null 2>&1
+chmod 755 $(which rclone) 1>/dev/null 2>&1
 
 #E-o-F#
 ##left over action_policy 'all' create_policy 'all' search_policy 'all' cache_time 5 --config=${CONFIG}
