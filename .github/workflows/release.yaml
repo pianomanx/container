@@ -215,25 +215,17 @@ jobs:
       run: cosign sign ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}@${{ steps.build-and-push.outputs.digest }}
 
 
-  send:
-    name: Build Docker
+  sendfail:
+    name: Send notification
     runs-on: ubuntu-20.04
-
-    permissions:
-      contents: read
-      packages: write
-      id-token: write
-      actions: write
-      checks: write
- 
     needs:
     - changes
     - get-version
-    - Build 
-    steps:
+    - build
+    if: failure() && ${{ github.event_name != 'pull_request' }}
 
-    - name: Send notification fail
-      if: failure() && ${{ github.event_name != 'pull_request' }}
+    steps:
+    - name: Send notification- fail
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_IMAGES }}
         DIGESTS: ${{ steps.build-and-push.outputs.digest }}
@@ -269,10 +261,19 @@ jobs:
            }
           ]
         }'
-       curl -fsSL --retry 5 -H "Content-Type: multipart/form-data" -F "payload_json=${json}" "${DISCORD_WEBHOOK}" > /dev/null
+        curl -fsSL --retry 5 -H "Content-Type: multipart/form-data" -F "payload_json=${json}" "${DISCORD_WEBHOOK}" > /dev/null
 
+  sendsuccess:
+    name: Send notification - success 
+    runs-on: ubuntu-20.04
+    needs:
+    - changes
+    - get-version
+    - build
+    if: success() && ${{ github.event_name != 'pull_request' }}
+
+    steps:
     - name: Send notification success 
-      if: success() && ${{ github.event_name != 'pull_request' }}
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_IMAGES }}
         DIGESTS: ${{ steps.build-and-push.outputs.digest }}
@@ -335,5 +336,5 @@ jobs:
            }
           ]
         }'
-       curl -fsSL --retry 5 -H "Content-Type: multipart/form-data" -F "file=@image.png" -F "payload_json=${json}" "${DISCORD_WEBHOOK}" > /dev/null
+        curl -fsSL --retry 5 -H "Content-Type: multipart/form-data" -F "file=@image.png" -F "payload_json=${json}" "${DISCORD_WEBHOOK}" > /dev/null
 
