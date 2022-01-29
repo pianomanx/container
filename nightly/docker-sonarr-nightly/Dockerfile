@@ -12,9 +12,6 @@ RUN  \
        apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main tinyxml2 && \
        apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community libmediainfo && \
        apk add --no-cache mono --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing && \
-       apk add --update --no-cache ca-certificates && \
-       cert-sync /etc/ssl/certs/ca-certificates.crt
-RUN \
     echo "**** install sonarr ****" && \
        mkdir -p /app/sonarr/bin && \
        SVERSION=$(curl -sX GET http://services.sonarr.tv/v1/releases | jq -r ".[] | select(.branch==\"$BRANCH\") | .version") && \
