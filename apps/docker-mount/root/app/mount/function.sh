@@ -222,7 +222,7 @@ sleep 5
 
 log ">> Set mount  options <<"
 rclone rc options/set --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --config=${CONFIG} \
---json '{ "mount": { "AllowNonEmpty": true, "AllowOther": true, "AsyncRead": true, "Daemon": true }}' &>/dev/null
+--json '{ "mount": { "AllowNonEmpty": true, "AllowOther": true, "AsyncRead": true, "Daemon": true ,"GID": 1000,"UID": 1000 }}' &>/dev/null
 sleep 5
 
 log ">> Set main options <<"
@@ -242,7 +242,7 @@ function rcmount() {
 source /system/mount/mount.env
 fusermount -uzq ${REMOTE}
 log ">> Starting mount <<"
-rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --config=${CONFIG} fs=remote: mountPoint="/mnt/unionfs" vfsOpt='{"GID": '${PGID}',"UID": '${PUID}'}' &>/dev/null
+rclone rc mount/mount --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --config=${CONFIG} fs=remote: mountPoint="/mnt/unionfs" vfsOpt='{"GID": 1000,"UID": 1000}' &>/dev/null
 
 }
 
@@ -279,8 +279,7 @@ function rcstats() {
 # NOTE LATER
 source /system/mount/mount.env
 log ">> get rclone stats <<"
-rclone rc core/stats \
---rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --config=${CONFIG}
+rclone rc core/stats --rc-user=${RC_USER} --rc-pass=${RC_PASSWORD} --config=${CONFIG}
 
 }
 
