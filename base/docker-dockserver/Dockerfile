@@ -6,7 +6,7 @@
 ARG VERSION
 FROM alpine:${VERSION}
 
-RUN apk add --no-cache bash shadow
+RUN apk add --no-cache bash shadow jq
 
 COPY ./base/docker-dockserver/root/start.sh /start.sh
 
