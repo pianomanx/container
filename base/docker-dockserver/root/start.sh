@@ -63,7 +63,8 @@ changelog-ci-config.yaml
 .gitignore
 .gitattributes
 log4j
-wiki" > /tmp/unwanted
+wiki
+imagss" > /tmp/unwanted
 
    sed '/^\s*#.*$/d' /tmp/unwanted | \
    while IFS=$'\n' read -r -a remove; do
