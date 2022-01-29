@@ -10,16 +10,22 @@ RUN \
   apk add --no-cache --virtual=build-dependencies \
     curl \
     g++ \
+    jq \
     make \
     python3 && \
   echo "**** symlink python3 for compatibility ****" && \
   ln -s /usr/bin/python3 /usr/bin/python && \
   echo "**** install runtime packages ****" && \
   apk add --no-cache yarn && \
-  export COMMIT_TAG="${VERSION}" && \
-  curl -o /tmp/overseerr.tar.gz -L  "https://github.com/sct/overseerr/archive/refs/tags/v${VERSION}.tar.gz" && \
+  TAG=$(curl -sX GET "https://api.github.com/repos/sct/overseerr/commits?sha=develop" | jq -r 'first(.[] | select(.commit.message | contains("[skip ci]") | not)) | .sha')  && \
+  export COMMIT_TAG="${TAG}" && \
+  curl -o \
+    /tmp/overseerr.tar.gz -L \
+    "https://github.com/sct/overseerr/archive/${TAG}.tar.gz" && \
   mkdir -p /app/overseerr && \
-  tar xzf /tmp/overseerr.tar.gz -C /app/overseerr/ --strip-components=1 && \
+  tar xzf \
+    /tmp/overseerr.tar.gz -C \
+    /app/overseerr/ --strip-components=1 && \
   cd /app/overseerr && \
   export NODE_OPTIONS=--max_old_space_size=2048 && \
   yarn --frozen-lockfile --network-timeout 1000000 && \
@@ -35,7 +41,7 @@ RUN \
   ln -s /config /app/overseerr/config && \
   touch /config/DOCKER && \
   echo "**** cleanup ****" && \
-  apk del --purge  build-dependencies && \
+  apk del --purge build-dependencies && \
   rm -rf \
     /root/.cache \
     /tmp/* \
