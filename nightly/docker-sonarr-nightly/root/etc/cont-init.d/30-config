@@ -4,6 +4,17 @@
 [[ -e /config/sonarr.pid ]] && \
     rm -rf /config/sonarr.pid
 
+   cat > /etc/apk/repositories << EOF; $(echo)
+http://dl-cdn.alpinelinux.org/alpine/v3.15/main
+http://dl-cdn.alpinelinux.org/alpine/v3.15/community
+http://dl-cdn.alpinelinux.org/alpine/edge/testing
+EOF
+
+echo "Updating Certificate"
+apk update --quiet
+apk add --quiet --no-cache openssl
+apk add --quiet --no-cache ca-certificates
+cert-sync /etc/ssl/certs/ca-certificates.crt &>/dev/null
+
 # permissions
-chown -R abc:abc \
-    /app/sonarr/bin
+chown -R abc:abc /app/sonarr/bin
