@@ -10,7 +10,7 @@ ENV XDG_CONFIG_HOME="/config/xdg"
 
 RUN \
   echo "**** install packages ****" && \
-    apk add -U --upgrade --no-cache jq tar icu-libs sqlite-libs && \
+    apk add -U --upgrade --no-cache jq curl tar icu-libs sqlite-libs && \
   echo "**** install radarr ****" && \
     mkdir -p /app/radarr/bin && \
   RADARR=$(curl -sL "https://radarr.servarr.com/v1/update/${BRANCH}/changes?runtime=netcore&os=linuxmusl" | jq -r '.[0].version') && \
