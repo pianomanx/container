@@ -10,7 +10,7 @@ RUN  \
     echo "**** install packages ****" && \
        apk add --no-cache jq openssl curl tar sqlite-libs && \
        apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main tinyxml2 && \
-       apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community libmediainfo
+       apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community libmediainfo && \
        apk add --no-cache mono --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing && \
        apk add --update --no-cache ca-certificates && \
        cert-sync /etc/ssl/certs/ca-certificates.crt
