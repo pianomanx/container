@@ -218,7 +218,6 @@ jobs:
       if: ${{ github.event_name != 'pull_request' }}
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_IMAGES }}
-        DISCORD_PIC: ${{ secrets.REPOPIC }}
         DIGESTS: ${{ steps.build-and-push.outputs.digest }}
         VERSION: ${{ steps.prep.outputs.version }}
         SHA8: ${{ steps.prep.outputs.shashort }}
@@ -227,15 +226,15 @@ jobs:
       shell: bash
       run: |
         if [[ -f "./images/${{ matrix.container }}.png" ]]; then
-            curl -fsSL --retry 5 "https://raw.githubusercontent.com/'${{ github.repository }}'/master/images/${{ matrix.container }}.png" > image.png
+            curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/${{ matrix.container }}.png" > image.png
         else
-            curl -fsSL --retry 5 "https://raw.githubusercontent.com/'${{ github.repository }}'/master/images/image.png" > image.png
+            curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/image.png" > image.png
         fi
         export DOCKER_CLI_EXPERIMENTAL=enabled
         if [[ ${{ steps.prep.outputs.version }} != "" ]]; then 
         json='{
           "username": "Docker Image Update",
-          "avatar_url": "${{ env.DISCORD_PIC }}",
+          "avatar_url": "https://raw.githubusercontent.com/dockserver/container/master/images/Logo.png",
           "embeds": [
             {
             "author": {
@@ -285,7 +284,7 @@ jobs:
         ## FAIL PIC curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/fail.png" > image.png
         json='{
           "username": "Docker Image : ERROR",
-          "avatar_url": "${{ env.DISCORD_PIC }}",
+          "avatar_url": "https://raw.githubusercontent.com/dockserver/container/master/images/Logo.png",
           "embeds": [
             {
             "author": {
