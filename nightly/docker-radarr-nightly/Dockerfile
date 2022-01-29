@@ -1,4 +1,4 @@
-FROM ghcr.io/dockserver/docker-alpine:latest
+FROM ghcr.io/linuxserver/baseimage-alpine:3.15
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -10,9 +10,7 @@ RUN \
       apk add -U --upgrade --no-cache tar curl jq icu-libs sqlite-libs && \
    echo "**** install radarr ****" && \
       mkdir -p /app/radarr/bin && \
-   if [ -z ${RADARR_RELEASE+x} ]; then \
-      RADARR_RELEASE=$(curl -sL "https://radarr.servarr.com/v1/update/${BRANCH}/changes?runtime=netcore&os=linuxmusl" | jq -r '.[0].version'); \
-   fi && \
+   RADARR_RELEASE=$(curl -sL "https://radarr.servarr.com/v1/update/${BRANCH}/changes?runtime=netcore&os=linuxmusl" | jq -r '.[0].version') && \
       curl -o /tmp/radarr.tar.gz -L "https://radarr.servarr.com/v1/update/${BRANCH}/updatefile?version=${RADARR_RELEASE}&os=linuxmusl&runtime=netcore&arch=x64" && \
    tar xzf \
       /tmp/radarr.tar.gz -C \
