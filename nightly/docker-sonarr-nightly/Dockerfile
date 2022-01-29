@@ -8,7 +8,7 @@ ENV XDG_CONFIG_HOME="/config/xdg"
 
 RUN  \
     echo "**** install packages ****" && \
-       apk add --no-cache jq curl tar sqlite-libs && \
+       apk add --no-cache jq ca-certificates openssl curl tar sqlite-libs && \
        apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main tinyxml2 && \
        apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community libmediainfo && \
        apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing mono && \
@@ -17,6 +17,7 @@ RUN  \
        SVERSION=$(curl -sX GET http://services.sonarr.tv/v1/releases | jq -r ".[] | select(.branch==\"$BRANCH\") | .version") && \
        curl -fsSL "https://download.sonarr.tv/v3/${BRANCH}/${SVERSION}/Sonarr.${BRANCH}.${SVERSION}.linux.tar.gz" | tar xzf - -C /app/sonarr/bin --strip-components=1 && \
     echo -e "UpdateMethod=docker\nBranch=${BRANCH}\nPackageVersion=${SVERSION}\nPackageAuthor=[dockserver.io](https://dockserver.io)" > /app/sonarr/package_info && \
+    cert-sync /etc/ssl/certs/ca-certificates.crt && \
     echo "**** cleanup ****" && \
        rm -rf /app/sonarr/bin/Sonarr.Update
 
