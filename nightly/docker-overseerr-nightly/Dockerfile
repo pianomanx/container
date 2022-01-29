@@ -6,7 +6,7 @@ ARG OVERLAY=v2.2.0.3
 
 # environment variables
 ENV PS1="$(whoami)@$(hostname):$(pwd)\\$ " \
-HOME="/root" \
+HOME="/config" \
 TERM="xterm"
 
 RUN \
@@ -64,10 +64,10 @@ RUN \
   rm -rf \
     /app/overseerr/src \
     /app/overseerr/server \
-    /app/overseerr/config \
     /app/overseerr/Dockerfile && \
   echo "{\"commitTag\": \"${COMMIT_TAG}\"}" > committag.json && \
-     mkdir -p /app/overseerr/config && mount --bind /config /app/overseerr/config && \
+     rm -rf /app/overseerr/config && \
+     ln -s /config /app/overseerr/config && \
      touch /config/DOCKER && \
   echo "**** cleanup ****" && \
      apk del --purge build-dependencies && \
