@@ -231,7 +231,7 @@ jobs:
         else
             curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/image.png" > image.png
         fi
-        if [[ -z ${VERSION} ]]; then
+        if [ -z ${VERSION} ]; then
         json='{
           "username": "Docker Image Update",
           "avatar_url": "https://raw.githubusercontent.com/dockserver/container/master/images/Logo.png",
@@ -280,10 +280,9 @@ jobs:
            }
           ]
         }'
-        curl -fsSL --retry 5 -H "Content-Type: multipart/form-data" -F "file=@image.png" -F "payload_json=${json}" "${DISCORD_WEBHOOK}" > /dev/null
         else
         json='{
-          "username": "Docker Image Build Failed",
+          "username": "Docker Image : ERROR",
           "avatar_url": "https://raw.githubusercontent.com/dockserver/container/master/images/Logo.png",
           "embeds": [
             {
@@ -292,20 +291,23 @@ jobs:
             },
             "title": "'${{ matrix.container }}'",
             "url": "https://github.com/orgs/'${{ github.repository_owner }}'/packages/container/package/'${{ matrix.container }}'",
-            "color": '${COLORAFAIL}',
+            "color": '${COLORFAIL}',
             "fields": [
               {
                 "name": "Container Info",
-                "value": "❌ Build for '${{ matrix.container }}' failed"
-             }
+                "value": "Image Build failed for : '${{ matrix.container }}'"
+              }
             ],
             "footer": {
               "text": "Powered by GitHub Actions",
               "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+             },
+             "timestamp": "'$(date -u +'%FT%T.%3NZ')'",
+             "image": {
+               "url": "attachment://image.png"
              }
            }
           ]
         }'
-      curl -fsSL --retry 5 -H "Content-Type: multipart/form-data" -F "payload_json=${json}" "${DISCORD_WEBHOOK}" > /dev/null
-      fi
-
+       fi
+       curl -fsSL --retry 5 -H "Content-Type: multipart/form-data" -F "file=@image.png" -F "payload_json=${json}" "${DISCORD_WEBHOOK}" > /dev/null
