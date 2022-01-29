@@ -214,48 +214,7 @@ jobs:
         COSIGN_EXPERIMENTAL: "true"
       run: cosign sign ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}@${{ steps.build-and-push.outputs.digest }}
 
-    - name: Send notification - fail
-      if: ${{ github.event_name != 'pull_request' }}
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_IMAGES }}
-        DIGESTS: ${{ steps.build-and-push.outputs.digest }}
-        VERSION: ${{ steps.prep.outputs.version }}
-        SHA8: ${{ steps.prep.outputs.shashort }}
-        COLORFAIL: 12193584
-      shell: bash
-      run: |
-        if [[ ${{ steps.prep.outputs.version }} == "" ]]; then
-        export DOCKER_CLI_EXPERIMENTAL=enabled
-        json='{
-          "username": "Docker Image : ERROR",
-          "avatar_url": "https://raw.githubusercontent.com/dockserver/container/master/images/Logo.png",
-          "embeds": [
-            {
-            "author": {
-              "name": "'${{ github.repository_owner }}'"
-            },
-            "title": "'${{ matrix.container }}'",
-            "url": "https://github.com/orgs/'${{ github.repository_owner }}'/packages/container/package/'${{ matrix.container }}'",
-            "color": '${COLORFAIL}',
-            "fields": [
-              {
-                "name": "Container Info",
-                "value": "Image Build failed for : '${{ matrix.container }}'"
-              }
-            ],
-            "footer": {
-              "text": "Powered by GitHub Actions",
-              "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-             },
-             "timestamp": "'$(date -u +'%FT%T.%3NZ')'"
-             }
-           }
-          ]
-        }'
-        curl -fsSL --retry 5 -H "Content-Type: multipart/form-data" -F "payload_json=${json}" "${DISCORD_WEBHOOK}" > /dev/null
-        fi
-
-    - name: Send notification - success
+    - name: Send notification
       if: ${{ github.event_name != 'pull_request' }}
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_IMAGES }}
@@ -263,15 +222,16 @@ jobs:
         VERSION: ${{ steps.prep.outputs.version }}
         SHA8: ${{ steps.prep.outputs.shashort }}
         COLOR: 3066993
+        COLORFAIL: 12193584
       shell: bash
       run: |
-        if [[ -z ${{ steps.prep.outputs.version }} ]]; then 
-        export DOCKER_CLI_EXPERIMENTAL=enabled
         if [[ -f "./images/${{ matrix.container }}.png" ]]; then
             curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/${{ matrix.container }}.png" > image.png
         else
             curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/image.png" > image.png
         fi
+        export DOCKER_CLI_EXPERIMENTAL=enabled
+        if [[ ${{ steps.prep.outputs.version }} != "" ]]; then 
         json='{
           "username": "Docker Image Update",
           "avatar_url": "https://raw.githubusercontent.com/dockserver/container/master/images/Logo.png",
@@ -320,5 +280,35 @@ jobs:
            }
           ]
         }'
-        curl -fsSL --retry 5 -H "Content-Type: multipart/form-data" -F "file=@image.png" -F "payload_json=${json}" "${DISCORD_WEBHOOK}" > /dev/null
+        else
+        json='{
+          "username": "Docker Image : ERROR",
+          "avatar_url": "https://raw.githubusercontent.com/dockserver/container/master/images/Logo.png",
+          "embeds": [
+            {
+            "author": {
+              "name": "'${{ github.repository_owner }}'"
+            },
+            "title": "'${{ matrix.container }}'",
+            "url": "https://github.com/orgs/'${{ github.repository_owner }}'/packages/container/package/'${{ matrix.container }}'",
+            "color": '${COLORFAIL}',
+            "fields": [
+              {
+                "name": "Container Info",
+                "value": "Image Build failed for : '${{ matrix.container }}'"
+              }
+            ],
+            "footer": {
+              "text": "Powered by GitHub Actions",
+              "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+             },
+             "timestamp": "'$(date -u +'%FT%T.%3NZ')'",
+             "image": {
+               "url": "attachment://image.png"
+             }
+           }
+          ]
+        }'
         fi
+        curl -fsSL --retry 5 -H "Content-Type: multipart/form-data" -F "file=@image.png" -F "payload_json=${json}" "${DISCORD_WEBHOOK}" > /dev/null
+
