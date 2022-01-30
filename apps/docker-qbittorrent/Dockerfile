@@ -1,39 +1,31 @@
-FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
+FROM ghcr.io/linuxserver/baseimage-alpine:3.15
 
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 ARG VERSION
-ARG DEBIAN_FRONTEND="noninteractive"
+
 ENV HOME="/config" \
 XDG_CONFIG_HOME="/config" \
-XDG_DATA_HOME="/config"
+XDG_DATA_HOME="/config" \
+    QBT_WEBUI_PORT=8080 \
+    LAN=192.168.0.0/16 \
+    DOCKER_CIDR=172.17.0.0/16 \
+    DNS=1.1.1.1 \
+    S6_BEHAVIOUR_IF_STAGE2_FAILS=2
 
-RUN \
-  echo "***** add qbitorrent repositories ****" && \
-  apt-get update && \
-  apt-get install -y \
-    gnupg \
-    python3 && \
-  curl -s https://dl.cloudsmith.io/public/qbittorrent-cli/qbittorrent-cli/gpg.F8756541ADDA2B7D.key | apt-key add - && \
-  apt-key adv --keyserver hkp://keyserver.ubuntu.com:11371 --recv-keys 7CA69FC4 && \
-  echo "deb http://ppa.launchpad.net/qbittorrent-team/qbittorrent-stable/ubuntu focal main" >> /etc/apt/sources.list.d/qbitorrent.list && \
-  echo "deb-src http://ppa.launchpad.net/qbittorrent-team/qbittorrent-stable/ubuntu focal main" >> /etc/apt/sources.list.d/qbitorrent.list && \
-  echo "deb https://dl.cloudsmith.io/public/qbittorrent-cli/qbittorrent-cli/deb/ubuntu focal main" >> /etc/apt/sources.list.d/qbitorrent.list && \
-  echo "**** install packages ****" && \
-     QBVERSION=$(curl -sX GET http://ppa.launchpad.net/qbittorrent-team/qbittorrent-stable/ubuntu/dists/focal/main/binary-amd64/Packages.gz | gunzip -c \
-     |grep -A 7 -m 1 "Package: qbittorrent-nox" | awk -F ": " '/Version/{print $2;exit}') && \
-  apt-get update && \
-  apt-get install -y \
-    p7zip-full \
-    qbittorrent-cli \
-    qbittorrent-nox=${QBVERSION} \
-    unrar \
-    geoip-bin \
-    unzip && \
-  echo "**** cleanup ****" && \
-  apt-get clean && \
-  rm -rf \
-    /tmp/* \
-    /var/lib/apt/lists/* \
-    /var/tmp/*
+RUN set -xe && \
+    echo "**** install build packages ****" && \
+       apk add --no-cache --virtual=build-dependencies libcap && \
+    echo "**** install runtime packages ****" && \
+       apk add --no-cache tar iptables jq curl tar subversion sudo && \
+    echo "**** install qbittorrent ****" && \
+       QVERSION=$(curl -sL "http://dl-cdn.alpinelinux.org/alpine/edge/community/x86_64/APKINDEX.tar.gz" | tar -xz -C /tmp && \
+       awk '/^P:qbittorrent-nox$/,/V:/' /tmp/APKINDEX | sed -n 2p | sed 's/^V://') && \
+       apk add --no-cache qbittorrent-nox=="${QVERSION}" && \
+    echo "abc ALL=(ALL) NOPASSWD: /sbin/ip" >>/etc/sudoers && \
+    echo "**** cleanup ****" && \
+       apk del --purge build-dependencies && \
+    rm -rf /tmp/*
 
 COPY ./apps/docker-qbittorrent/root/ /
 
