@@ -1,28 +1,20 @@
-FROM ghcr.io/linuxserver/baseimage-mono:LTS
+FROM ghcr.io/linuxserver/baseimage-alpine:3.15
 
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 ARG VERSION
 ENV HOME="/config"
 
-RUN \
- echo "**** install jq ****" && \
- apt-get update -yqq && \
- apt-get install -yqq \
-	jq && \
- echo "**** install duplicati ****" && \
- DUPLICATI_RELEASE=$(curl -sX GET "https://api.github.com/repos/duplicati/duplicati/releases" \
-	| jq -r 'first(.[] | select(.tag_name)) | .tag_name') && \
- mkdir -p \
-	/app/duplicati && \
-  duplicati_url=$(curl -s https://api.github.com/repos/duplicati/duplicati/releases/tags/"${DUPLICATI_RELEASE}" |jq -r '.assets[].browser_download_url' |grep zip |grep -v signatures) && \
- curl -o \
- /tmp/duplicati.zip -L \
-	"${duplicati_url}" && \
- unzip -q /tmp/duplicati.zip -d /app/duplicati && \
- echo "**** cleanup ****" && \
- rm -rf \
-	/tmp/* \
-	/var/lib/apt/lists/* \
-	/var/tmp/*
+RUN set -xe && \
+  echo "**** install packages ****" && \
+     apk add --no-cache jq openssl tar curl libgdiplus sqlite-libs terminus-fonts && \
+     apk add --no-cache mono --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing && \
+  echo "**** install sonarr ****" && \
+     DUPLICATI_RELEASE=$(curl -sX GET "https://api.github.com/repos/duplicati/duplicati/releases" | jq -r 'first(.[] | select(.tag_name)) | .tag_name') && \
+     mkdir -p /app/duplicati && \
+     curl -fsSL "https://github.com/duplicati/duplicati/archive/refs/tags/v${DUPLICATI_RELEASE}.tar.gz" | tar xzf - -C /app/duplicati --strip-components=1 && \
+  echo "**** cleanup ****" && \
+     rm -rf /tmp/* /var/tmp/*
 
 COPY ./apps/docker-duplicati/root/ /
 EXPOSE 8200
