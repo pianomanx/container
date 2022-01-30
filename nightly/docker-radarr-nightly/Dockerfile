@@ -4,26 +4,22 @@ ARG TARGETPLATFORM
 ARG BUILDPLATFORM
 ARG VERSION
 
-# environment settings
 ARG BRANCH="nightly"
 ENV XDG_CONFIG_HOME="/config/xdg"
 
-RUN \
-  echo "**** install packages ****" && \
-    apk add -U --upgrade --no-cache jq curl tar icu-libs sqlite-libs && \
-  echo "**** install radarr ****" && \
-    mkdir -p /app/radarr/bin && \
-  RADARR=$(curl -sL "https://radarr.servarr.com/v1/update/${BRANCH}/changes?runtime=netcore&os=linuxmusl" | jq -r '.[0].version') && \
-  curl -o /tmp/radarr.tar.gz -L "https://radarr.servarr.com/v1/update/${BRANCH}/updatefile?version=${RADARR}&os=linuxmusl&runtime=netcore&arch=x64" && \
-  tar xzf \
-    /tmp/radarr.tar.gz -C \
-    /app/radarr/bin --strip-components=1 && \
-  echo "UpdateMethod=docker\nBranch=${BRANCH}\nPackageVersion=${RADARR}\nPackageAuthor=[dockserver.io](https://dockserver.io/)" > /app/radarr/package_info && \
-  echo "**** cleanup ****" && \
-  rm -rf \
-    /app/radarr/bin/Radarr.Update \
-    /tmp/* \
-    /var/tmp/
+RUN  \
+    echo "**** install packages ****" && \
+       apk add --no-cache jq openssl jq curl tar icu-libs sqlite-libs && \
+       apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main tinyxml2 && \
+       apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community libmediainfo && \
+       apk add --no-cache mono --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing && \
+    echo "**** install radarr ****" && \
+       mkdir -p /app/radarr/bin && \
+       RADARR=$(curl -sL "https://radarr.servarr.com/v1/update/${BRANCH}/changes?runtime=netcore&os=linuxmusl" | jq -r '.[0].version') && \
+       curl -fsSL "https://radarr.servarr.com/v1/update/${BRANCH}/updatefile?version=${RADARR}&os=linuxmusl&runtime=netcore&arch=x64" | tar xzf - -C /app/radarr/bin --strip-components=1 && \
+    echo -e "UpdateMethod=docker\nBranch=${BRANCH}\nPackageVersion=${RADARR}\nPackageAuthor=[dockserver.io](https://dockserver.io/)" > /app/radarr/package_info && \
+    echo "**** cleanup ****" && \
+    rm -rf /app/radarr/bin/Radarr.Update 
 
 COPY ./apps/docker-radarr/root/ /
 
