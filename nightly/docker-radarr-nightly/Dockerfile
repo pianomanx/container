@@ -9,10 +9,9 @@ ENV XDG_CONFIG_HOME="/config/xdg"
 
 RUN  \
     echo "**** install packages ****" && \
-       apk add --no-cache jq openssl jq curl tar icu-libs sqlite-libs && \
+       apk add --no-cache jq openssl curl tar icu-libs sqlite-libs && \
        apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main tinyxml2 && \
        apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community libmediainfo && \
-       apk add --no-cache mono --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing && \
     echo "**** install radarr ****" && \
        mkdir -p /app/radarr/bin && \
        RADARR=$(curl -sL "https://radarr.servarr.com/v1/update/${BRANCH}/changes?runtime=netcore&os=linuxmusl" | jq -r '.[0].version') && \
