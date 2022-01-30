@@ -21,7 +21,7 @@ RUN set -xe && \
     echo "**** install qbittorrent ****" && \
        QVERSION=$(curl -sL "http://dl-cdn.alpinelinux.org/alpine/edge/community/x86_64/APKINDEX.tar.gz" | tar -xz -C /tmp && \
        awk '/^P:qbittorrent-nox$/,/V:/' /tmp/APKINDEX | sed -n 2p | sed 's/^V://') && \
-       apk add --no-cache qbittorrent-nox=="${QVERSION}" && \
+       apk add --no-cache qbittorrent-nox=="${QVERSION}" --repository http://dl-cdn.alpinelinux.org/alpine/edge/community && \
     echo "abc ALL=(ALL) NOPASSWD: /sbin/ip" >>/etc/sudoers && \
     echo "**** cleanup ****" && \
        apk del --purge build-dependencies && \
