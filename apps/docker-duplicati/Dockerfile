@@ -7,14 +7,15 @@ ENV HOME="/config"
 
 RUN set -xe && \
   echo "**** install packages ****" && \
-     apk add --no-cache jq openssl curl tar sqlite-libs && \
+     apk add --no-cache unzip jq openssl curl tar sqlite-libs && \
      apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing \
         mono libgdiplus terminus-font && \
   echo "**** install sonarr ****" && \
-     DUPLICATI_RELEASE=$(curl -sX GET "https://api.github.com/repos/duplicati/duplicati/releases" | jq -r 'first(.[] | select(.tag_name)) | .tag_name') && \
      mkdir -p /app/duplicati && \
-     curl -fsSL "https://github.com/duplicati/duplicati/archive/refs/tags/${DUPLICATI_RELEASE}.tar.gz" | tar xzf - -C /app/duplicati --strip-components=1 && \
-  echo "**** cleanup ****" && \
+     DVERSION=$(curl -sL "https://api.github.com/repos/duplicati/duplicati/releases" | jq -r 'first(.[] | select(.tag_name | contains("beta"))) | .tag_name') && \
+     curl -o /tmp/duplicati.zip -L "$(curl -s https://api.github.com/repos/duplicati/duplicati/releases/tags/${DVERSION} | jq -r '.assets[].browser_download_url' | grep zip | grep -v signatures)" && \
+     unzip /tmp/duplicati.zip -d /app/duplicati && \
+   echo "**** cleanup ****" && \
      rm -rf /tmp/* /var/tmp/*
 
 COPY ./apps/docker-duplicati/root/ /
