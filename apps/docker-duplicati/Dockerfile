@@ -13,7 +13,7 @@ RUN set -xe && \
   echo "**** install sonarr ****" && \
      DUPLICATI_RELEASE=$(curl -sX GET "https://api.github.com/repos/duplicati/duplicati/releases" | jq -r 'first(.[] | select(.tag_name)) | .tag_name') && \
      mkdir -p /app/duplicati && \
-     curl -fsSL "https://github.com/duplicati/duplicati/archive/refs/tags/v${DUPLICATI_RELEASE}.tar.gz" | tar xzf - -C /app/duplicati --strip-components=1 && \
+     curl -fsSL "https://github.com/duplicati/duplicati/archive/refs/tags/${DUPLICATI_RELEASE}.tar.gz" | tar xzf - -C /app/duplicati --strip-components=1 && \
   echo "**** cleanup ****" && \
      rm -rf /tmp/* /var/tmp/*
 
