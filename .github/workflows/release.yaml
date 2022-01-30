@@ -126,10 +126,11 @@ jobs:
         else
            echo ::set-output name=push::true
            echo ::set-output name=cache_from::"type=local,src=/tmp/.buildx-cache"
-           echo ::set-output name=cache_to::"type=local,dest=/tmp/.buildx-cache,mode=max"
+           echo ::set-output name=cache_to::"type=local,dest=/tmp/.buildx-cache-new,mode=max"
         fi
 
     - name: Set up QEMU
+      if: github.event_name != 'pull_request'
       uses: docker/setup-qemu-action@v1.2.0
       with:
         platforms: ${{ steps.prep.outputs.platformout }}
@@ -141,8 +142,8 @@ jobs:
         cosign-release: 'v1.4.0'
 
     - name: Login in Registry || major
-      uses: docker/login-action@v1.10.0
       if: github.event_name != 'pull_request'
+      uses: docker/login-action@v1.10.0
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         username: ${{ github.actor }}
@@ -175,6 +176,7 @@ jobs:
         images: ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
 
     - name: Build and Push Image
+      if: github.event_name != 'pull_request'
       id: build-and-push
       uses: docker/build-push-action@v2.7.0
       with:
@@ -183,7 +185,6 @@ jobs:
         platforms: ${{ steps.prep.outputs.platformout }}
         file: ./${{ steps.prep.outputs.category }}/${{ matrix.container }}/Dockerfile
         push: ${{ steps.prep.outputs.push }}
-        pull: ${{ steps.prep.outputs.push }}
         tags: |
           ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:latest
           ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:${{ steps.prep.outputs.shashort }}
@@ -204,6 +205,10 @@ jobs:
           org.opencontainers.image.license=${{ steps.prep.outputs.linc }}
           org.opencontainers.image.owner=${{ steps.prep.outputs.owndocker }}
           org.opencontainers.image.shaid=${{ steps.prep.outputs.shashort }}
+
+    - name: Move cache 
+      run: |
+        rm -rf /tmp/.buildx-cache && mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
