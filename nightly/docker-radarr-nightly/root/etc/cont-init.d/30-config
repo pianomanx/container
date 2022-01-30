@@ -6,11 +6,27 @@ http://dl-cdn.alpinelinux.org/alpine/v3.15/community
 http://dl-cdn.alpinelinux.org/alpine/edge/testing
 EOF
 
-echo "Updating Certificate"
-apk update --quiet
-apk add --quiet --no-cache openssl
-apk add --quiet --no-cache ca-certificates
-cert-sync /etc/ssl/certs/ca-certificates.crt &>/dev/null
+MAP=$(ls -1p /app/ | grep '/$' | $(command -v sed) 's/\/$//')
 
+[[ -e /config/$MAP.pid ]] && \
+    rm -rf /config/$MAP.pid
+
+if [[ ! -f "/app/$MAP/donecerts" ]]; then
+    echo "*** Running mono cert sync ***"
+    apk update --quiet
+    apk add --quiet --no-cache openssl
+    apk add --quiet --no-cache ca-certificates
+    apk add --no-cache mono --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing
+    cert-sync --quiet /etc/ssl/certs/ca-certificates.crt
+    touch "/app/$MAP/donecerts"
+fi
+
+[[ -d /config/custom-cont-init.d ]] && \
+  rm -rf /config/custom-cont-init.d
+
+[[ -d /config/custom-services.d ]] && \
+  rm -rf /config/custom-services.d
+
+custom-services.d
 # permissions
 chown -R abc:abc /config
