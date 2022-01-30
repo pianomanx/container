@@ -10,15 +10,9 @@ echo "Updating Certificate"
 apk update --quiet
 apk add --quiet --no-cache openssl
 apk add --quiet --no-cache ca-certificates
-cert-sync /etc/ssl/certs/ca-certificates.crt &>/dev/null
 
-mkdir -p \
-    /mnt/downloads/nzb \
-    /mnt/incomplete/nzb
-
-chown abc:abc \
-    /mnt/downloads/nzb \
-    /mnt/incomplete/nzb
+mkdir -p /mnt/downloads/nzb /mnt/incomplete/nzb
+chown -cR abc:abc /mnt/downloads/nzb /mnt/incomplete/nzb
 
 if [[ ! -f "/config/sabnzbd.ini" ]]; then
     printf "Copying over default configuration ... "
