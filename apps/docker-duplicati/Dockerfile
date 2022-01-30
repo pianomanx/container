@@ -7,8 +7,9 @@ ENV HOME="/config"
 
 RUN set -xe && \
   echo "**** install packages ****" && \
-     apk add --no-cache jq openssl tar curl libgdiplus sqlite-libs terminus-fonts && \
-     apk add --no-cache mono --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing && \
+     apk add --no-cache jq openssl curl tar sqlite-libs && \
+     apk add --no-cache -X http://dl-cdn.alpinelinux.org/alpine/edge/testing \
+        mono libgdiplus terminus-font && \
   echo "**** install sonarr ****" && \
      DUPLICATI_RELEASE=$(curl -sX GET "https://api.github.com/repos/duplicati/duplicati/releases" | jq -r 'first(.[] | select(.tag_name)) | .tag_name') && \
      mkdir -p /app/duplicati && \
