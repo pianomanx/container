@@ -20,7 +20,7 @@ RUN  \
     echo "**** cleanup ****" && \
        rm -rf /app/sonarr/bin/Sonarr.Update
 
-COPY ./apps/docker-sonarr/root/ /
+COPY ./nightly/docker-sonarr-nightly/root/ /
 
 EXPOSE 8989
 VOLUME /config
