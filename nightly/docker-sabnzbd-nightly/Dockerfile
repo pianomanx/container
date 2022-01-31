@@ -31,7 +31,7 @@ RUN \
      apk del --purge build-dependencies && \
      rm -rf /var/cache/apk/* /tmp/* $HOME/.cache
 
-COPY ./apps/docker-sabnzbd/root/ /
+COPY ./nightly/docker-sabnzbd-nightly/root/ /
 
 EXPOSE 8080 9090
 VOLUME /config
