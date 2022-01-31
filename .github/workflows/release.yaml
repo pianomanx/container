@@ -286,7 +286,7 @@ jobs:
           ]
         }'
         else
-        ## FAIL PIC curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/fail.png" > image.png
+        curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/fail.png" > image.png
         json='{
           "username": "Docker Image : ERROR",
           "avatar_url": "https://raw.githubusercontent.com/dockserver/container/master/images/Logo.png",
