@@ -20,7 +20,7 @@ RUN  \
     echo "**** cleanup ****" && \
     rm -rf /app/radarr/bin/Radarr.Update 
 
-COPY ./apps/docker-radarr/root/ /
+COPY ./nightly/docker-radarr-nightly/root/ /
 
 EXPOSE 7878
 VOLUME /config
