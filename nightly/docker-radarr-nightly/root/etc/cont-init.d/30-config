@@ -27,6 +27,5 @@ fi
 [[ -d /config/custom-services.d ]] && \
   rm -rf /config/custom-services.d
 
-custom-services.d
 # permissions
 chown -R abc:abc /config
