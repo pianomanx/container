@@ -17,7 +17,7 @@
 export username=${username}
 export token=${token}
 
-folder=$(ls -1p ./ | grep '/$' | sed 's/\/$//')
+folder=$(ls -1p ./ | grep '/$' | sed 's/\/$//' | sed '/images/d' )
 
 echo "${folder}"
 sleep 5
