@@ -68,8 +68,8 @@ jobs:
 
   build:
     name: Build Docker
-    runs-on: ${{ matrix.os }}
-    continue-on-error: ${{ matrix.experimental }}
+    runs-on: ubuntu-20.04
+    continue-on-error: false
 
     permissions:
       contents: read
@@ -85,8 +85,6 @@ jobs:
       max-parallel: 8
       fail-fast: false
       matrix: ${{ fromJson(needs.changes.outputs.matrix) }}
-      os: ubuntu-20.04
-      experimental: false
 
     if: "!contains(github.event.head_commit.message, '[ci-skip]')"
     steps:
