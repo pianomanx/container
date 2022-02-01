@@ -166,7 +166,7 @@ jobs:
         images: ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
 
     - name: Build and Push Image
-      if: ${{ steps.prep.outputs.version != "" }}
+      if: ${{ steps.prep.outputs.version != '' }}
       id: build-and-push
       uses: docker/build-push-action@v2.7.0
       with:
@@ -199,6 +199,7 @@ jobs:
     - name: Move cache 
       run: |
         rm -rf /tmp/.buildx-cache && mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
 
