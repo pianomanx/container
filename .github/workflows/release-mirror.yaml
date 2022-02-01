@@ -33,17 +33,9 @@ jobs:
 
     - name: Run Test & Get New Versions
       run: |
-        API=$(curl -H "Authorization: token ${{ secrets.CR_PAT }}" -X GET https://api.github.com/rate_limit \
-             | jq --raw-output '.rate.limit')
-        if [[ $API -gt 101 ]]; then
-           echo "Fetch new Versions"
-           if test -f "./.github/version.sh"; then
-              bash "./.github/version.sh"
-           fi
-        elif [[ $API -lt 100 ]]; then
-             echo " GitHube API busted " && exit 0
-        else
-             echo " no reponse from Github API ? Maybe down or busted " && exit 0
+        echo "Fetch new Versions"
+        if test -f "./.github/version.sh"; then
+           bash "./.github/version.sh"
         fi
       env:
         username: ${{ github.actor }}
@@ -76,7 +68,8 @@ jobs:
 
   build:
     name: Build Docker
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
 
     permissions:
       contents: read
@@ -89,8 +82,12 @@ jobs:
     - changes
     - get-version
     strategy:
-      matrix: ${{ fromJson(needs.changes.outputs.matrix) }}
+      max-parallel: 8
       fail-fast: false
+      matrix: ${{ fromJson(needs.changes.outputs.matrix) }}
+      os: ubuntu-20.04
+      experimental: false
+
     if: "!contains(github.event.head_commit.message, '[ci-skip]')"
     steps:
     - name: Checkout
@@ -130,6 +127,7 @@ jobs:
         fi
 
     - name: Set up QEMU
+      if: ${{ github.event_name != 'pull_request' }}
       uses: docker/setup-qemu-action@v1.2.0
       with:
         platforms: ${{ steps.prep.outputs.platformout }}
@@ -143,6 +141,7 @@ jobs:
           password: ${{ secrets.CR_QUAI }}
 
     - name: Set up Docker Buildx
+      if: ${{ github.event_name != 'pull_request' }}
       id: buildx
       uses: docker/setup-buildx-action@v1.6.0
       with:
@@ -158,17 +157,18 @@ jobs:
       uses: actions/cache@v2.1.7
       with:
         path: /tmp/.buildx-cache
-        key: ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
+        key: ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
         restore-keys: |
-          ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
+          ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
 
     - name: Extract Docker metadata
       id: meta
       uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
       with:
-        images: ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
+        images: ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
 
     - name: Build and Push Image
+      if: ${{ steps.prep.outputs.version != "" }}
       id: build-and-push
       uses: docker/build-push-action@v2.7.0
       with:
@@ -177,7 +177,6 @@ jobs:
         platforms: ${{ steps.prep.outputs.platformout }}
         file: ./${{ steps.prep.outputs.category }}/${{ matrix.container }}/Dockerfile
         push: ${{ steps.prep.outputs.push }}
-        pull: ${{ steps.prep.outputs.push }}
         tags: |
           ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:latest
           ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:${{ steps.prep.outputs.shashort }}
@@ -199,5 +198,9 @@ jobs:
           org.opencontainers.image.owner=${{ steps.prep.outputs.owndocker }}
           org.opencontainers.image.shaid=${{ steps.prep.outputs.shashort }}
 
+    - name: Move cache 
+      run: |
+        rm -rf /tmp/.buildx-cache && mv /tmp/.buildx-cache-new /tmp/.buildx-cache
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
+
