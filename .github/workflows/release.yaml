@@ -33,16 +33,9 @@ jobs:
 
     - name: Run Test & Get New Versions
       run: |
-        API=$(curl -H "Authorization: token ${{ secrets.CR_PAT }}" -X GET https://api.github.com/rate_limit | jq --raw-output '.rate.limit')
-        if [[ $API -gt 101 ]]; then
-           echo "Fetch new Versions"
-           if test -f "./.github/version.sh"; then
-              bash "./.github/version.sh"
-           fi
-        elif [[ $API -lt 100 ]]; then
-             echo " GitHube API busted " && exit 0
-        else
-             echo " no reponse from Github API ? Maybe down or busted " && exit 0
+        echo "Fetch new Versions"
+        if test -f "./.github/version.sh"; then
+           bash "./.github/version.sh"
         fi
       env:
         username: ${{ github.actor }}
@@ -75,7 +68,8 @@ jobs:
 
   build:
     name: Build Docker
-    runs-on: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
 
     permissions:
       contents: read
@@ -88,8 +82,12 @@ jobs:
     - changes
     - get-version
     strategy:
+      max-parallel: 8
       matrix: ${{ fromJson(needs.changes.outputs.matrix) }}
-      fail-fast: false
+      fail-fast: true
+        os: [ubuntu-18.04, ubuntu-20.04]
+        experimental: [false]
+
     if: "!contains(github.event.head_commit.message, '[ci-skip]')"
     steps:
     - name: Checkout
@@ -130,19 +128,19 @@ jobs:
         fi
 
     - name: Set up QEMU
-      if: github.event_name != 'pull_request'
+      if: ${{ github.event_name != 'pull_request' }}
       uses: docker/setup-qemu-action@v1.2.0
       with:
         platforms: ${{ steps.prep.outputs.platformout }}
 
     - name: Install cosign
-      if: github.event_name != 'pull_request'
+      if: ${{ github.event_name != 'pull_request' }}
       uses: sigstore/cosign-installer@1e95c1de343b5b0c23352d6417ee3e48d5bcd422
       with:
         cosign-release: 'v1.4.0'
 
     - name: Login in Registry || major
-      if: github.event_name != 'pull_request'
+      if: ${{ github.event_name != 'pull_request' }}
       uses: docker/login-action@v1.10.0
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
@@ -176,7 +174,7 @@ jobs:
         images: ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
 
     - name: Build and Push Image
-      if: github.event_name != 'pull_request'
+      if: ${{ steps.prep.outputs.version != "" }}
       id: build-and-push
       uses: docker/build-push-action@v2.7.0
       with:
@@ -231,9 +229,9 @@ jobs:
       shell: bash
       run: |
         if [[ -f "./images/${{ matrix.container }}.png" ]]; then
-            curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/${{ matrix.container }}.png" > image.png
+           curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/${{ matrix.container }}.png" > image.png
         else
-            curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/image.png" > image.png
+           curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/image.png" > image.png
         fi
         export DOCKER_CLI_EXPERIMENTAL=enabled
         if [[ ${{ steps.prep.outputs.version }} != "" ]]; then 
