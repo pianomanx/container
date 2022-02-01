@@ -32,13 +32,7 @@ RUN \
   && \
   apt-get -qq update \
   && \
-  apt-get -qq install -y \
-    aria2 \
-    jq \
-    unrar \
-    unzip \
-    uuid-runtime \
-    ${INSTALL_ARG} \
+  apt-get -qq install -y wget curl aria2 jq unrar unzip uuid-runtime ${INSTALL_ARG} \
   && \
   case "${ARCH}" in \
     'amd64') \
@@ -71,8 +65,7 @@ RUN \
   && \
   apt-get remove -yqq aria2 jq software-properties-common gpg-agent \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-  && apt-get autoremove -yqq \
-  && apt-get clean -yqq \
+  && apt-get autoremove -yqq && apt-get clean -yqq \
   && \
   rm -rf \
     /etc/default/plexmediaserver \
