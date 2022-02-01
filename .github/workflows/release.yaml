@@ -206,24 +206,21 @@ jobs:
       run: |
         rm -rf /tmp/.buildx-cache && mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-    - name: Image digest
-      run: echo ${{ steps.docker_build.outputs.digest }}
-
     - name: Sign the published Docker image
-      if: ${{ github.event_name != 'pull_request' }}
+      if: ${{ steps.prep.outputs.version != '' }}
       env:
         COSIGN_EXPERIMENTAL: "true"
-      run: cosign sign ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}@${{ steps.build-and-push.outputs.digest }}
+      run: |
+        echo ${{ steps.docker_build.outputs.digest }}
+        cosign sign ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}@${{ steps.build-and-push.outputs.digest }}
 
     - name: Send notification
-      if: ${{ github.event_name != 'pull_request' }}
+      if: ${{ steps.prep.outputs.version != '' }}
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_IMAGES }}
-        DIGESTS: ${{ steps.build-and-push.outputs.digest }}
         VERSION: ${{ steps.prep.outputs.version }}
         SHA8: ${{ steps.prep.outputs.shashort }}
         COLOR: 3066993
-        COLORFAIL: 12193584
       shell: bash
       run: |
         if [[ -f "./images/${{ matrix.container }}.png" ]]; then
@@ -232,7 +229,6 @@ jobs:
            curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/image.png" > image.png
         fi
         export DOCKER_CLI_EXPERIMENTAL=enabled
-        if [[ ${{ steps.prep.outputs.version }} != "" ]]; then 
         json='{
           "username": "Docker Image Update",
           "avatar_url": "https://raw.githubusercontent.com/dockserver/container/master/images/Logo.png",
@@ -262,8 +258,8 @@ jobs:
                 "value": "`docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest`\nor\n`docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION}'`"
               },
               {
-                "name": "Digest & Comment ID",
-                "value": "Digest : `'${DIGESTS}'`\nGitHub Comment ID : (https://github.com/'${{ github.repository }}'/commit/'${SHA8}')"
+                "name": "Comment ID",
+                "value": "GitHub Comment ID : (https://github.com/'${{ github.repository }}'/commit/'${SHA8}')"
               },
               {
                 "name": "Thanks!",
@@ -281,35 +277,4 @@ jobs:
            }
           ]
         }'
-        else
-        curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/fail.png" > image.png
-        json='{
-          "username": "Docker Image : ERROR",
-          "avatar_url": "https://raw.githubusercontent.com/dockserver/container/master/images/Logo.png",
-          "embeds": [
-            {
-            "author": {
-              "name": "'${{ github.repository_owner }}'"
-            },
-            "title": "'${{ matrix.container }}'",
-            "url": "https://github.com/orgs/'${{ github.repository_owner }}'/packages/container/package/'${{ matrix.container }}'",
-            "color": '${COLORFAIL}',
-            "fields": [
-              {
-                "name": "Container Info",
-                "value": "Image Build failed for : '${{ matrix.container }}'"
-              }
-            ],
-            "footer": {
-              "text": "Powered by GitHub Actions",
-              "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
-             },
-             "timestamp": "'$(date -u +'%FT%T.%3NZ')'",
-             "image": {
-               "url": "attachment://image.png"
-             }
-           }
-          ]
-        }'
-        fi
         curl -fsSL --retry 5 -H "Content-Type: multipart/form-data" -F "file=@image.png" -F "payload_json=${json}" "${DISCORD_WEBHOOK}" > /dev/null
