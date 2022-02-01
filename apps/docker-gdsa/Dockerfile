@@ -6,6 +6,7 @@
 #####################################
 ARG VERSION
 FROM gcr.io/google.com/cloudsdktool/cloud-sdk:${VERSION}-alpine
+
 RUN \
  echo "**** update build packages ****" && \
    apk --quiet --no-cache --no-progress update && \
@@ -16,4 +17,5 @@ RUN \
    rm -f /var/cache/apk/*
 
 COPY ./apps/docker-gdsa/root/ /
+
 ENTRYPOINT [ "/bin/bash", "/movestart.sh" ]
