@@ -50,13 +50,9 @@ for i in ${folder[@]}; do
    find ./$i -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read app; do
       if test -f "./$i/${app}/latest-version.sh"; then
          version=$(bash "./$i/${app}/latest-version.sh")
-         if [[ ! -z "${version}" || "${version}" != "" || "${version}" != 'null' ]]; then
+         if [ -n "${version}" ] && [ ! -z "${version}" ]; then
             echo "${version}" | tee "./$i/${app}/VERSION" > /dev/null
-            echo "${app} ${version}"
-            unset version
-         else
-            ##cat "./$i/${app}/VERSION" | tee "./$i/${app}/VERSION" > /dev/null
-            echo "${app} failed to update"
+            echo "update ${app} to ${version}"
             unset version
          fi
       fi
