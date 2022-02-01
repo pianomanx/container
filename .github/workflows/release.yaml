@@ -204,12 +204,13 @@ jobs:
 
     - name: Move cache 
       run: |
-        rm -rf /tmp/.buildx-cache && mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+        rm -rf /tmp/.buildx-* && mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
     - name: Sign the published Docker image
       if: ${{ steps.prep.outputs.version != '' }}
       env:
         COSIGN_EXPERIMENTAL: "true"
+      shell: bash
       run: |
         echo ${{ steps.docker_build.outputs.digest }}
         cosign sign ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}@${{ steps.build-and-push.outputs.digest }}
