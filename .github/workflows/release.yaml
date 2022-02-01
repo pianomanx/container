@@ -85,8 +85,8 @@ jobs:
       max-parallel: 8
       fail-fast: false
       matrix: ${{ fromJson(needs.changes.outputs.matrix) }}
-        os: [ubuntu-20.04]
-        experimental: [false]
+        os: ubuntu-20.04
+        experimental: false
 
     if: "!contains(github.event.head_commit.message, '[ci-skip]')"
     steps:
