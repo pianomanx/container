@@ -204,7 +204,8 @@ jobs:
 
     - name: Move cache 
       run: |
-        rm -rf /tmp/.buildx-* && mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+        rm -rf ${{ steps.prep.outputs.cache_to }}
+        mv ${{ steps.prep.outputs.cache_from }} ${{ steps.prep.outputs.cache_to }}
 
     - name: Sign the published Docker image
       if: ${{ steps.prep.outputs.version != '' }}
