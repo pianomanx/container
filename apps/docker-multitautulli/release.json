@@ -1,6 +1,6 @@
 {
    "appname": "docker-multitautulli",
-   "apppic": "./images/'docker-multitautulli'.png",
+   "apppic": "./images/docker-multitautulli.png",
    "appfolder": "./apps/docker-multitautulli",
    "newversion": "4.1.07",
    "oldversion": "4.1.07",

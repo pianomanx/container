@@ -1,6 +1,6 @@
 {
    "appname": "docker-jackett",
-   "apppic": "./images/'docker-jackett'.png",
+   "apppic": "./images/docker-jackett.png",
    "appfolder": "./apps/docker-jackett",
    "newversion": "0.20.497",
    "oldversion": "0.20.497",

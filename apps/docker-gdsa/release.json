@@ -1,6 +1,6 @@
 {
    "appname": "docker-gdsa",
-   "apppic": "./images/'docker-gdsa'.png",
+   "apppic": "./images/docker-gdsa.png",
    "appfolder": "./apps/docker-gdsa",
    "newversion": "371.0.0",
    "oldversion": "371.0.0",

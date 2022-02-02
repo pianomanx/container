@@ -1,6 +1,6 @@
 {
    "appname": "docker-wireguard",
-   "apppic": "./images/'docker-wireguard'.png",
+   "apppic": "./images/docker-wireguard.png",
    "appfolder": "./apps/docker-wireguard",
    "newversion": "1.0.20210914",
    "oldversion": "1.0.20210914",

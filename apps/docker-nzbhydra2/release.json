@@ -1,6 +1,6 @@
 {
    "appname": "docker-nzbhydra2",
-   "apppic": "./images/'docker-nzbhydra2'.png",
+   "apppic": "./images/docker-nzbhydra2.png",
    "appfolder": "./apps/docker-nzbhydra2",
    "newversion": "4.0.2",
    "oldversion": "4.0.2",

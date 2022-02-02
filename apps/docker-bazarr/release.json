@@ -1,6 +1,6 @@
 {
    "appname": "docker-bazarr",
-   "apppic": "./images/'docker-bazarr'.png",
+   "apppic": "./images/docker-bazarr.png",
    "appfolder": "./apps/docker-bazarr",
    "newversion": "1.0.2",
    "oldversion": "1.0.2",

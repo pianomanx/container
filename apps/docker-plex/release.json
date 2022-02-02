@@ -1,6 +1,6 @@
 {
    "appname": "docker-plex",
-   "apppic": "./images/'docker-plex'.png",
+   "apppic": "./images/docker-plex.png",
    "appfolder": "./apps/docker-plex",
    "newversion": "1.25.4.5487-648a8f9f9",
    "oldversion": "1.25.4.5487-648a8f9f9",

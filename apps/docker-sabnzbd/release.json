@@ -1,6 +1,6 @@
 {
    "appname": "docker-sabnzbd",
-   "apppic": "./images/'docker-sabnzbd'.png",
+   "apppic": "./images/docker-sabnzbd.png",
    "appfolder": "./apps/docker-sabnzbd",
    "newversion": "3.5.0",
    "oldversion": "3.5.0",

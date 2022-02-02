@@ -1,6 +1,6 @@
 {
    "appname": "docker-qbittorrent",
-   "apppic": "./images/'docker-qbittorrent'.png",
+   "apppic": "./images/docker-qbittorrent.png",
    "appfolder": "./apps/docker-qbittorrent",
    "newversion": "4.4.0-r0",
    "oldversion": "4.4.0-r0",

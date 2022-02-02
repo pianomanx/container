@@ -1,6 +1,6 @@
 {
    "appname": "docker-jellyfin",
-   "apppic": "./images/'docker-jellyfin'.png",
+   "apppic": "./images/docker-jellyfin.png",
    "appfolder": "./apps/docker-jellyfin",
    "newversion": "10.7.7-1",
    "oldversion": "10.7.7-1",

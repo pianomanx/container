@@ -1,6 +1,6 @@
 {
    "appname": "docker-sabnzbd-nightly",
-   "apppic": "./images/'docker-sabnzbd-nightly'.png",
+   "apppic": "./images/docker-sabnzbd-nightly.png",
    "appfolder": "./nightly/docker-sabnzbd-nightly",
    "newversion": "1c27ebc1e4db110c51ac8c3c20e72e33ab63e862",
    "oldversion": "1c27ebc1e4db110c51ac8c3c20e72e33ab63e862",

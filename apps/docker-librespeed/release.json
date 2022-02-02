@@ -1,6 +1,6 @@
 {
    "appname": "docker-librespeed",
-   "apppic": "./images/'docker-librespeed'.png",
+   "apppic": "./images/docker-librespeed.png",
    "appfolder": "./apps/docker-librespeed",
    "newversion": "5.2.5",
    "oldversion": "5.2.5",

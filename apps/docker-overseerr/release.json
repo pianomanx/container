@@ -1,6 +1,6 @@
 {
    "appname": "docker-overseerr",
-   "apppic": "./images/'docker-overseerr'.png",
+   "apppic": "./images/docker-overseerr.png",
    "appfolder": "./apps/docker-overseerr",
    "newversion": "1.28.0",
    "oldversion": "1.28.0",

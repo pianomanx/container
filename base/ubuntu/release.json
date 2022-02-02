@@ -1,6 +1,6 @@
 {
    "appname": "ubuntu",
-   "apppic": "./images/'ubuntu'.png",
+   "apppic": "./images/ubuntu.png",
    "appfolder": "./base/ubuntu",
    "newversion": "focal-20220113",
    "oldversion": "focal-20220113",

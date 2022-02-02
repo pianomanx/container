@@ -1,6 +1,6 @@
 {
    "appname": "docker-nzbget",
-   "apppic": "./images/'docker-nzbget'.png",
+   "apppic": "./images/docker-nzbget.png",
    "appfolder": "./apps/docker-nzbget",
    "newversion": "21.1",
    "oldversion": "21.1",

@@ -1,6 +1,6 @@
 {
    "appname": "docker-overseerr-nightly",
-   "apppic": "./images/'docker-overseerr-nightly'.png",
+   "apppic": "./images/docker-overseerr-nightly.png",
    "appfolder": "./nightly/docker-overseerr-nightly",
    "newversion": "92b2d32d2e1e1d319410a9e357e1304065a77598",
    "oldversion": "92b2d32d2e1e1d319410a9e357e1304065a77598",

@@ -1,6 +1,6 @@
 {
    "appname": "docker-sonarr",
-   "apppic": "./images/'docker-sonarr'.png",
+   "apppic": "./images/docker-sonarr.png",
    "appfolder": "./apps/docker-sonarr",
    "newversion": "3.0.6.1342",
    "oldversion": "3.0.6.1342",

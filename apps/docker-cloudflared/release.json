@@ -1,6 +1,6 @@
 {
    "appname": "docker-cloudflared",
-   "apppic": "./images/'docker-cloudflared'.png",
+   "apppic": "./images/docker-cloudflared.png",
    "appfolder": "./apps/docker-cloudflared",
    "newversion": "2022.1.3",
    "oldversion": "2022.1.3",

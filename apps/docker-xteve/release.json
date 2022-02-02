@@ -1,6 +1,6 @@
 {
    "appname": "docker-xteve",
-   "apppic": "./images/'docker-xteve'.png",
+   "apppic": "./images/docker-xteve.png",
    "appfolder": "./apps/docker-xteve",
    "newversion": "2.2.0.200",
    "oldversion": "2.2.0.200",

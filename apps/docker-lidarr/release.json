@@ -1,6 +1,6 @@
 {
    "appname": "docker-lidarr",
-   "apppic": "./images/'docker-lidarr'.png",
+   "apppic": "./images/docker-lidarr.png",
    "appfolder": "./apps/docker-lidarr",
    "newversion": "1.0.0.2434",
    "oldversion": "1.0.0.2434",

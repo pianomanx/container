@@ -1,6 +1,6 @@
 {
    "appname": "docker-readarr",
-   "apppic": "./images/'docker-readarr'.png",
+   "apppic": "./images/docker-readarr.png",
    "appfolder": "./apps/docker-readarr",
    "newversion": "0.1.0.1225",
    "oldversion": "0.1.0.1225",

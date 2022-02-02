@@ -1,6 +1,6 @@
 {
    "appname": "docker-hyperhdr",
-   "apppic": "./images/'docker-hyperhdr'.png",
+   "apppic": "./images/docker-hyperhdr.png",
    "appfolder": "./apps/docker-hyperhdr",
    "newversion": "17.0.0.0",
    "oldversion": "17.0.0.0",

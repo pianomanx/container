@@ -1,6 +1,6 @@
 {
    "appname": "docker-tautulli",
-   "apppic": "./images/'docker-tautulli'.png",
+   "apppic": "./images/docker-tautulli.png",
    "appfolder": "./apps/docker-tautulli",
    "newversion": "2.8.1",
    "oldversion": "2.8.1",

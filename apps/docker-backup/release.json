@@ -1,6 +1,6 @@
 {
    "appname": "docker-backup",
-   "apppic": "./images/'docker-backup'.png",
+   "apppic": "./images/docker-backup.png",
    "appfolder": "./apps/docker-backup",
    "newversion": "3.15.0-rc.4",
    "oldversion": "3.15.0-rc.4",

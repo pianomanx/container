@@ -1,6 +1,6 @@
 {
    "appname": "docker-embystat",
-   "apppic": "./images/'docker-embystat'.png",
+   "apppic": "./images/docker-embystat.png",
    "appfolder": "./apps/docker-embystat",
    "newversion": "0.2.0-beta.27",
    "oldversion": "0.2.0-beta.27",

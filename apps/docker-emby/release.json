@@ -1,6 +1,6 @@
 {
    "appname": "docker-emby",
-   "apppic": "./images/'docker-emby'.png",
+   "apppic": "./images/docker-emby.png",
    "appfolder": "./apps/docker-emby",
    "newversion": "4.6.7.0",
    "oldversion": "4.6.7.0",
