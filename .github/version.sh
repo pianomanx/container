@@ -19,41 +19,41 @@ export token=${token}
 
 folder=$(ls -1p ./ | grep '/$' | sed 's/\/$//' | sed '/images/d' )
 
-echo "${folder}"
-sleep 5
-
-#for i in ${folder[@]}; do
-#   find ./$i -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read app; do
-#      if test -f "./$i/${app}/latest-overlay.sh"; then
-#         ##version=$(bash "./$i/${app}/latest-overlay.sh")
-#         version=v2.2.0.3
-#         if [[ ! -z "${version}" || "${version}" != "" || "${version}" != 'null' ]]; then
-#           echo "${version}" | tee "./$i/${app}/OVERLAY_VERSION" > /dev/null
-#            echo "${app} 2.2.0.3"
-#            unset version
-#         else
-#            ##cat "./$i/${app}/OVERLAY_VERSION" | tee "./$i/${app}/OVERLAY_VERSION" > /dev/null
-#            echo "${app} failed to update"
-#            unset version
-#         fi
-#      else
-#         echo "${version}" | tee "./$i/${app}/OVERLAY_VERSION" > /dev/null
-#         echo "${app} 2.2.0.3"
-#         unset version 
-#      fi
-#   done
-#done
-
-folder=$(ls -1p ./ | grep '/$' | sed 's/\/$//')
-
 for i in ${folder[@]}; do
    find ./$i -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read app; do
       if test -f "./$i/${app}/latest-version.sh"; then
-         version=$(bash "./$i/${app}/latest-version.sh")
-         if [ -n "${version}" ] && [ ! -z "${version}" ]; then
-            echo "${version}" | tee "./$i/${app}/VERSION" > /dev/null
-            echo "update ${app} to ${version}"
-            unset version
+         NEWVERSION=$(bash "./$i/${app}/latest-version.sh")
+         if [ "${NEWVERSION}" != "null" ] && [ "${NEWVERSION}" != "" ] && [ -n "${NEWVERSION}" ] && [ ! -z "${NEWVERSION}" ]; then
+            touch "./$i/${app}/release.json"
+            DESCRIPTION=$(jq -r '.description' < ./$i/${app}/release.json)
+            OLDVERSION=$(jq -r '.newversion' < ./$i/${app}/release.json)
+            BUILDDATE="$(date +%Y-%m-%d)"
+
+            if [[ -f "./images/${app}.png" ]]; then
+               PICTURE="./images/'${app}'.png"
+            else
+               PICTURE="./images/image.png"
+            fi
+
+printf '{
+   "appname": "'${app}'",
+   "apppic": "'${PICTURE}'",
+   "appfolder": "./'$i'/'${app}'",
+   "newversion": "'${NEWVERSION}'",
+   "oldversion": "'${OLDVERSION}'",
+   "builddate": "'${BUILDDATE}'",
+   "description": "'${DESCRIPTION}'",
+   "body": "Upgrading '${app}' from '${OLDVERSION}' to '${NEWVERSION}'",
+   "user": "github-actions[bot]"
+}' > "./$i/${app}/release.json"
+
+         rm -rf ./$i/${app}/VERSION \
+             ./$i/${app}/OVERLAY_VERSION \
+             ./$i/${app}/PLATFORM \
+             ./$i/${app}/.editorconfig \
+             ./$i/${app}/latest-overlay.sh
+
+            unset OLDVERSION NEWVERSION DESCRIPTION BUILDDATE
          fi
       fi
    done
