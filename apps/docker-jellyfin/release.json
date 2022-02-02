@@ -1,0 +1,11 @@
+{
+   "appname": "docker-jellyfin",
+   "apppic": "./images/'docker-jellyfin'.png",
+   "appfolder": "./apps/docker-jellyfin",
+   "newversion": "10.7.7-1",
+   "oldversion": "",
+   "builddate": "2022-02-02",
+   "description": "",
+   "body": "Upgrading docker-jellyfin from  to 10.7.7-1",
+   "user": "github-actions[bot]"
+}

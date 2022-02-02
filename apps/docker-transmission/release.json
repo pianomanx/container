@@ -1,0 +1,11 @@
+{
+   "appname": "docker-transmission",
+   "apppic": "./images/'docker-transmission'.png",
+   "appfolder": "./apps/docker-transmission",
+   "newversion": "3.00-r3",
+   "oldversion": "",
+   "builddate": "2022-02-02",
+   "description": "",
+   "body": "Upgrading docker-transmission from  to 3.00-r3",
+   "user": "github-actions[bot]"
+}

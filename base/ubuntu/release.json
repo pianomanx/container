@@ -1,0 +1,11 @@
+{
+   "appname": "ubuntu",
+   "apppic": "./images/'ubuntu'.png",
+   "appfolder": "./base/ubuntu",
+   "newversion": "focal-20220113",
+   "oldversion": "",
+   "builddate": "2022-02-02",
+   "description": "",
+   "body": "Upgrading ubuntu from  to focal-20220113",
+   "user": "github-actions[bot]"
+}

@@ -1,0 +1,11 @@
+{
+   "appname": "docker-overseerr-nightly",
+   "apppic": "./images/'docker-overseerr-nightly'.png",
+   "appfolder": "./nightly/docker-overseerr-nightly",
+   "newversion": "92b2d32d2e1e1d319410a9e357e1304065a77598",
+   "oldversion": "",
+   "builddate": "2022-02-02",
+   "description": "",
+   "body": "Upgrading docker-overseerr-nightly from  to 92b2d32d2e1e1d319410a9e357e1304065a77598",
+   "user": "github-actions[bot]"
+}

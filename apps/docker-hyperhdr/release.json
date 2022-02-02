@@ -1,0 +1,11 @@
+{
+   "appname": "docker-hyperhdr",
+   "apppic": "./images/'docker-hyperhdr'.png",
+   "appfolder": "./apps/docker-hyperhdr",
+   "newversion": "17.0.0.0",
+   "oldversion": "",
+   "builddate": "2022-02-02",
+   "description": "",
+   "body": "Upgrading docker-hyperhdr from  to 17.0.0.0",
+   "user": "github-actions[bot]"
+}

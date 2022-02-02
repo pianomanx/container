@@ -1,0 +1,11 @@
+{
+   "appname": "docker-traktarr",
+   "apppic": "./images/'docker-traktarr'.png",
+   "appfolder": "./apps/docker-traktarr",
+   "newversion": "latest-fb87f253",
+   "oldversion": "",
+   "builddate": "2022-02-02",
+   "description": "",
+   "body": "Upgrading docker-traktarr from  to latest-fb87f253",
+   "user": "github-actions[bot]"
+}

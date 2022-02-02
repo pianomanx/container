@@ -1,0 +1,11 @@
+{
+   "appname": "docker-ubuntu-focal",
+   "apppic": "./images/'docker-ubuntu-focal'.png",
+   "appfolder": "./base/docker-ubuntu-focal",
+   "newversion": "3.15.0-rc.4",
+   "oldversion": "",
+   "builddate": "2022-02-02",
+   "description": "",
+   "body": "Upgrading docker-ubuntu-focal from  to 3.15.0-rc.4",
+   "user": "github-actions[bot]"
+}

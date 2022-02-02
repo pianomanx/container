@@ -1,0 +1,11 @@
+{
+   "appname": "docker-sabnzbd-nightly",
+   "apppic": "./images/'docker-sabnzbd-nightly'.png",
+   "appfolder": "./nightly/docker-sabnzbd-nightly",
+   "newversion": "1c27ebc1e4db110c51ac8c3c20e72e33ab63e862",
+   "oldversion": "",
+   "builddate": "2022-02-02",
+   "description": "",
+   "body": "Upgrading docker-sabnzbd-nightly from  to 1c27ebc1e4db110c51ac8c3c20e72e33ab63e862",
+   "user": "github-actions[bot]"
+}

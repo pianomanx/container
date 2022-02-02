@@ -1,0 +1,11 @@
+{
+   "appname": "docker-multitautulli",
+   "apppic": "./images/'docker-multitautulli'.png",
+   "appfolder": "./apps/docker-multitautulli",
+   "newversion": "4.1.07",
+   "oldversion": "",
+   "builddate": "2022-02-02",
+   "description": "",
+   "body": "Upgrading docker-multitautulli from  to 4.1.07",
+   "user": "github-actions[bot]"
+}

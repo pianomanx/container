@@ -1,0 +1,11 @@
+{
+   "appname": "docker-plex",
+   "apppic": "./images/'docker-plex'.png",
+   "appfolder": "./apps/docker-plex",
+   "newversion": "1.25.4.5487-648a8f9f9",
+   "oldversion": "",
+   "builddate": "2022-02-02",
+   "description": "",
+   "body": "Upgrading docker-plex from  to 1.25.4.5487-648a8f9f9",
+   "user": "github-actions[bot]"
+}

@@ -1,0 +1,11 @@
+{
+   "appname": "docker-mount",
+   "apppic": "./images/'docker-mount'.png",
+   "appfolder": "./apps/docker-mount",
+   "newversion": "3.15.0-rc.4",
+   "oldversion": "",
+   "builddate": "2022-02-02",
+   "description": "",
+   "body": "Upgrading docker-mount from  to 3.15.0-rc.4",
+   "user": "github-actions[bot]"
+}

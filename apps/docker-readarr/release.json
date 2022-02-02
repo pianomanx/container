@@ -1,0 +1,11 @@
+{
+   "appname": "docker-readarr",
+   "apppic": "./images/'docker-readarr'.png",
+   "appfolder": "./apps/docker-readarr",
+   "newversion": "0.1.0.1225",
+   "oldversion": "",
+   "builddate": "2022-02-02",
+   "description": "",
+   "body": "Upgrading docker-readarr from  to 0.1.0.1225",
+   "user": "github-actions[bot]"
+}

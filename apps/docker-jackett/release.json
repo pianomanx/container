@@ -1,0 +1,11 @@
+{
+   "appname": "docker-jackett",
+   "apppic": "./images/'docker-jackett'.png",
+   "appfolder": "./apps/docker-jackett",
+   "newversion": "0.20.497",
+   "oldversion": "",
+   "builddate": "2022-02-02",
+   "description": "",
+   "body": "Upgrading docker-jackett from  to 0.20.497",
+   "user": "github-actions[bot]"
+}

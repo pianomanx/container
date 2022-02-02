@@ -1,0 +1,11 @@
+{
+   "appname": "docker-cloudflared",
+   "apppic": "./images/'docker-cloudflared'.png",
+   "appfolder": "./apps/docker-cloudflared",
+   "newversion": "2022.1.3",
+   "oldversion": "",
+   "builddate": "2022-02-02",
+   "description": "",
+   "body": "Upgrading docker-cloudflared from  to 2022.1.3",
+   "user": "github-actions[bot]"
+}

@@ -1,0 +1,11 @@
+{
+   "appname": "docker-sabnzbd",
+   "apppic": "./images/'docker-sabnzbd'.png",
+   "appfolder": "./apps/docker-sabnzbd",
+   "newversion": "3.5.0",
+   "oldversion": "",
+   "builddate": "2022-02-02",
+   "description": "",
+   "body": "Upgrading docker-sabnzbd from  to 3.5.0",
+   "user": "github-actions[bot]"
+}
