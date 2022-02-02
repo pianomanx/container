@@ -30,7 +30,7 @@ for i in ${folder[@]}; do
             BUILDDATE="$(date +%Y-%m-%d)"
 
             if [[ -f "./images/${app}.png" ]]; then
-               PICTURE="./images/'${app}'.png"
+               PICTURE="./images/${app}.png"
             else
                PICTURE="./images/image.png"
             fi
