@@ -103,11 +103,10 @@ jobs:
         fi
 
         echo ::set-output name=category::${CATEGORY}
-           VERSION=$(cat ./${CATEGORY}/${{ matrix.container }}/VERSION)
+           VERSION=$(jq -r '.newversion' < ./${CATEGORY}/${{ matrix.container }}/release.json)
         echo ::set-output name=version::${VERSION}
-           PLATFORM=$(cat ./${CATEGORY}/${{ matrix.container }}/PLATFORM)
         echo ::set-output name=platform::${PLATFORM}
-           CREATED=$(date +'%Y-%m-%dT%H:%M:%SZ')
+           CREATED=$(jq -r '.builddate' < ./${CATEGORY}/${{ matrix.container }}/release.json)
         echo ::set-output name=shashort::$(echo ${GITHUB_SHA} | cut -c1-8)
         echo ::set-output name=created::${CREATED}
         echo ::set-output name=source::dockserver.io
@@ -236,11 +235,8 @@ jobs:
         COLOR: 3066993
       shell: bash
       run: |
-        if [[ -f "./images/${{ matrix.container }}.png" ]]; then
-           curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/${{ matrix.container }}.png" > image.png
-        else
-           curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/image.png" > image.png
-        fi
+        APPPIC=$(jq -r '.apppic' < ./${CATEGORY}/${{ matrix.container }}/release.json)
+        cp -rv ${APPPIC} image.png
         export DOCKER_CLI_EXPERIMENTAL=enabled
         json='{
           "username": "Docker Image Update",
