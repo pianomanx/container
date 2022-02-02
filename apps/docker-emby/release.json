@@ -3,9 +3,9 @@
    "apppic": "./images/'docker-emby'.png",
    "appfolder": "./apps/docker-emby",
    "newversion": "4.6.7.0",
-   "oldversion": "",
+   "oldversion": "4.6.7.0",
    "builddate": "2022-02-02",
    "description": "",
-   "body": "Upgrading docker-emby from  to 4.6.7.0",
+   "body": "Upgrading docker-emby from 4.6.7.0 to 4.6.7.0",
    "user": "github-actions[bot]"
 }

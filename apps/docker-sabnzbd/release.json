@@ -3,9 +3,9 @@
    "apppic": "./images/'docker-sabnzbd'.png",
    "appfolder": "./apps/docker-sabnzbd",
    "newversion": "3.5.0",
-   "oldversion": "",
+   "oldversion": "3.5.0",
    "builddate": "2022-02-02",
    "description": "",
-   "body": "Upgrading docker-sabnzbd from  to 3.5.0",
+   "body": "Upgrading docker-sabnzbd from 3.5.0 to 3.5.0",
    "user": "github-actions[bot]"
 }

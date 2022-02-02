@@ -3,9 +3,9 @@
    "apppic": "./images/'docker-librespeed'.png",
    "appfolder": "./apps/docker-librespeed",
    "newversion": "5.2.5",
-   "oldversion": "",
+   "oldversion": "5.2.5",
    "builddate": "2022-02-02",
    "description": "",
-   "body": "Upgrading docker-librespeed from  to 5.2.5",
+   "body": "Upgrading docker-librespeed from 5.2.5 to 5.2.5",
    "user": "github-actions[bot]"
 }

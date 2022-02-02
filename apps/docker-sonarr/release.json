@@ -3,9 +3,9 @@
    "apppic": "./images/'docker-sonarr'.png",
    "appfolder": "./apps/docker-sonarr",
    "newversion": "3.0.6.1342",
-   "oldversion": "",
+   "oldversion": "3.0.6.1342",
    "builddate": "2022-02-02",
    "description": "",
-   "body": "Upgrading docker-sonarr from  to 3.0.6.1342",
+   "body": "Upgrading docker-sonarr from 3.0.6.1342 to 3.0.6.1342",
    "user": "github-actions[bot]"
 }

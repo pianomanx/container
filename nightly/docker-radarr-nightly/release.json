@@ -3,9 +3,9 @@
    "apppic": "./images/'docker-radarr-nightly'.png",
    "appfolder": "./nightly/docker-radarr-nightly",
    "newversion": "4.0.5.5923",
-   "oldversion": "",
+   "oldversion": "4.0.5.5923",
    "builddate": "2022-02-02",
    "description": "",
-   "body": "Upgrading docker-radarr-nightly from  to 4.0.5.5923",
+   "body": "Upgrading docker-radarr-nightly from 4.0.5.5923 to 4.0.5.5923",
    "user": "github-actions[bot]"
 }

@@ -3,9 +3,9 @@
    "apppic": "./images/'docker-xteve'.png",
    "appfolder": "./apps/docker-xteve",
    "newversion": "2.2.0.200",
-   "oldversion": "",
+   "oldversion": "2.2.0.200",
    "builddate": "2022-02-02",
    "description": "",
-   "body": "Upgrading docker-xteve from  to 2.2.0.200",
+   "body": "Upgrading docker-xteve from 2.2.0.200 to 2.2.0.200",
    "user": "github-actions[bot]"
 }

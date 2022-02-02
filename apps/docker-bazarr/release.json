@@ -3,9 +3,9 @@
    "apppic": "./images/'docker-bazarr'.png",
    "appfolder": "./apps/docker-bazarr",
    "newversion": "1.0.2",
-   "oldversion": "",
+   "oldversion": "1.0.2",
    "builddate": "2022-02-02",
    "description": "",
-   "body": "Upgrading docker-bazarr from  to 1.0.2",
+   "body": "Upgrading docker-bazarr from 1.0.2 to 1.0.2",
    "user": "github-actions[bot]"
 }

@@ -3,9 +3,9 @@
    "apppic": "./images/image.png",
    "appfolder": "./apps/docker-requestrr",
    "newversion": "2.1.1",
-   "oldversion": "",
+   "oldversion": "2.1.1",
    "builddate": "2022-02-02",
    "description": "",
-   "body": "Upgrading docker-requestrr from  to 2.1.1",
+   "body": "Upgrading docker-requestrr from 2.1.1 to 2.1.1",
    "user": "github-actions[bot]"
 }

@@ -3,9 +3,9 @@
    "apppic": "./images/'docker-sonarr-nightly'.png",
    "appfolder": "./nightly/docker-sonarr-nightly",
    "newversion": "3.0.6.1451",
-   "oldversion": "",
+   "oldversion": "3.0.6.1451",
    "builddate": "2022-02-02",
    "description": "",
-   "body": "Upgrading docker-sonarr-nightly from  to 3.0.6.1451",
+   "body": "Upgrading docker-sonarr-nightly from 3.0.6.1451 to 3.0.6.1451",
    "user": "github-actions[bot]"
 }

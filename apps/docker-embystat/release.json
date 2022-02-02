@@ -3,9 +3,9 @@
    "apppic": "./images/'docker-embystat'.png",
    "appfolder": "./apps/docker-embystat",
    "newversion": "0.2.0-beta.27",
-   "oldversion": "",
+   "oldversion": "0.2.0-beta.27",
    "builddate": "2022-02-02",
    "description": "",
-   "body": "Upgrading docker-embystat from  to 0.2.0-beta.27",
+   "body": "Upgrading docker-embystat from 0.2.0-beta.27 to 0.2.0-beta.27",
    "user": "github-actions[bot]"
 }

@@ -3,9 +3,9 @@
    "apppic": "./images/'docker-lidarr'.png",
    "appfolder": "./apps/docker-lidarr",
    "newversion": "1.0.0.2434",
-   "oldversion": "",
+   "oldversion": "1.0.0.2434",
    "builddate": "2022-02-02",
    "description": "",
-   "body": "Upgrading docker-lidarr from  to 1.0.0.2434",
+   "body": "Upgrading docker-lidarr from 1.0.0.2434 to 1.0.0.2434",
    "user": "github-actions[bot]"
 }
