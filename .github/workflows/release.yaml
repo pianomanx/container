@@ -236,8 +236,11 @@ jobs:
         COLOR: 3066993
       shell: bash
       run: |
-        APPPIC=$(jq -r '.apppic' < ./'${CATEGORY}'/${{ matrix.container }}/release.json)
-        cp -rv ${APPPIC} image.png
+        if [[ -f "./images/${{ matrix.container }}.png" ]]; then
+           curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/${{ matrix.container }}.png" > image.png
+        else
+           curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/image.png" > image.png
+        fi
         export DOCKER_CLI_EXPERIMENTAL=enabled
         json='{
           "username": "Docker Image Update",
