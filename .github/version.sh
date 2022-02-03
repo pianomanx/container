@@ -28,7 +28,7 @@ for i in ${folder[@]}; do
             DESCRIPTION=$(jq -r '.description' < ./$i/${app}/release.json)
             OLDVERSION=$(jq -r '.newversion' < ./$i/${app}/release.json)
             BUILDDATE="$(date +%Y-%m-%d)"
-
+            echo "Docker : ${app} | Version : ${NEWVERSION}"
             if [[ -f "./images/${app}.png" ]]; then
                PICTURE="./images/${app}.png"
             else
