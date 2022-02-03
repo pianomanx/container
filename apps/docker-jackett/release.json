@@ -3,9 +3,9 @@
    "apppic": "./images/docker-jackett.png",
    "appfolder": "./apps/docker-jackett",
    "newversion": "0.20.500",
-   "oldversion": "0.20.497",
+   "oldversion": "0.20.500",
    "builddate": "2022-02-03",
    "description": "",
-   "body": "Upgrading docker-jackett from 0.20.497 to 0.20.500",
+   "body": "Upgrading docker-jackett from 0.20.500 to 0.20.500",
    "user": "github-actions[bot]"
 }
