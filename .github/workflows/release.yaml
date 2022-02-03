@@ -34,9 +34,9 @@ jobs:
     - name: Run Test & Get New Versions
       run: |
         echo "Fetch new Versions"
-        if test -f "./.github/version.sh"; then
-           bash "./.github/version.sh"
-        fi
+        #if test -f "./.github/version.sh"; then
+        #   bash "./.github/version.sh"
+        #fi
       env:
         username: ${{ github.actor }}
         token: ${{ secrets.CR_PAT }}
