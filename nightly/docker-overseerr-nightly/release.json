@@ -4,7 +4,7 @@
    "appfolder": "./nightly/docker-overseerr-nightly",
    "newversion": "92b2d32d2e1e1d319410a9e357e1304065a77598",
    "oldversion": "92b2d32d2e1e1d319410a9e357e1304065a77598",
-   "builddate": "2022-02-02",
+   "builddate": "2022-02-03",
    "description": "",
    "body": "Upgrading docker-overseerr-nightly from 92b2d32d2e1e1d319410a9e357e1304065a77598 to 92b2d32d2e1e1d319410a9e357e1304065a77598",
    "user": "github-actions[bot]"

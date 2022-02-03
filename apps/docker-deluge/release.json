@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-deluge",
    "newversion": "2.0.5-0",
    "oldversion": "2.0.5-0",
-   "builddate": "2022-02-02",
+   "builddate": "2022-02-03",
    "description": "",
    "body": "Upgrading docker-deluge from 2.0.5-0 to 2.0.5-0",
    "user": "github-actions[bot]"

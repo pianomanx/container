@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-rclone",
    "newversion": "1.57.0",
    "oldversion": "1.57.0",
-   "builddate": "2022-02-02",
+   "builddate": "2022-02-03",
    "description": "",
    "body": "Upgrading docker-rclone from 1.57.0 to 1.57.0",
    "user": "github-actions[bot]"

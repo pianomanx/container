@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-jackett",
    "newversion": "0.20.497",
    "oldversion": "0.20.497",
-   "builddate": "2022-02-02",
+   "builddate": "2022-02-03",
    "description": "",
    "body": "Upgrading docker-jackett from 0.20.497 to 0.20.497",
    "user": "github-actions[bot]"
