@@ -3,9 +3,9 @@
    "apppic": "./images/docker-sabnzbd-nightly.png",
    "appfolder": "./nightly/docker-sabnzbd-nightly",
    "newversion": "38a613de45e6e6e5ba4f68a40ad37613a04ed0b0",
-   "oldversion": "06f829bf35b8c007185122163f17f28575a86738",
+   "oldversion": "38a613de45e6e6e5ba4f68a40ad37613a04ed0b0",
    "builddate": "2022-02-04",
    "description": "",
-   "body": "Upgrading docker-sabnzbd-nightly from 06f829bf35b8c007185122163f17f28575a86738 to 38a613de45e6e6e5ba4f68a40ad37613a04ed0b0",
+   "body": "Upgrading docker-sabnzbd-nightly from 38a613de45e6e6e5ba4f68a40ad37613a04ed0b0 to 38a613de45e6e6e5ba4f68a40ad37613a04ed0b0",
    "user": "github-actions[bot]"
 }
