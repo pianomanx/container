@@ -191,10 +191,12 @@ jobs:
         tags: |
           ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:latest
           ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:${{ steps.prep.outputs.shashort }}
+          ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:${{ steps.prep.outputs.created }}
           ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:v${{ steps.prep.outputs.version }}
           ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:latest
           ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:${{ steps.prep.outputs.shashort }}
-          ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:v${{ steps.prep.outputs.version }}     
+          ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:${{ steps.prep.outputs.created }}
+          ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:v${{ steps.prep.outputs.version }}
         cache-from: ${{ steps.prep.outputs.cache_from }}
         cache-to: ${{ steps.prep.outputs.cache_to }}
         labels: |
