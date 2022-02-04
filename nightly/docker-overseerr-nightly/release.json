@@ -2,10 +2,10 @@
    "appname": "docker-overseerr-nightly",
    "apppic": "./images/docker-overseerr-nightly.png",
    "appfolder": "./nightly/docker-overseerr-nightly",
-   "newversion": "5d4b06bbcc6cf6d328f6b4a86c4c0f9b0f3aff3e",
+   "newversion": "ec08fa67934715ff4a4d618d5b9ff97853913b78",
    "oldversion": "5d4b06bbcc6cf6d328f6b4a86c4c0f9b0f3aff3e",
    "builddate": "2022-02-04",
    "description": "",
-   "body": "Upgrading docker-overseerr-nightly from 5d4b06bbcc6cf6d328f6b4a86c4c0f9b0f3aff3e to 5d4b06bbcc6cf6d328f6b4a86c4c0f9b0f3aff3e",
+   "body": "Upgrading docker-overseerr-nightly from 5d4b06bbcc6cf6d328f6b4a86c4c0f9b0f3aff3e to ec08fa67934715ff4a4d618d5b9ff97853913b78",
    "user": "github-actions[bot]"
 }
