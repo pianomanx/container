@@ -27,7 +27,11 @@ for i in ${folder[@]}; do
             touch "./$i/${app}/release.json"
             DESCRIPTION=$(jq -r '.description' < ./$i/${app}/release.json)
             OLDVERSION=$(jq -r '.newversion' < ./$i/${app}/release.json)
-            BUILDDATE="$(date +%Y-%m-%d)"
+            if [ "${OLDVERSION}" != "${NEWVERSION}" ]; then
+               BUILDDATE="$(date +%Y-%m-%d)"
+            else
+               BUILDDATE=$(jq -r '.builddate' < ./$i/${app}/release.json)
+            fi
             echo "Docker : ${app} | Version : ${NEWVERSION}"
             if [[ -f "./images/${app}.png" ]]; then
                PICTURE="./images/${app}.png"
