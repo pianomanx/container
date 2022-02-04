@@ -2,10 +2,10 @@
    "appname": "docker-cloudflared",
    "apppic": "./images/docker-cloudflared.png",
    "appfolder": "./apps/docker-cloudflared",
-   "newversion": "2022.1.3",
+   "newversion": "2022.2.0",
    "oldversion": "2022.1.3",
    "builddate": "2022-02-04",
    "description": "",
-   "body": "Upgrading docker-cloudflared from 2022.1.3 to 2022.1.3",
+   "body": "Upgrading docker-cloudflared from 2022.1.3 to 2022.2.0",
    "user": "github-actions[bot]"
 }
