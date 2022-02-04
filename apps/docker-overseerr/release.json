@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-overseerr",
    "newversion": "1.28.0",
    "oldversion": "1.28.0",
-   "builddate": "2022-02-03",
+   "builddate": "2022-02-04",
    "description": "",
    "body": "Upgrading docker-overseerr from 1.28.0 to 1.28.0",
    "user": "github-actions[bot]"

@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-hyperhdr",
    "newversion": "17.0.0.0",
    "oldversion": "17.0.0.0",
-   "builddate": "2022-02-03",
+   "builddate": "2022-02-04",
    "description": "",
    "body": "Upgrading docker-hyperhdr from 17.0.0.0 to 17.0.0.0",
    "user": "github-actions[bot]"

@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-wireguard",
    "newversion": "1.0.20210914",
    "oldversion": "1.0.20210914",
-   "builddate": "2022-02-03",
+   "builddate": "2022-02-04",
    "description": "",
    "body": "Upgrading docker-wireguard from 1.0.20210914 to 1.0.20210914",
    "user": "github-actions[bot]"

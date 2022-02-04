@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-tautulli",
    "newversion": "2.8.1",
    "oldversion": "2.8.1",
-   "builddate": "2022-02-03",
+   "builddate": "2022-02-04",
    "description": "",
    "body": "Upgrading docker-tautulli from 2.8.1 to 2.8.1",
    "user": "github-actions[bot]"

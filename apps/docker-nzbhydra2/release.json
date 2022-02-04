@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-nzbhydra2",
    "newversion": "4.0.2",
    "oldversion": "4.0.2",
-   "builddate": "2022-02-03",
+   "builddate": "2022-02-04",
    "description": "",
    "body": "Upgrading docker-nzbhydra2 from 4.0.2 to 4.0.2",
    "user": "github-actions[bot]"

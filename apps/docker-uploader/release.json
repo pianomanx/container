@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-uploader",
    "newversion": "3.15.0-rc.4",
    "oldversion": "3.15.0-rc.4",
-   "builddate": "2022-02-03",
+   "builddate": "2022-02-04",
    "description": "",
    "body": "Upgrading docker-uploader from 3.15.0-rc.4 to 3.15.0-rc.4",
    "user": "github-actions[bot]"
