@@ -57,19 +57,33 @@ echo -e '{
    "body": "Upgrading '${app}' from '${OLDVERSION}' to '${NEWVERSION}'",
    "user": "github-actions[bot]"
 }' > "./$i/${app}/release.json"
-fi
-         rm -rf ./$i/${app}/VERSION \
-             ./$i/${app}/OVERLAY_VERSION \
-             ./$i/${app}/PLATFORM \
-             ./$i/${app}/.editorconfig \
-             ./$i/${app}/latest-overlay.sh
-             unset OLDVERSION NEWVERSION DESCRIPTION BUILDDATE PICTURE
+            fi
+         unset app OLDVERSION NEWVERSION DESCRIPTION BUILDDATE PICTURE
          fi
       fi
    done
 done
 
 unset token username
+
+##remove unwanted and add file
+folder=$(ls -1p ./ | grep '/$' | sed 's/\/$//' | sed '/images/d' )
+for i in ${folder[@]}; do
+   find ./$i -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read app; do
+     rm -rf ./$i/${app}/VERSION \
+            ./$i/${app}/OVERLAY_VERSION \
+            ./$i/${app}/PLATFORM \
+            ./$i/${app}/.editorconfig \
+            ./$i/${app}/latest-overlay.sh \
+            ./$i/${app}/.trigger-ci \
+            ./$i/${app}/.dockerignore
+     ## hardcoded files inside
+     if test -f "./$i/${app}/root/dockserver.txt"; then
+        cp "./.github/dockserver.text" "./$i/${app}/root/donate.txt"
+     fi
+     unset app
+   done
+done
 
 sleep 5
 if [[ -n $(git status --porcelain) ]]; then
