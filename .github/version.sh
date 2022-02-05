@@ -29,12 +29,10 @@ for i in ${folder[@]}; do
             fi
             DESCRIPTION=$(jq -r '.description' < ./$i/${app}/release.json)
             APP=$(echo ${app} | sed "s#docker-##g" | sed "s#-nightly##g")
-            #if test -f "./.templates/${APP}-description.sh"; then
-               #if [ "${DESCRIPTION}" == "" ] && [ "${DESCRIPTION}" == "null" ]; then
-                  DESCRIPTION=$(bash "./.templates/${APP}-description.sh" "${username}" "${token}" )
-               #fi
-            #fi
-            echo "${DESCRIPTION}"
+            if test -f "./.templates/${APP}-description.sh"; then
+               DESCRIPTION=$(bash "./.templates/${APP}-description.sh" "${username}" "${token}" )
+            fi
+            echo "Docker : ${app} | Version : ${NEWVERSION} | ${DESCRIPTION}"
             sleep 1
             OLDVERSION=$(jq -r '.newversion' < ./$i/${app}/release.json)
             if [ "${OLDVERSION}" != "${NEWVERSION}" ] && [ "${OLDVERSION}" == "${NEWVERSION}" ]; then
@@ -42,7 +40,6 @@ for i in ${folder[@]}; do
             else
                BUILDDATE=$(jq -r '.builddate' < ./$i/${app}/release.json)
             fi
-            echo "Docker : ${app} | Version : ${NEWVERSION}"
             if [[ -f "./images/${app}.png" ]]; then
                PICTURE="./images/${app}.png"
             else
@@ -66,7 +63,7 @@ fi
              ./$i/${app}/PLATFORM \
              ./$i/${app}/.editorconfig \
              ./$i/${app}/latest-overlay.sh
-            unset OLDVERSION NEWVERSION DESCRIPTION BUILDDATE PICTURE
+             unset OLDVERSION NEWVERSION DESCRIPTION BUILDDATE PICTURE
          fi
       fi
    done
