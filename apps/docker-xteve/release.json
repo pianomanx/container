@@ -5,7 +5,7 @@
    "newversion": "2.2.0.200",
    "oldversion": "2.2.0.200",
    "builddate": "2022-02-04",
-   "description": "",
+   "description": "null",
    "body": "Upgrading docker-xteve from 2.2.0.200 to 2.2.0.200",
    "user": "github-actions[bot]"
 }

@@ -5,7 +5,7 @@
    "newversion": "1.25.4.5487-648a8f9f9",
    "oldversion": "1.25.4.5487-648a8f9f9",
    "builddate": "2022-02-04",
-   "description": "null",
+   "description": "Docker Container for Plex Media Server",
    "body": "Upgrading docker-plex from 1.25.4.5487-648a8f9f9 to 1.25.4.5487-648a8f9f9",
    "user": "github-actions[bot]"
 }

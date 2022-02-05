@@ -5,7 +5,7 @@
    "newversion": "4.0.5.5923",
    "oldversion": "4.0.5.5923",
    "builddate": "2022-02-04",
-   "description": "",
+   "description": "null",
    "body": "Upgrading docker-radarr-nightly from 4.0.5.5923 to 4.0.5.5923",
    "user": "github-actions[bot]"
 }

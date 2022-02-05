@@ -5,7 +5,7 @@
    "newversion": "2.5-alpine3.15",
    "oldversion": "2.5-alpine3.15",
    "builddate": "2022-02-04",
-   "description": "",
+   "description": "null",
    "body": "Upgrading docker-haproxy from 2.5-alpine3.15 to 2.5-alpine3.15",
    "user": "github-actions[bot]"
 }
