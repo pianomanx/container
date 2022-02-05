@@ -22,21 +22,21 @@ folder=$(ls -1p ./ | grep '/$' | sed 's/\/$//' | sed '/images/d' )
 for i in ${folder[@]}; do
    find ./$i -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read app; do
       if test -f "./.templates/${app}-version.sh"; then
-         NEWVERSION=$(bash "./.templates/${app}-version.sh")
+         NEWVERSION=$(bash "./.templates/${app}-version.sh" "${username}" "${token}" )
          if [ "${NEWVERSION}" != "null" ] && [ "${NEWVERSION}" != "" ] && [ -n "${NEWVERSION}" ] && [ ! -z "${NEWVERSION}" ]; then
-            touch "./$i/${app}/release.json"
+            if [ ! -f "./$i/${app}/release.json" ] ; then
+               touch "./$i/${app}/release.json"
+            fi
             DESCRIPTION=$(jq -r '.description' < ./$i/${app}/release.json)
-            #APP=$(echo ${app} | sed "s#docker-##g" | sed "s#-nightly##g")
+            APP=$(echo ${app} | sed "s#docker-##g" | sed "s#-nightly##g")
             #if test -f "./.templates/${APP}-description.sh"; then
-               #if [ "${DESC}" != "" ]; then
-                  #DESCRIPTION=$(bash -xv  "./.templates/${APP}-description.sh" "${username}" "${token}" )
+               #if [ "${DESCRIPTION}" == "" ] && [ "${DESCRIPTION}" == "null" ]; then
+                  #DESCRIPTION=$(bash "./.templates/${APP}-description.sh" "${username}" "${token}" )
                #fi
             #fi
             #echo "${DESCRIPTION}"
-            #sleep 5
-
+            sleep 1
             OLDVERSION=$(jq -r '.newversion' < ./$i/${app}/release.json)
-
             if [ "${OLDVERSION}" != "${NEWVERSION}" ] && [ "${OLDVERSION}" == "${NEWVERSION}" ]; then
                BUILDDATE="$(date +%Y-%m-%d)"
             else
@@ -66,14 +66,13 @@ fi
              ./$i/${app}/PLATFORM \
              ./$i/${app}/.editorconfig \
              ./$i/${app}/latest-overlay.sh
-
-            unset OLDVERSION NEWVERSION DESCRIPTION BUILDDATE
+            unset OLDVERSION NEWVERSION DESCRIPTION BUILDDATE PICTURE
          fi
       fi
    done
 done
-unset token
-unset username
+
+unset token username
 
 sleep 5
 if [[ -n $(git status --porcelain) ]]; then
@@ -84,4 +83,4 @@ if [[ -n $(git status --porcelain) ]]; then
    git push --force
 fi
 
-exit
+exit 0
