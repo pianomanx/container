@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
-version=$(curl -u $username:$token -sX GET "https://api.github.com/repos/cloudflare/cloudflared/tags" | jq -r ".[0] .name")
-printf "%s" "${version}"
+username=$1
+token=$2
+DESCRIPTION="$(curl -u $username:$token -sX GET "https://api.github.com/repos/cloudflare/cloudflared" | jq -r '.description')"
+printf "%s" "${DESCRIPTION}"
