@@ -45,7 +45,7 @@ for i in ${folder[@]}; do
             else
                PICTURE="./images/image.png"
             fi
-            if [ "${OLDVERSION}" != "${NEWVERSION}" ] ; then
+            if [ "${NEWVERSION}" != "${OLDVERSION}" ] ; then
 echo -e '{
    "appname": "'${app}'",
    "apppic": "'${PICTURE}'",
