@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-username=$1
-token=$2
-DESCRIPTION="$(curl -u $username:$token -sX GET "https://api.github.com/repos/dockserver/dockserver" | jq -r '.description')"
+## NO github Repo ##
+## set own DESCRIPTION ##
+DESCRIPTION="Docker Wiki Image from Dockserver"
 printf "%s" "${DESCRIPTION}"
-
