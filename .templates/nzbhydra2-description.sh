@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-version="$(curl -u $username:$token -sX GET "https://api.github.com/repos/theotherp/nzbhydra2/releases" | jq --raw-output '.[0].tag_name')"
-version="${version#*v}"
-version="${version#*release-}"
-printf "%s" "${version}"
+username=$1
+token=$2
+DESCRIPTION="$(curl -u $username:$token -sX GET "https://api.github.com/repos/theotherp/nzbhydra2" | jq -r '.description')"
+printf "%s" "${DESCRIPTION}"
