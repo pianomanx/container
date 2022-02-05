@@ -39,8 +39,10 @@ for i in ${folder[@]}; do
                BUILDDATE="$(date +%Y-%m-%d)"
             fi
             BUILDDATE=$(jq -r '.builddate' < ./$i/${app}/release.json)
-            if [ "${BUILDDATE}" == "" ]; then
+            if [ "${BUILDDATE}" != "" ]; then
                BUILDDATE=$(jq -r '.builddate' < ./$i/${app}/release.json)
+            else
+               BUILDDATE="$(date +%Y-%m-%d)"
             fi
             if [[ -f "./images/${app}.png" ]]; then
                PICTURE="./images/${app}.png"
