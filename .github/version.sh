@@ -27,7 +27,7 @@ for i in ${folder[@]}; do
             touch "./$i/${app}/release.json"
             DESCRIPTION=$(jq -r '.description' < ./$i/${app}/release.json)
             OLDVERSION=$(jq -r '.newversion' < ./$i/${app}/release.json)
-            if [ "${OLDVERSION}" != "${NEWVERSION}" ]; then
+            if [ "${OLDVERSION}" != "${NEWVERSION}" ] && [ "${OLDVERSION}" == "${NEWVERSION}" ]; then
                BUILDDATE="$(date +%Y-%m-%d)"
             else
                BUILDDATE=$(jq -r '.builddate' < ./$i/${app}/release.json)
@@ -38,7 +38,7 @@ for i in ${folder[@]}; do
             else
                PICTURE="./images/image.png"
             fi
-
+            if [ "${OLDVERSION}" != "${NEWVERSION}" ] ; then
 printf '{
    "appname": "'${app}'",
    "apppic": "'${PICTURE}'",
@@ -50,7 +50,7 @@ printf '{
    "body": "Upgrading '${app}' from '${OLDVERSION}' to '${NEWVERSION}'",
    "user": "github-actions[bot]"
 }' > "./$i/${app}/release.json"
-
+fi
          rm -rf ./$i/${app}/VERSION \
              ./$i/${app}/OVERLAY_VERSION \
              ./$i/${app}/PLATFORM \
@@ -76,3 +76,4 @@ if [[ -n $(git status --porcelain) ]]; then
 fi
 
 exit
+
