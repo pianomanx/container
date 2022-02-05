@@ -20,14 +20,6 @@ jobs:
         if test -f "./.github/version.sh"; then
            bash "./.github/version.sh"
         fi
-        echo "Check Mixed Endings"
-        if test -f "./.github/crlf.sh"; then
-           bash "./.github/crlf.sh"
-        fi
-        echo "Repack Repo"
-        if test -f "./.github/repack.sh"; then
-           bash "./.github/repack.sh"
-        fi
       env:
         username: ${{ github.actor }}
         token: ${{ secrets.CR_PAT }}
