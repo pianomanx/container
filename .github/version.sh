@@ -37,7 +37,9 @@ for i in ${folder[@]}; do
             OLDVERSION=$(jq -r '.newversion' < ./$i/${app}/release.json)
             if [ "${OLDVERSION}" != "${NEWVERSION}" ] && [ "${OLDVERSION}" == "${NEWVERSION}" ]; then
                BUILDDATE="$(date +%Y-%m-%d)"
-            else
+            fi
+            BUILDDATE=$(jq -r '.builddate' < ./$i/${app}/release.json)
+            if [ "${BUILDDATE}" == "" ]; then
                BUILDDATE=$(jq -r '.builddate' < ./$i/${app}/release.json)
             fi
             if [[ -f "./images/${app}.png" ]]; then
