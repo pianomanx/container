@@ -3,9 +3,9 @@
    "apppic": "./images/docker-radarr.png",
    "appfolder": "./apps/docker-radarr",
    "newversion": "4.0.4.5922",
-   "oldversion": "4.0.4.5922",
-   "builddate": "2022-02-04",
+   "oldversion": "",
+   "builddate": "",
    "description": "",
-   "body": "Upgrading docker-radarr from 4.0.4.5922 to 4.0.4.5922",
+   "body": "Upgrading docker-radarr from  to 4.0.4.5922",
    "user": "github-actions[bot]"
 }

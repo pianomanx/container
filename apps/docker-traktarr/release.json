@@ -5,7 +5,7 @@
    "newversion": "latest-fb87f253",
    "oldversion": "latest-fb87f253",
    "builddate": "2022-02-04",
-   "description": "",
+   "description": "null",
    "body": "Upgrading docker-traktarr from latest-fb87f253 to latest-fb87f253",
    "user": "github-actions[bot]"
 }

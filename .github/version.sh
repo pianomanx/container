@@ -21,12 +21,22 @@ folder=$(ls -1p ./ | grep '/$' | sed 's/\/$//' | sed '/images/d' )
 
 for i in ${folder[@]}; do
    find ./$i -maxdepth 1 -mindepth 1 -type d -exec basename {} \; | while read app; do
-      if test -f "./$i/${app}/latest-version.sh"; then
-         NEWVERSION=$(bash "./$i/${app}/latest-version.sh")
+      if test -f "./.templates/${app}-version.sh"; then
+         NEWVERSION=$(bash "./.templates/${app}-version.sh")
          if [ "${NEWVERSION}" != "null" ] && [ "${NEWVERSION}" != "" ] && [ -n "${NEWVERSION}" ] && [ ! -z "${NEWVERSION}" ]; then
             touch "./$i/${app}/release.json"
             DESCRIPTION=$(jq -r '.description' < ./$i/${app}/release.json)
+            #APP=$(echo ${app} | sed "s#docker-##g" | sed "s#-nightly##g")
+            #if test -f "./.templates/${APP}-description.sh"; then
+               #if [ "${DESC}" != "" ]; then
+                  #DESCRIPTION=$(bash -xv  "./.templates/${APP}-description.sh" "${username}" "${token}" )
+               #fi
+            #fi
+            #echo "${DESCRIPTION}"
+            #sleep 5
+
             OLDVERSION=$(jq -r '.newversion' < ./$i/${app}/release.json)
+
             if [ "${OLDVERSION}" != "${NEWVERSION}" ] && [ "${OLDVERSION}" == "${NEWVERSION}" ]; then
                BUILDDATE="$(date +%Y-%m-%d)"
             else
@@ -39,7 +49,7 @@ for i in ${folder[@]}; do
                PICTURE="./images/image.png"
             fi
             if [ "${OLDVERSION}" != "${NEWVERSION}" ] ; then
-printf '{
+echo -e '{
    "appname": "'${app}'",
    "apppic": "'${PICTURE}'",
    "appfolder": "./'$i'/'${app}'",
@@ -62,7 +72,6 @@ fi
       fi
    done
 done
-
 unset token
 unset username
 
@@ -76,4 +85,3 @@ if [[ -n $(git status --porcelain) ]]; then
 fi
 
 exit
-

@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-qbittorrent",
    "newversion": "4.4.0-r0",
    "oldversion": "4.4.0-r0",
-   "builddate": "2022-02-04",
+   "builddate": "",
    "description": "",
    "body": "Upgrading docker-qbittorrent from 4.4.0-r0 to 4.4.0-r0",
    "user": "github-actions[bot]"
