@@ -29,12 +29,12 @@ for i in ${folder[@]}; do
             fi
             DESCRIPTION=$(jq -r '.description' < ./$i/${app}/release.json)
             APP=$(echo ${app} | sed "s#docker-##g" | sed "s#-nightly##g")
-            #if test -f "./.templates/${APP}-description.sh"; then
-               #if [ "${DESCRIPTION}" == "" ] && [ "${DESCRIPTION}" == "null" ]; then
-                  #DESCRIPTION=$(bash "./.templates/${APP}-description.sh" "${username}" "${token}" )
-               #fi
-            #fi
-            #echo "${DESCRIPTION}"
+            if test -f "./.templates/${APP}-description.sh"; then
+               if [ "${DESCRIPTION}" == "" ] && [ "${DESCRIPTION}" == "null" ]; then
+                  DESCRIPTION=$(bash "./.templates/${APP}-description.sh" "${username}" "${token}" )
+               fi
+            fi
+            echo "${DESCRIPTION}"
             sleep 1
             OLDVERSION=$(jq -r '.newversion' < ./$i/${app}/release.json)
             if [ "${OLDVERSION}" != "${NEWVERSION}" ] && [ "${OLDVERSION}" == "${NEWVERSION}" ]; then
