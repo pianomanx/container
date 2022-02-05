@@ -36,7 +36,7 @@ PUID=${PUID:-1000}
 groupmod -o -g "$PGID" abc
 usermod -o -u "$PUID" abc
 
-if [[ -f /dockserver.txt ]]; then cat /dockserver.txt ; fi
+if [[ -f /donate.txt ]]; then cat /donate.txt ; fi
 echo '
 -------------------------------------
 GID/UID
