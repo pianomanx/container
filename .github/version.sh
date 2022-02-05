@@ -79,7 +79,7 @@ for i in ${folder[@]}; do
             ./$i/${app}/.dockerignore
      ## hardcoded files inside
      if test -f "./$i/${app}/root/dockserver.txt"; then
-        cp "./.github/dockserver.text" "./$i/${app}/root/donate.txt"
+        cp "./.github/dockserver.txt" "./$i/${app}/root/donate.txt"
      fi
      unset app
    done
