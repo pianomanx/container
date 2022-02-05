@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-
-version=$(curl -sL "http://dl-cdn.alpinelinux.org/alpine/v3.14/community/x86_64/APKINDEX.tar.gz" | tar -xz -C /tmp && awk '/^P:transmission-daemon$/,/V:/' /tmp/APKINDEX | sed -n 2p | sed 's/^V://')
-version="${version#*v}"
-version="${version#*release-}"
-printf "%s" "${version}"
+username=$1
+token=$2
+DESCRIPTION="$(curl -u $username:$token -sX GET "https://api.github.com/repos/transmission/transmission" | jq -r '.description')"
+printf "%s" "${DESCRIPTION}"
