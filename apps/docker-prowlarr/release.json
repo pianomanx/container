@@ -2,10 +2,10 @@
    "appname": "docker-prowlarr",
    "apppic": "./images/docker-prowlarr.png",
    "appfolder": "./apps/docker-prowlarr",
-   "newversion": "0.2.0.1485",
-   "oldversion": "0.2.0.1474",
+   "newversion": "0.2.0.1489",
+   "oldversion": "0.2.0.1485",
    "builddate": "2022-02-05",
    "description": "null",
-   "body": "Upgrading docker-prowlarr from 0.2.0.1474 to 0.2.0.1485",
+   "body": "Upgrading docker-prowlarr from 0.2.0.1485 to 0.2.0.1489",
    "user": "github-actions[bot]"
 }
