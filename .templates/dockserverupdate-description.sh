@@ -2,4 +2,4 @@
 ## NO github Repo ##
 ## set own DESCRIPTION ##
 DESCRIPTION="Dockerserver.io owned update Container"
-printf "%s" "${DESCRIPTION}
+printf "%s" "${DESCRIPTION}"
