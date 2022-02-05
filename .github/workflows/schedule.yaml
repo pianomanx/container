@@ -14,7 +14,7 @@ jobs:
         token: ${{ secrets.CR_PAT }}
         fetch-depth: 0
 
-    - name: Run Commands
+    - name: Run Test & Get New Versions
       run: |
         echo "Fetch new Versions"
         if test -f "./.github/version.sh"; then
@@ -43,3 +43,35 @@ jobs:
         PATH: '/README.md'
         COMMIT_MESSAGE: 'docs(README): update contributors'
         AVATAR_SHAPE: 'square'
+
+  crlf:
+    name: Check Mixed Line Endings action
+    needs: [ get-version, contrib ]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.CR_PAT }}
+        fetch-depth: 0
+    - name: Run CRLF changes
+      run: |
+        echo "Fixxing endings"
+        if test -f "./.github/crlf.sh"; then
+           bash "./.github/crlf.sh"
+        fi
+
+  repack:
+    name: Run Repack
+    needs: [ get-version, contrib , crlf ]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.CR_PAT }}
+        fetch-depth: 0
+    - name: Run Repack
+      run: |
+        echo "run repack"
+        if test -f "./.github/repack.sh"; then
+           bash "./.github/repack.sh"
+        fi
