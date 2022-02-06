@@ -28,7 +28,6 @@ for i in ${folder[@]}; do
                touch "./$i/${app}/release.json"
             fi
             echo "Docker : ${app} | Version : ${NEWVERSION}"
-            sleep 1
             OLDVERSION=$(jq -r '.newversion' < ./$i/${app}/release.json)
             if [ "${NEWVERSION}" != "${OLDVERSION}" ] ; then
                DESCRIPTION=$(jq -r '.description' < ./$i/${app}/release.json)
@@ -75,7 +74,7 @@ for i in ${folder[@]}; do
             ./$i/${app}/.trigger-ci \
             ./$i/${app}/.dockerignore
      ## hardcoded files inside
-     if [[ ! -f "./$i/${app}/root/dockserver.txt" ]]; then
+     if [ -d "./$i/${app}/root/" ] && [ ! -f "./$i/${app}/root/dockserver.txt" ]; then
         cp "./.github/dockserver.txt" "./$i/${app}/root/donate.txt"
      fi
      unset app
