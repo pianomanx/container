@@ -231,6 +231,14 @@ jobs:
         echo ${{ steps.docker_build.outputs.digest }}
         cosign sign ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}@${{ steps.build-and-push.outputs.digest }}
 
+    - name: Delete untagged images
+      uses: r26d/ghcr-delete-image-action@v1.1.0
+      with:
+        owner: ${{ github.repository_owner }}
+        name: ${{ matrix.container }}
+        token: ${{ secrets.CR_PAT }}
+        untagged-keep-latest: 1
+
     - name: Send notification
       if: ${{ steps.prep.outputs.version != '' }}
       env:
