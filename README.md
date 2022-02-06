@@ -43,14 +43,13 @@ This should not work for you.
 1. lidarr
 1. readarr
 
-Are using now alpine as base image
+The dockers above using now alpine as base image
 We moved away from Ubuntu and mono
 New dockers are using alpine as images
 
 When all tests are positive !
 
 We moved the normal version also to alpine
-
 
 ---
 
