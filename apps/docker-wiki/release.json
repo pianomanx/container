@@ -2,10 +2,10 @@
    "appname": "docker-wiki",
    "apppic": "./images/docker-wiki.png",
    "appfolder": "./apps/docker-wiki",
-   "newversion": "1.4.7",
+   "newversion": "1.4.8",
    "oldversion": "1.4.7",
    "builddate": "2022-02-04",
-   "description": "",
-   "body": "Upgrading docker-wiki from 1.4.7 to 1.4.7",
+   "description": "Docker Wiki Image from Dockserver",
+   "body": "Upgrading docker-wiki from 1.4.7 to 1.4.8",
    "user": "github-actions[bot]"
 }
