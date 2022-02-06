@@ -2,10 +2,10 @@
    "appname": "docker-sonarr-nightly",
    "apppic": "./images/docker-sonarr-nightly.png",
    "appfolder": "./nightly/docker-sonarr-nightly",
-   "newversion": "3.0.6.1456",
-   "oldversion": "3.0.6.1454",
+   "newversion": "3.0.6.1457",
+   "oldversion": "3.0.6.1456",
    "builddate": "2022-02-04",
    "description": "Smart PVR for newsgroup and bittorrent users.",
-   "body": "Upgrading docker-sonarr-nightly from 3.0.6.1454 to 3.0.6.1456",
+   "body": "Upgrading docker-sonarr-nightly from 3.0.6.1456 to 3.0.6.1457",
    "user": "github-actions[bot]"
 }
