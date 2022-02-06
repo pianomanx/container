@@ -27,42 +27,35 @@ for i in ${folder[@]}; do
             if [ ! -f "./$i/${app}/release.json" ] ; then
                touch "./$i/${app}/release.json"
             fi
-            DESCRIPTION=$(jq -r '.description' < ./$i/${app}/release.json)
-            APP=$(echo ${app} | sed "s#docker-##g" | sed "s#-nightly##g")
-            if test -f "./.templates/${APP}-description.sh"; then
-               DESCRIPTION=$(bash "./.templates/${APP}-description.sh" "${username}" "${token}" )
-            fi
-            echo "Docker : ${app} | Version : ${NEWVERSION} | ${DESCRIPTION}"
+            echo "Docker : ${app} | Version : ${NEWVERSION}"
             sleep 1
             OLDVERSION=$(jq -r '.newversion' < ./$i/${app}/release.json)
-            if [ "${OLDVERSION}" != "${NEWVERSION}" ] && [ "${OLDVERSION}" == "${NEWVERSION}" ]; then
-               BUILDDATE="$(date +%Y-%m-%d)"
-            fi
-            BUILDDATE=$(jq -r '.builddate' < ./$i/${app}/release.json)
-            if [ "${BUILDDATE}" != "" ]; then
-               BUILDDATE=$(jq -r '.builddate' < ./$i/${app}/release.json)
-            else
-               BUILDDATE="$(date +%Y-%m-%d)"
-            fi
-            if [[ -f "./images/${app}.png" ]]; then
-               PICTURE="./images/${app}.png"
-            else
-               PICTURE="./images/image.png"
-            fi
             if [ "${NEWVERSION}" != "${OLDVERSION}" ] ; then
-echo -e '{
+               DESCRIPTION=$(jq -r '.description' < ./$i/${app}/release.json)
+               APP=$(echo ${app} | sed "s#docker-##g" | sed "s#-nightly##g")
+               if test -f "./.templates/${APP}-description.sh"; then
+                  DESCRIPTION=$(bash "./.templates/${APP}-description.sh" "${username}" "${token}" )
+               fi
+               BASEIMAGE=$(jq -r '.baseimage' < ./$i/${app}/release.json)
+               BUILDDATE="$(date +%Y-%m-%d)"
+               PACKAGES=$(jq -r '.packages' < ./$i/${app}/release.json)
+               PICTURE="./images/${app}.png"
+
+echo '{
    "appname": "'${app}'",
    "apppic": "'${PICTURE}'",
    "appfolder": "./'$i'/'${app}'",
    "newversion": "'${NEWVERSION}'",
    "oldversion": "'${OLDVERSION}'",
    "builddate": "'${BUILDDATE}'",
+   "baseimage": "'${BASEIMAGE}'",
+   "packages": "'${PACKAGES}'",
    "description": "'${DESCRIPTION}'",
    "body": "Upgrading '${app}' from '${OLDVERSION}' to '${NEWVERSION}'",
    "user": "github-actions[bot]"
 }' > "./$i/${app}/release.json"
             fi
-         unset app OLDVERSION NEWVERSION DESCRIPTION BUILDDATE PICTURE
+         unset app OLDVERSION NEWVERSION DESCRIPTION BUILDDATE PICTURE PACKAGES BASEIMAGE
          fi
       fi
    done
