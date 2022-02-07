@@ -141,14 +141,14 @@ jobs:
 
     - name: Login in Registry || major
       if: ${{ github.event_name != 'pull_request' }}
-      uses: docker/login-action@v1.10.0
+      uses: docker/login-action@v1.12.0
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.CR_PAT }}
 
     - name: Login in Registry || mirror
-      uses: docker/login-action@v1.10.0
+      uses: docker/login-action@v1.12.0
       if: github.event_name != 'pull_request'
       with:
         registry: ${{ secrets.OWN_REGISTRY }}
