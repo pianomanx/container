@@ -2,10 +2,12 @@
    "appname": "docker-jackett",
    "apppic": "./images/docker-jackett.png",
    "appfolder": "./apps/docker-jackett",
-   "newversion": "0.20.514",
-   "oldversion": "0.20.510",
-   "builddate": "2022-02-05",
+   "newversion": "0.20.521",
+   "oldversion": "0.20.514",
+   "builddate": "2022-02-07",
+   "baseimage": "null",
+   "packages": "null",
    "description": "API Support for your favorite torrent trackers",
-   "body": "Upgrading docker-jackett from 0.20.510 to 0.20.514",
+   "body": "Upgrading docker-jackett from 0.20.514 to 0.20.521",
    "user": "github-actions[bot]"
 }
