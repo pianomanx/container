@@ -121,13 +121,11 @@ jobs:
 
         if [ "${{ github.event_name }}" == "pull_request" ]; then
            echo ::set-output name=push::false
-           echo ::set-output name=cache_from::"type=local,src=/tmp/.buildx-cache"
-           echo ::set-output name=cache_to::"type=local,dest=/tmp/.buildx-cache-new,mode=max"
         else
            echo ::set-output name=push::true
-           echo ::set-output name=cache_from::"gha"
-           echo ::set-output name=cache_to::"gha"
         fi
+        echo ::set-output name=cache_from::"type=local,src=/tmp/.buildx-cache"
+        echo ::set-output name=cache_to::"type=local,dest=/tmp/.buildx-cache-new,mode=max"
 
     - name: Set up QEMU
       if: ${{ github.event_name != 'pull_request' }}
@@ -221,10 +219,8 @@ jobs:
 
     - name: Move cache 
       run: |
-        if [ "${{ github.event_name }}" == "pull_request" ]; then
-           rm -rf /tmp/.buildx-cache
-           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-        fi
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
     - name: Sign the digest image
       if: ${{ steps.prep.outputs.version != '' }}
