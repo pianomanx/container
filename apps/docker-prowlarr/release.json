@@ -5,8 +5,8 @@
    "newversion": "0.2.0.1519",
    "oldversion": "0.2.0.1516",
    "builddate": "2022-02-07",
-   "baseimage": "null",
-   "packages": "null",
+   "baseimage": "ghcr.io/linuxserver/baseimage-alpine:3.15",
+   "packages": "jq curl tar sqlite-libs libintl icu-libs",
    "description": "null",
    "body": "Upgrading docker-prowlarr from 0.2.0.1516 to 0.2.0.1519",
    "user": "github-actions[bot]"
