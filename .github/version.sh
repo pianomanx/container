@@ -29,16 +29,15 @@ for i in ${folder[@]}; do
             fi
             echo "Docker : ${app} | Version : ${NEWVERSION}"
             OLDVERSION=$(jq -r '.newversion' < ./$i/${app}/release.json)
-            if [ "${NEWVERSION}" != "${OLDVERSION}" ] ; then
-               DESCRIPTION=$(jq -r '.description' < ./$i/${app}/release.json)
-               APP=$(echo ${app} | sed "s#docker-##g" | sed "s#-nightly##g")
-               if test -f "./.templates/${APP}-description.sh"; then
-                  DESCRIPTION=$(bash "./.templates/${APP}-description.sh" "${username}" "${token}" )
-               fi
-               BASEIMAGE=$(jq -r '.baseimage' < ./$i/${app}/release.json)
-               BUILDDATE="$(date +%Y-%m-%d)"
-               PACKAGES=$(jq -r '.packages' < ./$i/${app}/release.json)
-               PICTURE="./images/${app}.png"
+            DESCRIPTION=$(jq -r '.description' < ./$i/${app}/release.json)
+            APP=$(echo ${app} | sed "s#docker-##g" | sed "s#-nightly##g")
+            if test -f "./.templates/${APP}-description.sh"; then
+               DESCRIPTION=$(bash "./.templates/${APP}-description.sh" "${username}" "${token}" )
+            fi
+            BASEIMAGE=$(jq -r '.baseimage' < ./$i/${app}/release.json)
+            BUILDDATE="$(date +%Y-%m-%d)"
+            PACKAGES=$(jq -r '.packages' < ./$i/${app}/release.json)
+            PICTURE="./images/${app}.png"
 
 echo '{
    "appname": "'${app}'",
@@ -53,7 +52,6 @@ echo '{
    "body": "Upgrading '${app}' from '${OLDVERSION}' to '${NEWVERSION}'",
    "user": "github-actions[bot]"
 }' > "./$i/${app}/release.json"
-            fi
          unset app OLDVERSION NEWVERSION DESCRIPTION BUILDDATE PICTURE PACKAGES BASEIMAGE
          fi
       fi
