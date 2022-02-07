@@ -20,7 +20,9 @@ env:
   MOBY: "moby/buildkit:latest"
   PLATFORM: "linux/amd64,linux/arm64"
   LICENSE: "GPL-3.0 DockServer.io"
+  SOURCE: "dockserver.io"
   CODE_OWNED: "base image LSIO, changes dockserver.io"
+  CACHE: "gha"
 
 jobs:
   get-version:
@@ -112,19 +114,19 @@ jobs:
         fi
         echo ::set-output name=shashort::$(echo ${GITHUB_SHA} | cut -c1-8)
         echo ::set-output name=created::${CREATED}
-        echo ::set-output name=source::dockserver.io
+        echo ::set-output name=source::${{ env.SOURCE }}
         echo ::set-output name=platformout::${{ env.PLATFORM }}
         echo ::set-output name=linc::${{ env.LICENSE }}
         echo ::set-output name=owndocker::${{ env.CODE_OWNED }}
 
-        if [ "${{github.event_name}}" == "pull_request" ]; then
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
            echo ::set-output name=push::false
            echo ::set-output name=cache_from::"type=local,src=/tmp/.buildx-cache"
-           echo ::set-output name=cache_to::""
+           echo ::set-output name=cache_to::"type=local,dest=/tmp/.buildx-cache-new,mode=max"
         else
            echo ::set-output name=push::true
-           echo ::set-output name=cache_from::"type=local,src=/tmp/.buildx-cache"
-           echo ::set-output name=cache_to::"type=local,dest=/tmp/.buildx-cache-new,mode=max"
+           echo ::set-output name=cache_from::"gha"
+           echo ::set-output name=cache_to::"gha"
         fi
 
     - name: Set up QEMU
@@ -137,7 +139,7 @@ jobs:
       if: ${{ github.event_name != 'pull_request' }}
       uses: sigstore/cosign-installer@51f8e5c6fce54e46006ae97d73b2b6315f518752
       with:
-        cosign-release: 'v1.4.0'
+        cosign-release: 'v1.5.1'
 
     - name: Login in Registry || major
       if: ${{ github.event_name != 'pull_request' }}
@@ -219,10 +221,12 @@ jobs:
 
     - name: Move cache 
       run: |
-        rm -rf /tmp/.buildx-cache
-        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
+           rm -rf /tmp/.buildx-cache
+           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+        fi
 
-    - name: Sign the published Docker image
+    - name: Sign the digest image
       if: ${{ steps.prep.outputs.version != '' }}
       env:
         COSIGN_EXPERIMENTAL: "true"
@@ -230,6 +234,16 @@ jobs:
       run: |
         echo ${{ steps.docker_build.outputs.digest }}
         cosign sign ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}@${{ steps.build-and-push.outputs.digest }}
+
+    - name: Sign image published Image Tag
+      run: |
+        echo ${COSIGN_KEY} > /tmp/my_cosign.key && \
+        cosign sign --key /tmp/my_cosign.key ${TAGS}
+      env:
+        COSIGN_EXPERIMENTAL: "true"
+        TAGS: ${{ steps.docker_meta.outputs.tags }}
+        COSIGN_KEY: ${{secrets.COSIGN_KEY}}
+        COSIGN_PASSWORD: ${{secrets.COSIGN_PASSWORD}}
 
     - name: Delete untagged images
       uses: r26d/ghcr-delete-image-action@v1.1.0
