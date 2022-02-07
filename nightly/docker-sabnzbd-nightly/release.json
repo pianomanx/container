@@ -2,12 +2,12 @@
    "appname": "docker-sabnzbd-nightly",
    "apppic": "./images/docker-sabnzbd-nightly.png",
    "appfolder": "./nightly/docker-sabnzbd-nightly",
-   "newversion": "f539a8ccda3b8627e5fa5dd91cf8aa0905ae81e4",
-   "oldversion": "171f04960792d7d0adfadc32e0f76654dae6b04d",
+   "newversion": "8c44c5b79a56b921bd103913d3d8b50810d4b514",
+   "oldversion": "f539a8ccda3b8627e5fa5dd91cf8aa0905ae81e4",
    "builddate": "2022-02-07",
    "baseimage": "ghcr.io/linuxserver/baseimage-alpine:3.15",
    "packages": "apk-tools jq bash busybox coreutils shadow curl tar p7zip par2cmdline python3 py3-pip",
    "description": "SABnzbd - The automated Usenet download tool",
-   "body": "Upgrading docker-sabnzbd-nightly from 171f04960792d7d0adfadc32e0f76654dae6b04d to f539a8ccda3b8627e5fa5dd91cf8aa0905ae81e4",
+   "body": "Upgrading docker-sabnzbd-nightly from f539a8ccda3b8627e5fa5dd91cf8aa0905ae81e4 to 8c44c5b79a56b921bd103913d3d8b50810d4b514",
    "user": "github-actions[bot]"
 }
