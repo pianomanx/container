@@ -5,8 +5,8 @@
    "newversion": "0.20.521",
    "oldversion": "0.20.514",
    "builddate": "2022-02-07",
-   "baseimage": "null",
-   "packages": "null",
+   "baseimage": "ghcr.io/linuxserver/baseimage-ubuntu:bionic",
+   "packages": "jq libicu60 tar",
    "description": "API Support for your favorite torrent trackers",
    "body": "Upgrading docker-jackett from 0.20.514 to 0.20.521",
    "user": "github-actions[bot]"
