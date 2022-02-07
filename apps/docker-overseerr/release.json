@@ -4,8 +4,10 @@
    "appfolder": "./apps/docker-overseerr",
    "newversion": "1.28.0",
    "oldversion": "1.28.0",
-   "builddate": "2022-02-04",
-   "description": "",
+   "builddate": "2022-02-07",
+   "baseimage": "null",
+   "packages": "null",
+   "description": "Request management and media discovery tool for the Plex ecosystem",
    "body": "Upgrading docker-overseerr from 1.28.0 to 1.28.0",
    "user": "github-actions[bot]"
 }

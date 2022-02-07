@@ -4,8 +4,10 @@
    "appfolder": "./apps/docker-tautulli",
    "newversion": "2.8.1",
    "oldversion": "2.8.1",
-   "builddate": "2022-02-04",
-   "description": "",
+   "builddate": "2022-02-07",
+   "baseimage": "null",
+   "packages": "null",
+   "description": "A Python based monitoring and tracking tool for Plex Media Server.",
    "body": "Upgrading docker-tautulli from 2.8.1 to 2.8.1",
    "user": "github-actions[bot]"
 }

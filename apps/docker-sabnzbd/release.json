@@ -4,8 +4,10 @@
    "appfolder": "./apps/docker-sabnzbd",
    "newversion": "3.5.0",
    "oldversion": "3.5.0",
-   "builddate": "2022-02-04",
-   "description": "",
+   "builddate": "2022-02-07",
+   "baseimage": "null",
+   "packages": "null",
+   "description": "SABnzbd - The automated Usenet download tool",
    "body": "Upgrading docker-sabnzbd from 3.5.0 to 3.5.0",
    "user": "github-actions[bot]"
 }

@@ -4,7 +4,9 @@
    "appfolder": "./apps/docker-jellyfin",
    "newversion": "10.7.7-1",
    "oldversion": "10.7.7-1",
-   "builddate": "2022-02-05",
+   "builddate": "2022-02-07",
+   "baseimage": "null",
+   "packages": "null",
    "description": "The Free Software Media System",
    "body": "Upgrading docker-jellyfin from 10.7.7-1 to 10.7.7-1",
    "user": "github-actions[bot]"

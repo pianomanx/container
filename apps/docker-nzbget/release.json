@@ -4,8 +4,10 @@
    "appfolder": "./apps/docker-nzbget",
    "newversion": "21.1",
    "oldversion": "21.1",
-   "builddate": "2022-02-04",
-   "description": "",
+   "builddate": "2022-02-07",
+   "baseimage": "null",
+   "packages": "null",
+   "description": "Efficient Usenet Downloader",
    "body": "Upgrading docker-nzbget from 21.1 to 21.1",
    "user": "github-actions[bot]"
 }

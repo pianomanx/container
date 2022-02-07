@@ -4,8 +4,10 @@
    "appfolder": "./apps/docker-duplicati",
    "newversion": "2.0.6.100",
    "oldversion": "2.0.6.100",
-   "builddate": "2022-02-04",
-   "description": "",
+   "builddate": "2022-02-07",
+   "baseimage": "null",
+   "packages": "null",
+   "description": "Store securely encrypted backups in the cloud!",
    "body": "Upgrading docker-duplicati from 2.0.6.100 to 2.0.6.100",
    "user": "github-actions[bot]"
 }
