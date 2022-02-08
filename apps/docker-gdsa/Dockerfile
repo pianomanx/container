@@ -4,8 +4,9 @@
 # Docker owned dockserver           #
 # Docker Maintainer dockserver      #
 #####################################
+FROM gcr.io/google.com/cloudsdktool/cloud-sdk:alpine
+
 ARG VERSION
-FROM gcr.io/google.com/cloudsdktool/cloud-sdk:${VERSION}-alpine
 
 RUN \
  echo "**** update build packages ****" && \
