@@ -59,7 +59,8 @@ We provide as next some hidden scripts to build
 the docker images based of a json / shell file 
 
 We didn't show them ,
-since I know some other are stealing here 
+since I know some other are stealing here,
+
 Withou given any credits 
 
 
