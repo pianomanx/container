@@ -28,7 +28,6 @@ for i in ${folder[@]}; do
                touch "./$i/${app}/release.json"
             fi
             echo "Docker : ${app} | Version : ${NEWVERSION}"
-            OLDVERSION=$(jq -r '.newversion' < ./$i/${app}/release.json)
             DESCRIPTION=$(jq -r '.description' < ./$i/${app}/release.json)
             APP=$(echo ${app} | sed "s#docker-##g" | sed "s#-nightly##g")
             if test -f "./.templates/${APP}-description.sh"; then
@@ -44,15 +43,14 @@ echo '{
    "apppic": "'${PICTURE}'",
    "appfolder": "./'$i'/'${app}'",
    "newversion": "'${NEWVERSION}'",
-   "oldversion": "'${OLDVERSION}'",
    "builddate": "'${BUILDDATE}'",
    "baseimage": "'${BASEIMAGE}'",
    "packages": "'${PACKAGES}'",
    "description": "'${DESCRIPTION}'",
-   "body": "Upgrading '${app}' from '${OLDVERSION}' to '${NEWVERSION}'",
+   "body": "Upgrading '${app}' to '${NEWVERSION}'",
    "user": "github-actions[bot]"
 }' > "./$i/${app}/release.json"
-         unset app OLDVERSION NEWVERSION DESCRIPTION BUILDDATE PICTURE PACKAGES BASEIMAGE
+         unset app NEWVERSION DESCRIPTION BUILDDATE PICTURE PACKAGES BASEIMAGE
          fi
       fi
    done
