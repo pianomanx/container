@@ -53,6 +53,18 @@ We moved the normal version also to alpine
 
 ---
 
+## Some hidden Updates are coming
+
+We provide as next some hidden scripts to build
+the docker imagss of a json / shell file 
+
+We didn't show them ,
+Since I know some other are stealing here 
+Without any given credits 
+
+
+--- 
+
 ## Ideas and Code
 
 This repository is heavily based on 
