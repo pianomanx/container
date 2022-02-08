@@ -10,7 +10,7 @@ RUN \
    echo "**** install build packages ****" && \
      apk add --no-cache --virtual=build-dependencies g++ gcc make py3-pip python3-dev && \
    echo "**** install packages ****" && \
-     apk add --no-cache tar curl jq py3-openssl py3-setuptools python3 && \
+     apk add --no-cache tar curl git jq py3-openssl py3-setuptools python3 && \
    echo "**** install pip packages ****" && \
      pip3 install --no-cache-dir -U mock plexapi pycryptodomex && \
    echo "**** install app ****" && \
