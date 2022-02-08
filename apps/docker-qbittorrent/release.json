@@ -3,11 +3,10 @@
    "apppic": "./images/docker-qbittorrent.png",
    "appfolder": "./apps/docker-qbittorrent",
    "newversion": "4.4.0-r0",
-   "oldversion": "4.4.0-r0",
    "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "qBittorrent BitTorrent client",
-   "body": "Upgrading docker-qbittorrent from 4.4.0-r0 to 4.4.0-r0",
+   "body": "Upgrading docker-qbittorrent to 4.4.0-r0",
    "user": "github-actions[bot]"
 }

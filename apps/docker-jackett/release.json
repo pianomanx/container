@@ -3,11 +3,10 @@
    "apppic": "./images/docker-jackett.png",
    "appfolder": "./apps/docker-jackett",
    "newversion": "0.20.529",
-   "oldversion": "0.20.529",
    "builddate": "2022-02-08",
    "baseimage": "ghcr.io/linuxserver/baseimage-ubuntu:bionic",
    "packages": "jq libicu60 tar",
    "description": "API Support for your favorite torrent trackers",
-   "body": "Upgrading docker-jackett from 0.20.529 to 0.20.529",
+   "body": "Upgrading docker-jackett to 0.20.529",
    "user": "github-actions[bot]"
 }

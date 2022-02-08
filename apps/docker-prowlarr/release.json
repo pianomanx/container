@@ -3,11 +3,10 @@
    "apppic": "./images/docker-prowlarr.png",
    "appfolder": "./apps/docker-prowlarr",
    "newversion": "0.2.0.1519",
-   "oldversion": "0.2.0.1519",
    "builddate": "2022-02-08",
    "baseimage": "ghcr.io/linuxserver/baseimage-alpine:3.15",
    "packages": "jq curl tar sqlite-libs libintl icu-libs",
    "description": "null",
-   "body": "Upgrading docker-prowlarr from 0.2.0.1519 to 0.2.0.1519",
+   "body": "Upgrading docker-prowlarr to 0.2.0.1519",
    "user": "github-actions[bot]"
 }

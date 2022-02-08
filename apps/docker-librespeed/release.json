@@ -3,11 +3,10 @@
    "apppic": "./images/docker-librespeed.png",
    "appfolder": "./apps/docker-librespeed",
    "newversion": "5.2.5",
-   "oldversion": "5.2.5",
    "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "Self-hosted Speedtest for HTML5 and more. Easy setup, examples, configurable, mobile friendly. Supports PHP, Node, Multiple servers, and more",
-   "body": "Upgrading docker-librespeed from 5.2.5 to 5.2.5",
+   "body": "Upgrading docker-librespeed to 5.2.5",
    "user": "github-actions[bot]"
 }

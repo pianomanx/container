@@ -3,11 +3,10 @@
    "apppic": "./images/docker-emby.png",
    "appfolder": "./apps/docker-emby",
    "newversion": "4.6.7.0",
-   "oldversion": "4.6.7.0",
    "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "Emby Server is a personal media server with apps on just about every device.",
-   "body": "Upgrading docker-emby from 4.6.7.0 to 4.6.7.0",
+   "body": "Upgrading docker-emby to 4.6.7.0",
    "user": "github-actions[bot]"
 }

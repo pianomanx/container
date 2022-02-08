@@ -3,11 +3,10 @@
    "apppic": "./images/docker-sabnzbd-nightly.png",
    "appfolder": "./nightly/docker-sabnzbd-nightly",
    "newversion": "cf07260186dbc25a9585d0981985be3a7b7eed63",
-   "oldversion": "cf07260186dbc25a9585d0981985be3a7b7eed63",
    "builddate": "2022-02-08",
    "baseimage": "ghcr.io/linuxserver/baseimage-alpine:3.15",
    "packages": "apk-tools jq bash busybox coreutils shadow curl tar p7zip par2cmdline python3 py3-pip",
    "description": "SABnzbd - The automated Usenet download tool",
-   "body": "Upgrading docker-sabnzbd-nightly from cf07260186dbc25a9585d0981985be3a7b7eed63 to cf07260186dbc25a9585d0981985be3a7b7eed63",
+   "body": "Upgrading docker-sabnzbd-nightly to cf07260186dbc25a9585d0981985be3a7b7eed63",
    "user": "github-actions[bot]"
 }

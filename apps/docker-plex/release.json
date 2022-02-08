@@ -3,11 +3,10 @@
    "apppic": "./images/docker-plex.png",
    "appfolder": "./apps/docker-plex",
    "newversion": "1.25.5.5492-12f6b8c83",
-   "oldversion": "1.25.5.5492-12f6b8c83",
    "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "Docker Container for Plex Media Server",
-   "body": "Upgrading docker-plex from 1.25.5.5492-12f6b8c83 to 1.25.5.5492-12f6b8c83",
+   "body": "Upgrading docker-plex to 1.25.5.5492-12f6b8c83",
    "user": "github-actions[bot]"
 }

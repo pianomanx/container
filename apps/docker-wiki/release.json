@@ -3,11 +3,10 @@
    "apppic": "./images/docker-wiki.png",
    "appfolder": "./apps/docker-wiki",
    "newversion": "1.4.9",
-   "oldversion": "1.4.9",
    "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "Docker Wiki Image from Dockserver",
-   "body": "Upgrading docker-wiki from 1.4.9 to 1.4.9",
+   "body": "Upgrading docker-wiki to 1.4.9",
    "user": "github-actions[bot]"
 }

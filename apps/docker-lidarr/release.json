@@ -3,11 +3,10 @@
    "apppic": "./images/docker-lidarr.png",
    "appfolder": "./apps/docker-lidarr",
    "newversion": "1.0.0.2434",
-   "oldversion": "1.0.0.2434",
    "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "Looks and smells like Sonarr but made for music.",
-   "body": "Upgrading docker-lidarr from 1.0.0.2434 to 1.0.0.2434",
+   "body": "Upgrading docker-lidarr to 1.0.0.2434",
    "user": "github-actions[bot]"
 }

@@ -3,11 +3,10 @@
    "apppic": "./images/docker-wireguard.png",
    "appfolder": "./apps/docker-wireguard",
    "newversion": "1.0.20210914",
-   "oldversion": "1.0.20210914",
    "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "Mirror only. Official repository is at https://git.zx2c4.com/wireguard-tools",
-   "body": "Upgrading docker-wireguard from 1.0.20210914 to 1.0.20210914",
+   "body": "Upgrading docker-wireguard to 1.0.20210914",
    "user": "github-actions[bot]"
 }
