@@ -56,11 +56,11 @@ We moved the normal version also to alpine
 ## Some hidden Updates are coming
 
 We provide as next some hidden scripts to build
-the docker imagss of a json / shell file 
+the docker images based of a json / shell file 
 
 We didn't show them ,
-Since I know some other are stealing here 
-Without any given credits 
+since I know some other are stealing here 
+Withou given any credits 
 
 
 --- 
