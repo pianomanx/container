@@ -20,8 +20,8 @@ jobs:
         CONTRIBUTOR: '### Contributors'
         COLUMN_PER_ROW: '4'
         ACCESS_TOKEN: ${{ secrets.CR_PAT }}
-        IMG_WIDTH: '100'
+        IMG_WIDTH: '50'
         FONT_SIZE: '14'
         PATH: '/README.md'
         COMMIT_MESSAGE: 'docs(README): update contributors'
-        AVATAR_SHAPE: 'square'
+        AVATAR_SHAPE: 'round'
