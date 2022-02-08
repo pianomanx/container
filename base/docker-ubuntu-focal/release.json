@@ -4,7 +4,7 @@
    "appfolder": "./base/docker-ubuntu-focal",
    "newversion": "3.15.0-rc.4",
    "oldversion": "3.15.0-rc.4",
-   "builddate": "2022-02-07",
+   "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "Dockerbase Image with Ubuntu focal",

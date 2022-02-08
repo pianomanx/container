@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-librespeed",
    "newversion": "5.2.5",
    "oldversion": "5.2.5",
-   "builddate": "2022-02-07",
+   "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "Self-hosted Speedtest for HTML5 and more. Easy setup, examples, configurable, mobile friendly. Supports PHP, Node, Multiple servers, and more",

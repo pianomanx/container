@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-qbittorrent",
    "newversion": "4.4.0-r0",
    "oldversion": "4.4.0-r0",
-   "builddate": "2022-02-07",
+   "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "qBittorrent BitTorrent client",

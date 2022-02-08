@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-radarr",
    "newversion": "4.0.4.5922",
    "oldversion": "4.0.4.5922",
-   "builddate": "2022-02-07",
+   "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "A fork of Sonarr to work with movies à la Couchpotato.",

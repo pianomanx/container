@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-deluge",
    "newversion": "2.0.5-0",
    "oldversion": "2.0.5-0",
-   "builddate": "2022-02-07",
+   "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "Deluge BitTorrent client - Git mirror, PRs only",

@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-transmission",
    "newversion": "3.00-r3",
    "oldversion": "3.00-r3",
-   "builddate": "2022-02-07",
+   "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "Official Transmission BitTorrent client repository",

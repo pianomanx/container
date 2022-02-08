@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-hyperhdr",
    "newversion": "17.0.0.0",
    "oldversion": "17.0.0.0",
-   "builddate": "2022-02-07",
+   "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "Open source ambient lighting implementation for television sets based on the video and audio streams analysis for Windows, macOS and Linux (x86 and Raspberry Pi). Includes real-time HDR tone mapping and multi-threading for better performance.",

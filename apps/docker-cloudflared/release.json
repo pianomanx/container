@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-cloudflared",
    "newversion": "2022.2.0",
    "oldversion": "2022.2.0",
-   "builddate": "2022-02-07",
+   "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "Cloudflare Tunnel client (formerly Argo Tunnel)",

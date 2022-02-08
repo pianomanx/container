@@ -4,7 +4,7 @@
    "appfolder": "./apps/docker-wireguard",
    "newversion": "1.0.20210914",
    "oldversion": "1.0.20210914",
-   "builddate": "2022-02-07",
+   "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "Mirror only. Official repository is at https://git.zx2c4.com/wireguard-tools",

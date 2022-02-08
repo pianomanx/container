@@ -4,7 +4,7 @@
    "appfolder": "./base/docker-haproxy",
    "newversion": "2.5-alpine3.15",
    "oldversion": "2.5-alpine3.15",
-   "builddate": "2022-02-07",
+   "builddate": "2022-02-08",
    "baseimage": "null",
    "packages": "null",
    "description": "HAProxy Load Balancer's development branch (mirror of git.haproxy.org)",
