@@ -17,9 +17,6 @@ RUN \
      mkdir -p /app/tautulli && \
    TAUTULLI_RELEASE=$(curl -sX GET "https://api.github.com/repos/Tautulli/Tautulli/releases/latest" | jq -r '. | .tag_name') && \
      curl -fsSL "https://github.com/Tautulli/Tautulli/archive/${TAUTULLI_RELEASE}.tar.gz" | tar xzf - -C /app/tautulli --strip-components=1 && \
-   echo "**** update requirements of python3 ****" && \
-     python3 -m pip install --upgrade pip && \
-     python3 -m pip install --upgrade --force-reinstall -r /app/tautulli/requirements.txt && \
    echo "**** Hard Coding versioning ****" && \ 
    echo "${TAUTULLI_RELEASE}" > /app/tautulli/version.txt && \
    echo "master" > /app/tautulli/branch.txt && \
