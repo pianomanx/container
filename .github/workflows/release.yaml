@@ -205,6 +205,9 @@ jobs:
         rm -rf /tmp/.buildx-cache
         mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
+    - name: Image digest
+      run: echo ${{ steps.docker_build.outputs.digest }}
+
     - name: Sign the digest image
       if: ${{ steps.prep.outputs.version != '' }}
       env:
