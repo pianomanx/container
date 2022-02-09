@@ -3,7 +3,7 @@
    "apppic": "./images/docker-sabnzbd.png",
    "appfolder": "./apps/docker-sabnzbd",
    "newversion": "3.5.0",
-   "builddate": "2022-02-08",
+   "builddate": "2022-02-09",
    "baseimage": "null",
    "packages": "null",
    "description": "SABnzbd - The automated Usenet download tool",

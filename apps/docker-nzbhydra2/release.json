@@ -3,7 +3,7 @@
    "apppic": "./images/docker-nzbhydra2.png",
    "appfolder": "./apps/docker-nzbhydra2",
    "newversion": "4.0.2",
-   "builddate": "2022-02-08",
+   "builddate": "2022-02-09",
    "baseimage": "null",
    "packages": "null",
    "description": "Usenet meta search",

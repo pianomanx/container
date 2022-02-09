@@ -3,7 +3,7 @@
    "apppic": "./images/ubuntu.png",
    "appfolder": "./base/ubuntu",
    "newversion": "focal-20220113",
-   "builddate": "2022-02-08",
+   "builddate": "2022-02-09",
    "baseimage": "null",
    "packages": "null",
    "description": "Dockerbase Image with Ubuntu",

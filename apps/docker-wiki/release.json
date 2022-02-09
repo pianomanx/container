@@ -3,7 +3,7 @@
    "apppic": "./images/docker-wiki.png",
    "appfolder": "./apps/docker-wiki",
    "newversion": "1.4.9",
-   "builddate": "2022-02-08",
+   "builddate": "2022-02-09",
    "baseimage": "null",
    "packages": "null",
    "description": "Docker Wiki Image from Dockserver",

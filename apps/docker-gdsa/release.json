@@ -3,7 +3,7 @@
    "apppic": "./images/docker-gdsa.png",
    "appfolder": "./apps/docker-gdsa",
    "newversion": "372.0.0",
-   "builddate": "2022-02-08",
+   "builddate": "2022-02-09",
    "baseimage": "null",
    "packages": "null",
    "description": "Docker container for Google Cloud ServiceKeys",

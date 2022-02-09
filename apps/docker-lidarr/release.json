@@ -3,7 +3,7 @@
    "apppic": "./images/docker-lidarr.png",
    "appfolder": "./apps/docker-lidarr",
    "newversion": "1.0.0.2434",
-   "builddate": "2022-02-08",
+   "builddate": "2022-02-09",
    "baseimage": "null",
    "packages": "null",
    "description": "Looks and smells like Sonarr but made for music.",

@@ -3,7 +3,7 @@
    "apppic": "./images/docker-nzbget.png",
    "appfolder": "./apps/docker-nzbget",
    "newversion": "21.1",
-   "builddate": "2022-02-08",
+   "builddate": "2022-02-09",
    "baseimage": "null",
    "packages": "null",
    "description": "Efficient Usenet Downloader",

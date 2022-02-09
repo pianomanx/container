@@ -3,7 +3,7 @@
    "apppic": "./images/docker-embystat.png",
    "appfolder": "./apps/docker-embystat",
    "newversion": "0.2.0-beta.27",
-   "builddate": "2022-02-08",
+   "builddate": "2022-02-09",
    "baseimage": "null",
    "packages": "null",
    "description": "Multiplatform statistics server for Emby server",

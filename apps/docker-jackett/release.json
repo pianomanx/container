@@ -3,7 +3,7 @@
    "apppic": "./images/docker-jackett.png",
    "appfolder": "./apps/docker-jackett",
    "newversion": "0.20.529",
-   "builddate": "2022-02-08",
+   "builddate": "2022-02-09",
    "baseimage": "ghcr.io/linuxserver/baseimage-ubuntu:bionic",
    "packages": "jq libicu60 tar",
    "description": "API Support for your favorite torrent trackers",

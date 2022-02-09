@@ -3,7 +3,7 @@
    "apppic": "./images/docker-jellyfin.png",
    "appfolder": "./apps/docker-jellyfin",
    "newversion": "10.7.7-1",
-   "builddate": "2022-02-08",
+   "builddate": "2022-02-09",
    "baseimage": "null",
    "packages": "null",
    "description": "The Free Software Media System",
