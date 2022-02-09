@@ -25,34 +25,18 @@ env:
   CACHE: "gha"
 
 jobs:
-  get-version:
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v2.4.0
-      with:
-        token: ${{ secrets.CR_PAT }}
-        fetch-depth: 0
-
-    - name: Run Test & Get New Versions
-      run: |
-        echo "Fetch new Versions"
-        #if test -f "./.github/version.sh"; then
-        #   bash "./.github/version.sh"
-        #fi
-      env:
-        username: ${{ github.actor }}
-        token: ${{ secrets.CR_PAT }}
-
   changes:
     name: Get changes
     runs-on: ubuntu-20.04
-    needs:
-    - get-version
     outputs:
       matrix: "{\"container\": ${{ steps.reduce.outputs.containers }} }"
     steps:
     - name: Checkout
       uses: actions/checkout@v2.4.0
+      with:
+        token: ${{ secrets.CR_PAT }}
+        fetch-depth: 0
+
     - uses: dorny/paths-filter@v2
       id: filter
       with:
@@ -82,7 +66,6 @@ jobs:
  
     needs:
     - changes
-    - get-version
     strategy:
       max-parallel: 8
       fail-fast: false
