@@ -43,7 +43,6 @@ echo '{
    "apppic": "'${PICTURE}'",
    "appfolder": "./'$i'/'${app}'",
    "newversion": "'${NEWVERSION}'",
-   "builddate": "'${BUILDDATE}'",
    "baseimage": "'${BASEIMAGE}'",
    "packages": "'${PACKAGES}'",
    "description": "'${DESCRIPTION}'",
