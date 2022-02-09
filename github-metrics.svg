@@ -37,7 +37,7 @@
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
                                 <path fill-rule="evenodd" d="M0 1.75A.75.75 0 01.75 1h4.253c1.227 0 2.317.59 3 1.501A3.744 3.744 0 0111.006 1h4.245a.75.75 0 01.75.75v10.5a.75.75 0 01-.75.75h-4.507a2.25 2.25 0 00-1.591.659l-.622.621a.75.75 0 01-1.06 0l-.622-.621A2.25 2.25 0 005.258 13H.75a.75.75 0 01-.75-.75V1.75zm8.755 3a2.25 2.25 0 012.25-2.25H14.5v9h-3.757c-.71 0-1.4.201-1.992.572l.004-7.322zm-1.504 7.324l.004-5.073-.002-2.253A2.25 2.25 0 005.003 2.5H1.5v9h3.757a3.75 3.75 0 011.994.574z"/>
                             </svg>
-                            6.72k views in last two weeks
+                            6.71k views in last two weeks
                         </div>
                     </section>
                     <section>
@@ -265,14 +265,14 @@
                         <rect x="0" y="0" width="460" height="8" fill="white" rx="5"/>
                     </mask>
                     <rect mask="url(#languages-bar)" x="0" y="0" width="0" height="8" fill="#d1d5da"/>
-                    <rect mask="url(#languages-bar)" x="0" y="0" width="204.7039839708171" height="8" fill="#89e051"/>
-                    <rect mask="url(#languages-bar)" x="204.7039839708171" y="0" width="127.59084287041674" height="8" fill="#384d54"/>
-                    <rect mask="url(#languages-bar)" x="332.2948268412338" y="0" width="51.76875456460808" height="8" fill="#4F5D95"/>
-                    <rect mask="url(#languages-bar)" x="384.0635814058419" y="0" width="36.617352967043054" height="8" fill="#f0c040"/>
-                    <rect mask="url(#languages-bar)" x="420.68093437288496" y="0" width="25.812261254268265" height="8" fill="#e34c26"/>
-                    <rect mask="url(#languages-bar)" x="446.4931956271532" y="0" width="7.598566856452397" height="8" fill="#f1e05a"/>
-                    <rect mask="url(#languages-bar)" x="454.0917624836056" y="0" width="4.924997036589517" height="8" fill="#563d7c"/>
-                    <rect mask="url(#languages-bar)" x="459.01675952019514" y="0" width="0.9832404798048355" height="8" fill="#a52a22"/>
+                    <rect mask="url(#languages-bar)" x="0" y="0" width="204.67078921101844" height="8" fill="#89e051"/>
+                    <rect mask="url(#languages-bar)" x="204.67078921101844" y="0" width="127.60743281744166" height="8" fill="#384d54"/>
+                    <rect mask="url(#languages-bar)" x="332.2782220284601" y="0" width="51.77548577569228" height="8" fill="#4F5D95"/>
+                    <rect mask="url(#languages-bar)" x="384.0537078041524" y="0" width="36.622114123347444" height="8" fill="#f0c040"/>
+                    <rect mask="url(#languages-bar)" x="420.67582192749984" y="0" width="25.815617482953392" height="8" fill="#e34c26"/>
+                    <rect mask="url(#languages-bar)" x="446.4914394104532" y="0" width="7.599554856992072" height="8" fill="#f1e05a"/>
+                    <rect mask="url(#languages-bar)" x="454.09099426744524" y="0" width="4.925637407309677" height="8" fill="#563d7c"/>
+                    <rect mask="url(#languages-bar)" x="459.01663167475493" y="0" width="0.983368325245039" height="8" fill="#a52a22"/>
                 </svg>
                 <div class="row fill-width">
                     <section>
@@ -285,7 +285,7 @@
                             </div>
                             <small>
                                 <div>116 kB</div>
-                                <div>44.5%</div>
+                                <div>44.49%</div>
                             </small>
                         </div>
                         <div class="field language details">
@@ -297,7 +297,7 @@
                             </div>
                             <small>
                                 <div>29.4 kB</div>
-                                <div>11.25%</div>
+                                <div>11.26%</div>
                             </small>
                         </div>
                         <div class="field language details">
@@ -399,8 +399,8 @@
                         <div class="category column">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="50" height="50" class="gauge high">
                                 <circle class="gauge-base" r="53" cx="60" cy="60"/>
-                                <circle class="gauge-arc" transform="rotate(-90 60 60)" r="53" cx="60" cy="60" stroke-dasharray="322.42 329"/>
-                                <text x="60" y="60" dominant-baseline="central">98</text>
+                                <circle class="gauge-arc" transform="rotate(-90 60 60)" r="53" cx="60" cy="60" stroke-dasharray="312.55 329"/>
+                                <text x="60" y="60" dominant-baseline="central">95</text>
                             </svg>
                             <span class="title">Performance</span>
                         </div>
@@ -623,7 +623,7 @@
                                 <div class="details">
                                     <div>on branch <span class="code">master</span></div>
                                     <div class="commit">
-                                        <div class="sha">#99093dc</div>
+                                        <div class="sha">#11888c8</div>
                                         <div class="message">[Auto Generation] Adding new release version
 
 Signed-off-by: github-actions[bot] &lt;github-actions[bot]@users.noreply.github.com&gt;</div>
@@ -646,28 +646,7 @@ Signed-off-by: github-actions[bot] &lt;github-actions[bot]@users.noreply.github.
                                 <div class="details">
                                     <div>on branch <span class="code">master</span></div>
                                     <div class="commit">
-                                        <div class="sha">#26426a8</div>
-                                        <div class="message">Update github-metrics.svg - [Skip GitHub Action]</div>
-                                    </div>
-                                </div>
-                            </section>
-                        </div>
-                        <div class="row fill-width">
-                            <section class="activity">
-                                <div class="field">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
-                                        <path fill-rule="evenodd" d="M10.5 7.75a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm1.43.75a4.002 4.002 0 01-7.86 0H.75a.75.75 0 110-1.5h3.32a4.001 4.001 0 017.86 0h3.32a.75.75 0 110 1.5h-3.32z"/>
-                                    </svg>
-                                    <div class="content">
-                                        <span class="user">doob187</span>
-                                        pushed 1 commit in
-                                        <span class="repo">dockserver/container</span>
-                                    </div>
-                                </div>
-                                <div class="details">
-                                    <div>on branch <span class="code">master</span></div>
-                                    <div class="commit">
-                                        <div class="sha">#0b4ca34</div>
+                                        <div class="sha">#b49b810</div>
                                         <div class="message">Update release.yaml</div>
                                     </div>
                                 </div>
@@ -688,8 +667,8 @@ Signed-off-by: github-actions[bot] &lt;github-actions[bot]@users.noreply.github.
                                 <div class="details">
                                     <div>on branch <span class="code">master</span></div>
                                     <div class="commit">
-                                        <div class="sha">#14168f7</div>
-                                        <div class="message">Update github-metrics.svg - [Skip GitHub Action]</div>
+                                        <div class="sha">#50c2828</div>
+                                        <div class="message">Update release.yaml</div>
                                     </div>
                                 </div>
                             </section>
@@ -709,10 +688,29 @@ Signed-off-by: github-actions[bot] &lt;github-actions[bot]@users.noreply.github.
                                 <div class="details">
                                     <div>on branch <span class="code">master</span></div>
                                     <div class="commit">
-                                        <div class="sha">#a223131</div>
-                                        <div class="message">[Auto Generation] Adding new release version
-
-Signed-off-by: github-actions[bot] &lt;github-actions[bot]@users.noreply.github.com&gt;</div>
+                                        <div class="sha">#bd12516</div>
+                                        <div class="message">Update version.sh</div>
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                        <div class="row fill-width">
+                            <section class="activity">
+                                <div class="field">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" width="16" height="16">
+                                        <path fill-rule="evenodd" d="M10.5 7.75a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zm1.43.75a4.002 4.002 0 01-7.86 0H.75a.75.75 0 110-1.5h3.32a4.001 4.001 0 017.86 0h3.32a.75.75 0 110 1.5h-3.32z"/>
+                                    </svg>
+                                    <div class="content">
+                                        <span class="user">doob187</span>
+                                        pushed 1 commit in
+                                        <span class="repo">dockserver/container</span>
+                                    </div>
+                                </div>
+                                <div class="details">
+                                    <div>on branch <span class="code">master</span></div>
+                                    <div class="commit">
+                                        <div class="sha">#8e42456</div>
+                                        <div class="message">Update release.yaml</div>
                                     </div>
                                 </div>
                             </section>
@@ -721,7 +719,7 @@ Signed-off-by: github-actions[bot] &lt;github-actions[bot]@users.noreply.github.
                 </div>
             </section>
             <footer>
-                <span>Last updated 9 Feb 2022, 13:43:40 with lowlighter/metrics@3.19.0</span>
+                <span>Last updated 9 Feb 2022, 15:22:23 with lowlighter/metrics@3.19.0</span>
             </footer>
         </div>
         <div xmlns="http://www.w3.org/1999/xhtml" id="metrics-end"></div>
