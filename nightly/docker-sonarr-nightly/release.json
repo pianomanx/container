@@ -3,7 +3,6 @@
    "apppic": "./images/docker-sonarr-nightly.png",
    "appfolder": "./nightly/docker-sonarr-nightly",
    "newversion": "3.0.6.1457",
-   "builddate": "2022-02-09",
    "baseimage": "null",
    "packages": "null",
    "description": "Smart PVR for newsgroup and bittorrent users.",

@@ -3,7 +3,6 @@
    "apppic": "./images/docker-multitautulli.png",
    "appfolder": "./apps/docker-multitautulli",
    "newversion": "4.1.07",
-   "builddate": "2022-02-09",
    "baseimage": "null",
    "packages": "null",
    "description": "A Python based monitoring and tracking tool for Plex Media Server.",

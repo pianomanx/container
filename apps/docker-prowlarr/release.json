@@ -3,7 +3,6 @@
    "apppic": "./images/docker-prowlarr.png",
    "appfolder": "./apps/docker-prowlarr",
    "newversion": "0.2.0.1519",
-   "builddate": "2022-02-09",
    "baseimage": "ghcr.io/linuxserver/baseimage-alpine:3.15",
    "packages": "jq curl tar sqlite-libs libintl icu-libs",
    "description": "null",

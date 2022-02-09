@@ -3,7 +3,6 @@
    "apppic": "./images/docker-transmission.png",
    "appfolder": "./apps/docker-transmission",
    "newversion": "3.00-r3",
-   "builddate": "2022-02-09",
    "baseimage": "null",
    "packages": "null",
    "description": "Official Transmission BitTorrent client repository",

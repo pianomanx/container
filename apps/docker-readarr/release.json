@@ -3,7 +3,6 @@
    "apppic": "./images/docker-readarr.png",
    "appfolder": "./apps/docker-readarr",
    "newversion": "0.1.0.1232",
-   "builddate": "2022-02-09",
    "baseimage": "null",
    "packages": "null",
    "description": "0.1.0.1232",

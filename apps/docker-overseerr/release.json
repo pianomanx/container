@@ -3,7 +3,6 @@
    "apppic": "./images/docker-overseerr.png",
    "appfolder": "./apps/docker-overseerr",
    "newversion": "1.28.0",
-   "builddate": "2022-02-09",
    "baseimage": "null",
    "packages": "null",
    "description": "Request management and media discovery tool for the Plex ecosystem",
