@@ -1,0 +1,11 @@
+{
+   "appname": "docker-sonarr",
+   "apppic": "./images/docker-sonarr.png",
+   "appfolder": "./apps/docker-sonarr",
+   "newversion": "3.0.6.1342",
+   "baseimage": "null",
+   "packages": "null",
+   "description": "Smart PVR for newsgroup and bittorrent users.",
+   "body": "Upgrading docker-sonarr to 3.0.6.1342",
+   "user": "github-actions[bot]"
+}

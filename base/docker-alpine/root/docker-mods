@@ -10,15 +10,11 @@ if [ ! -f /usr/bin/curl ] || [ ! -f /usr/bin/jq ]; then
   echo "[mod-init] Curl/JQ was not found on this system for Docker mods installing"
   if [ -f /usr/bin/apt ]; then
     ## Ubuntu
-    apt-get update
-    apt-get install --no-install-recommends -y \
-      curl \
-      jq
+    apt-get update -yqq
+    apt-get install --no-install-recommends -y curl jq
   elif [ -f /sbin/apk ]; then
     # Alpine
-    apk add --no-cache \
-      curl \
-      jq
+    apk add --no-cache curl jq
   fi
 fi
 

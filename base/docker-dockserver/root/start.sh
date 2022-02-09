@@ -22,6 +22,12 @@ function log() {
 
 function first() {
 
+   cat > /etc/apk/repositories << EOF; $(echo)
+http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/main
+http://dl-cdn.alpinelinux.org/alpine/v$(cat /etc/alpine-release | cut -d'.' -f1,2)/community
+http://dl-cdn.alpinelinux.org/alpine/edge/testing
+EOF
+
    log "**** update system packages ****" && \
    apk --quiet --no-cache --no-progress update && \
    apk --quiet --no-cache --no-progress upgrade && \
@@ -32,6 +38,7 @@ function first() {
 
    PGID=${PGID:-1000}
    PUID=${PUID:-1000}
+
    groupmod -o -g "$PGID" abc
    usermod -o -u "$PUID" abc
 
@@ -55,30 +62,25 @@ changelog-ci-config.yaml
 .editorconfig
 .gitignore
 .gitattributes
-wiki" > /tmp/unwanted
-
-## cleanup unused files and folders
+log4j
+wiki
+imagss" > /tmp/unwanted
 
    sed '/^\s*#.*$/d' /tmp/unwanted | \
-   while IFS=$'\n' read -r -a myArray; do
-       rm -rf ${FOLDER}/${myArray[0]} > /dev/null
+   while IFS=$'\n' read -r -a remove; do
+       rm -rf ${FOLDER}/${remove[0]} > /dev/null
    done
+   unset remove
+   rm -rf /tmp/unwanted
 }
 
 function build() {
+
+   install=(aria2 curl bc findutils coreutils tar git jq pv pigz tzdata rsync)
    log "**** install build packages ****" && \
-   apk add --quiet --no-cache --no-progress --virtual=build-dependencies \
-	aria2 \
-	curl \
-	bc \
-	findutils \
-	coreutils \
-	tar \
-	git \
-	jq \
-	pv \
-	pigz \
-	tzdata
+   apk add --quiet --no-cache --no-progress --virtual=build-dependencies ${install[@]}
+   unset install
+
 }
 
 function run() {
@@ -96,6 +98,8 @@ while :
    GTHUB="https://github.com/dockserver/dockserver/archive/refs/tags"
    GIT="https://github.com/dockserver/dockserver.git"
    DIFF=$(($YET-$LASTRUN))
+   FILE=$(ls "${FOLDER}/apps/myapps/" | wc -l)
+   MINFILES=1
 
    if [ "$DIFF" -gt 43200 ] || [ "$DIFF" -lt 1 ];then
       if test -f "/tmp/VERSION";then
@@ -114,36 +118,40 @@ while :
            log "**** downloading dockserver ${VERSION} ****" && \
            aria2c -x2 -k1M -d /tmp -o dockserver.tar.gz ${GTHUB}/v${VERSION}.tar.gz
            if [[ ! -f "${FILETMP}" ]]; then
-              log "**** check of ${FILETMP} is failed || fallback to git-clone ****"
-              apk --quiet --no-cache --no-progress add git && \
-              git clone --quiet ${GIT} ${FOLDER}
-              REMOGIT=$(git describe --tags `git rev-list --tags --max-count=1`)
-              echo "${REMOGIT#*v}" | tee "/tmp/VERSION" > /dev/null
+              log "**** check of ${FILETMP} is failed || fallback to git-clone ****" && \
+              apk add --quiet --no-cache --no-progress --virtual=build-dependencies git rsync && \
+              rm -rf "${FOLDERTMP}" && git clone --quiet "${GIT}" "${FOLDERTMP}" && \
+              rsync --remove-source-files --prune-empty-dirs -aqhv "${FOLDERTMP}" "${FOLDER}" && \
+              rm -rf "${FOLDERTMP}"
            else 
               log "**** check of ${FILETMP} positiv ****"
               if [[ ! -f "${FOLDER}/install.sh" ]]; then
-                 log "**** check of ${FOLDER} is negativ | create the folder now****"
+                 log "**** check of ${FOLDER} is negativ | create the folder now ****"
                  mkdir -p ${FOLDER} && \
                  unpigz -dcqp 16 "${FILETMP}" | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
-                 rm -rf ${FILETMP} && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
+                 rm -rf "${FILETMP}" "${FOLDERTMP}" && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
               else
                  log "**** check of ${FOLDER} is positiv ****"
-                 if [[ ! -d "${FOLDER}/apps/myapps" ]] ; then
+                 if [[ ! ${FILE} -ge ${MINFILES} ]]; then
+                    log "**** check if ${FOLDER}/apps/myapps is available ****"
+                    mkdir -p "${FOLDERTMP}/apps/myapps/" && \
+                    rsync --remove-source-files --prune-empty-dirs -aqhv --include='**.yml' "${FOLDER}/apps/myapps/" "${FOLDERTMP}/apps/myapps/" && \
+                    unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
+                    rsync --remove-source-files --prune-empty-dirs -aqhv --include='**.yml' "${FOLDERTMP}/apps/myapps/" "${FOLDER}/apps/myapps/" && \
+                    rm -rf "${FILETMP}" "${FOLDERTMP}" && echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null && \
+                    log "**** Update dockserver to ${VERSION#*v} completed ****"
+                 else
                     log "**** check if ${FILETMP} available ****" && \
                     unpigz -dcqp 16 "${FILETMP}" | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
-                    rm -rf ${FILETMP} && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null
+                    rm -rf "${FILETMP}" && echo "${VERSION#*v}" | tee "/tmp/VERSION" > /dev/null && \
                     log "**** Update dockserver to $ ${VERSION#*v} completed ****"
-                 else
-                    log "**** check if ${FOLDER}/apps/myapps is available ****"
-                    mkdir -p "${FOLDERTMP}" && mv "${FOLDER}/apps/myapps" "${FOLDERTMP}/myapps" && \
-                    unpigz -dcqp 16 ${FILETMP} | pv -pterb | tar pxf - -C "${FOLDER}" --strip-components=1 && \
-                    cp -r "${FOLDERTMP}/myapps" "${FOLDER}/apps/myapps" && \
-                    rm -rf "${FILETMP}" && echo "${LOCAL#*v}" | tee "/tmp/VERSION" > /dev/null
-                    log "**** Update dockserver to ${VERSION#*v} completed ****"
                  fi
               fi
               GUID=$(stat -c '%g' "${FOLDER}"/* | head -n 1)
-              if [[ $GUID == 0 ]]; then chown -cR abc:abc ${FOLDER} > /dev/null; fi
+              if [[ $GUID == 0 ]]; then
+                 find "${FOLDER}" -exec chmod a=rx,u+w {} \;
+                 find "${FOLDER}" -exec chown -hR 1000:1000 {} \;
+              fi
               unwanted
            fi
          fi
@@ -151,6 +159,7 @@ while :
    fi
    sleep 720
 done
+
 }
    ## RUN IN ORDER
    first

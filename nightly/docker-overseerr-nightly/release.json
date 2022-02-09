@@ -1,0 +1,11 @@
+{
+   "appname": "docker-overseerr-nightly",
+   "apppic": "./images/docker-overseerr-nightly.png",
+   "appfolder": "./nightly/docker-overseerr-nightly",
+   "newversion": "ec08fa67934715ff4a4d618d5b9ff97853913b78",
+   "baseimage": "null",
+   "packages": "null",
+   "description": "Request management and media discovery tool for the Plex ecosystem",
+   "body": "Upgrading docker-overseerr-nightly to ec08fa67934715ff4a4d618d5b9ff97853913b78",
+   "user": "github-actions[bot]"
+}

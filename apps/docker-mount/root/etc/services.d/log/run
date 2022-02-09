@@ -16,8 +16,10 @@ function log() {
     echo "[Mount] ${1}"
 }
 umask 022
-lpurge="/app/log/log.sh"
-sleep 2
-log "-> Starting log purging in auto mode <-"
-exec $lpurge
-#<EOF>#
+
+chown -cR abc:abc /app /system/*
+chmod -cR 755 /app /system/*
+log "-> Starting log <-"
+exec /app/mount/log.sh
+
+#EOF#

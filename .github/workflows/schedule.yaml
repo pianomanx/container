@@ -3,7 +3,7 @@ name: Get latest versions
 on:
   workflow_dispatch:
   schedule:
-  - cron: "0 */4 * * *"
+  - cron: "*/30 * * * *"
 
 jobs:
   get-version:
@@ -16,15 +16,62 @@ jobs:
 
     - name: Run Test & Get New Versions
       run: |
-        API=$(curl -H "Authorization: token ${{ secrets.CR_PAT }}" -X GET https://api.github.com/rate_limit \
-             | jq --raw-output '.rate.limit')
-        if [[ $API -gt 101 ]]; then
-           echo "Fetch new Versions"
-           if test -f "./.github/version.sh"; then
-              bash "./.github/version.sh"
-           fi
-        elif [[ $API -lt 100 ]]; then
-             echo " GitHube API busted " && exit 0
-        else
-             echo " no reponse from Github API ? Maybe down or busted " && exit 0
+        echo "Fetch new Versions"
+        if test -f "./.github/version.sh"; then
+           bash "./.github/version.sh"
+        fi
+      env:
+        username: ${{ github.actor }}
+        token: ${{ secrets.CR_PAT }}
+
+  contrib:
+    runs-on: ubuntu-latest
+    needs: get-version
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.CR_PAT }}
+
+    - uses: BobAnkh/add-contributors@master
+      with:
+        REPO_NAME: 'dockserver/container'
+        CONTRIBUTOR: '### Contributors'
+        COLUMN_PER_ROW: '4'
+        ACCESS_TOKEN: ${{ secrets.CR_PAT }}
+        IMG_WIDTH: '50'
+        FONT_SIZE: '14'
+        PATH: '/README.md'
+        COMMIT_MESSAGE: 'docs(README): update contributors'
+        AVATAR_SHAPE: 'round'
+
+  crlf:
+    name: Check Mixed Line Endings action
+    needs: [ get-version, contrib ]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.CR_PAT }}
+        fetch-depth: 0
+    - name: Run CRLF changes
+      run: |
+        echo "Fixxing endings"
+        if test -f "./.github/crlf.sh"; then
+           bash "./.github/crlf.sh"
+        fi
+
+  repack:
+    name: Run Repack
+    needs: [ get-version, contrib , crlf ]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.CR_PAT }}
+        fetch-depth: 0
+    - name: Run Repack
+      run: |
+        echo "run repack"
+        if test -f "./.github/repack.sh"; then
+           bash "./.github/repack.sh"
         fi

@@ -15,62 +15,72 @@
 
 export DEBIAN_FRONTEND=noninteractive
 echo "**** update system  ****" && \
-   apt-get -yqq update 1>/dev/null 2>&1 && \
-   apt-get -yqq upgrade 1>/dev/null 2>&1
+  apt-get -yqq update 1>/dev/null 2>&1 && \
+  apt-get -yqq upgrade 1>/dev/null 2>&1
 
-echo "**** install xmlstarlet ****" && \
-   apt-get -yqq install xmlstarlet 1>/dev/null 2>&1
+  cat /requirements.txt | while IFS=$'\n' read -r -a myArray; do
+      apt-get install -yqq ${myArray[0]} 1>/dev/null 2>&1
+  done
 
 echo "**** set permissions ****" && \
-   if [[ ! -d "/app" ]]; then mkdir -p /app 1>/dev/null 2>&1;fi && \
-   if [[ ! -d "/config" ]]; then  mkdir -p /config 1>/dev/null 2>&1;fi && \
-   if [[ -d "/app" ]]; then chown -cR abc:abc /app 1>/dev/null 2>&1;fi && \
-   if [[ -d "/config" ]]; then chown -cR abc:abc /config 1>/dev/null 2>&1;fi
+  if [[ ! -d "/app" ]]; then mkdir -p /app 1>/dev/null 2>&1;fi && \
+  if [[ ! -d "/config" ]]; then  mkdir -p /config 1>/dev/null 2>&1;fi && \
+  if [[ -d "/app" ]]; then chown -cR abc:abc /app 1>/dev/null 2>&1;fi && \
+  if [[ -d "/config" ]]; then chown -cR abc:abc /config 1>/dev/null 2>&1;fi
 
-if [ "${DEBUG,,}" = "true" ]; then
-   set -x
-fi
+  if [ "${DEBUG,,}" = "true" ]; then set -x ; fi
 
 PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR="/config/Library/Application Support"
 
+FILE="/config/plex.env"
+if [[ ! -f $FILE ]]; then
+echo -e "GenerateChapterThumbBehavior|never
+LoudnessAnalysisBehavior|never
+MinutesAllowedPaused|10
+DlnaReportTimeline|10
+TranscodeCountLimit|0
+TranscoderH264BackgroundPreset|faster
+TranscoderThrottleBuffer|200
+ScannerLowPriority|1
+ManualPortMappingMode|1
+autoEmptyTrash|1
+RelayEnabled|0
+GenerateBIFFrameInterval|10
+secureConnections|1
+DlnaEnabled|0
+TranscoderCanOnlyRemuxVideo|0
+TranscoderToneMapping|1
+GenerateIntroMarkerBehavior|never" >"${FILE}"
+fi
+
 function getPref {
-  local key="${1}"
-  xmlstarlet sel -T -t -m "/Preferences" -v "@${key}" -n "${prefFile}"
+   local key="${1}"
+   xmlstarlet sel -T -t -m "/Preferences" -v "@${key}" -n "${prefFile}"
 }
 
 function setPref {
-  local key="${1}"
-  local value="${2}"
-  count="$(xmlstarlet sel -t -v "count(/Preferences/@${key})" "${prefFile}")"
-  count=$(($count + 0))
-  xmlstarlet ed --inplace --delete "/Preferences/@${key}" -v "${value}" "${prefFile}"
-  xmlstarlet ed --inplace --insert "/Preferences/@${key}" -v "${value}" "${prefFile}"
-
-  #if [[ $count > 0 ]]; then
-  #    xmlstarlet ed --inplace --update "/Preferences/@${key}" -v "${value}" "${prefFile}"
-  #else
-  #    xmlstarlet ed --inplace --insert "/Preferences" --type attr -n "${key}" -v "${value}" "${prefFile}"
-  #fi
+   local key="${1}"
+   local value="${2}"
+   count="$(xmlstarlet sel -t -v "count(/Preferences/@${key})" "${prefFile}")"
+   count=$(($count + 0))
+   xmlstarlet ed --inplace --delete "/Preferences/@${key}" -v "${value}" "${prefFile}"
+   xmlstarlet ed --inplace --insert "/Preferences/@${key}" -v "${value}" "${prefFile}"
 }
 
 prefFile="${PLEX_MEDIA_SERVER_APPLICATION_SUPPORT_DIR}/Plex Media Server/Preferences.xml"
-
 serial="$(getPref "MachineIdentifier")"
-
 if [ -z "${serial}" ]; then
    serial="$(uuidgen)"
    setPref "MachineIdentifier" "${serial}"
 fi
 
 clientId="$(getPref "ProcessedMachineIdentifier")"
-
 if [ -z "${clientId}" ]; then
    clientId="$(echo -n "${serial}- Plex Media Server" | sha1sum | cut -b 1-40)"
    setPref "ProcessedMachineIdentifier" "${clientId}"
 fi
 
 token="$(getPref "PlexOnlineToken")"
-
 if [ ! -z "${PLEX_CLAIM}" ] && [ -z "${token}" ]; then
    echo "Attempting to obtain server token from claim token"
    loginInfo="$(curl -X POST \
@@ -94,27 +104,27 @@ if [ -n "${ADVERTISE_IP}" ]; then
    setPref "customConnections" "${ADVERTISE_IP}"
 fi
 
-if [ -n "${ALLOWED_NETWORKS}" ]; then
-   setPref "allowedNetworks" "${ALLOWED_NETWORKS}"
-fi
-##########
 FILE="/config/plex.env"
-sed '/^\s*#.*$/d' $FILE | \
-while IFS=$'|' read -r -a myArray; do
+sed '/^\s*#.*$/d' $FILE | while IFS=$'|' read -r -a myArray; do
    if [ -z "$(getPref "${myArray[0]}")" ]; then
       setPref "${myArray[0]}" "${myArray[1]}"
    fi
 done
-##########
-RAM=$(grep MemTotal /proc/meminfo | awk '{print $2 / 1024}')
+
+PUID=${PUID:-911}
+RAM=$(grep MemTotal /proc/meminfo | awk '{$1=$2/(1024); print $1;}')
 if [ -z "$(getPref "TranscoderTempDirectory")" ]; then
    if [ "${RAM}" -ge "69000" ]; then
-      setPref "TranscoderTempDirectory" "/transcode"
+      setPref "TranscoderTempDirectory" "/config/transcode"
+      if [[ ! -d "/config/transcode" ]]; then mkdir -p /config/transcode;fi
+      if [ ! "$(stat -c %u /config/transcode)" = "$PUID" ]; then chown abc:abc -R /config/transcode ; fi
    else
       setPref "TranscoderTempDirectory" "/ram_transcode"
+      if [[ ! -d "/ram_transcode" ]]; then mkdir -p /ram_transcode;fi
+      if [ ! "$(stat -c %u /ram_transcode)" = "$PUID" ]; then chown abc:abc -R /ram_transcode ; fi
    fi
 fi
-##########
+
 FILES=$(find /dev/dri /dev/dvb -type c -print 2>/dev/null)
 for i in $FILES ; do
     VIDEO_GID=$(stat -c '%g' "$i")
@@ -135,10 +145,20 @@ for var in "${!PLEX_PREFERENCE_@}"; do
 done
 
 echo "**** cleanup system ****" && \
-   apt-get -yqq purge xmlstarlet 1>/dev/null 2>&1 && \
-   apt-get -yqq autoclean 1>/dev/null 2>&1 && \
+   apt-get -yqq purge xmlstarlet 1>/dev/null 2>&1
+   apt-get -yqq autoclean 1>/dev/null 2>&1
    apt-get -yqq autoremove 1>/dev/null 2>&1
 
+echo "**** set permissions ****" && \
+   if [[ ! -d "/app" ]]; then mkdir -p /app 1>/dev/null 2>&1;fi
+   if [[ ! -d "/config" ]]; then mkdir -p /config 1>/dev/null 2>&1;fi
+   if [[ -d "/app" ]]; then chown -cR abc:abc /app 1>/dev/null 2>&1;fi
+   if [[ -d "/config" ]]; then chown -cR abc:abc /config 1>/dev/null 2>&1;fi
+
+### 
+### Explain the PLEX_PREFERENCE_ BELOW
+###
+##
 # Parse list of all exported variables that start with PLEX_PREFERENCE_
 # The format of which is PLEX_PREFERENCE_<SOMETHING>="Key=Value"
 # Where Key is the EXACT key to use in the Plex Preference file
@@ -146,5 +166,5 @@ echo "**** cleanup system ****" && \
 # Please note it looks like many of the key's are camelCase in some fashion.
 # Additionally there are likely some preferences where environment variable injection
 # doesn't really work for.
-
+###
 #E-O-F

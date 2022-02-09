@@ -1,4 +1,4 @@
-FROM ghcr.io/linuxserver/baseimage-alpine:3.14
+FROM ghcr.io/linuxserver/baseimage-alpine:3.15
 
 # set version label
 ARG VERSION
@@ -15,16 +15,11 @@ RUN \
   echo "**** symlink python3 for compatibility ****" && \
   ln -s /usr/bin/python3 /usr/bin/python && \
   echo "**** install runtime packages ****" && \
-  apk add --no-cache \
-    yarn && \
+  apk add --no-cache  yarn && \
   export COMMIT_TAG="v${VERSION}" && \
-  curl -o \
-    /tmp/overseerr.tar.gz -L \
-    "https://github.com/sct/overseerr/archive/refs/tags/v${VERSION}.tar.gz" && \
+  curl -o /tmp/overseerr.tar.gz -L  "https://github.com/sct/overseerr/archive/refs/tags/v${VERSION}.tar.gz" && \
   mkdir -p /app/overseerr && \
-  tar xzf \
-    /tmp/overseerr.tar.gz -C \
-    /app/overseerr/ --strip-components=1 && \
+  tar xzf /tmp/overseerr.tar.gz -C  /app/overseerr/ --strip-components=1 && \
   cd /app/overseerr && \
   export NODE_OPTIONS=--max_old_space_size=2048 && \
   yarn --frozen-lockfile --network-timeout 1000000 && \
@@ -40,11 +35,11 @@ RUN \
   ln -s /config /app/overseerr/config && \
   touch /config/DOCKER && \
   echo "**** cleanup ****" && \
-  apk del --purge \
-    build-dependencies && \
+  apk del --purge  build-dependencies && \
   rm -rf \
     /root/.cache \
-    /tmp/*
+    /tmp/* \
+    /app/overseerr/.next/cache/*
 
 # copy local files
 COPY ./apps/docker-overseerr/root/ /

@@ -1,0 +1,11 @@
+{
+   "appname": "docker-sabnzbd-nightly",
+   "apppic": "./images/docker-sabnzbd-nightly.png",
+   "appfolder": "./nightly/docker-sabnzbd-nightly",
+   "newversion": "d5536ed2465d720be62ca29f399250c3a9bc93ad",
+   "baseimage": "ghcr.io/linuxserver/baseimage-alpine:3.15",
+   "packages": "apk-tools jq bash busybox coreutils shadow curl tar p7zip par2cmdline python3 py3-pip",
+   "description": "SABnzbd - The automated Usenet download tool",
+   "body": "Upgrading docker-sabnzbd-nightly to d5536ed2465d720be62ca29f399250c3a9bc93ad",
+   "user": "github-actions[bot]"
+}

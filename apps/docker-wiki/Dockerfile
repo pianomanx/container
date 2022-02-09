@@ -11,7 +11,6 @@
 # NO CODE MIRRORING IS ALLOWED      #
 #####################################
 FROM alpine:3.15.0 as buildstage
-LABEL maintainer=dockserver
 
 RUN \
    echo "**** install packages ****" && \

@@ -20,42 +20,23 @@ env:
   MOBY: "moby/buildkit:latest"
   PLATFORM: "linux/amd64,linux/arm64"
   LICENSE: "GPL-3.0 DockServer.io"
+  SOURCE: "dockserver.io"
   CODE_OWNED: "base image LSIO, changes dockserver.io"
+  CACHE: "gha"
 
 jobs:
-  get-version:
-    runs-on: ubuntu-20.04
-    steps:
-    - uses: actions/checkout@v2.4.0
-      with:
-        token: ${{ secrets.CR_PAT }}
-        fetch-depth: 0
-
-    - name: Run Test & Get New Versions
-      run: |
-        API=$(curl -H "Authorization: token ${{ secrets.CR_PAT }}" -X GET https://api.github.com/rate_limit \
-             | jq --raw-output '.rate.limit')
-        if [[ $API -gt 101 ]]; then
-           echo "Fetch new Versions"
-           if test -f "./.github/version.sh"; then
-              bash "./.github/version.sh"
-           fi
-        elif [[ $API -lt 100 ]]; then
-             echo " GitHube API busted " && exit 0
-        else
-             echo " no reponse from Github API ? Maybe down or busted " && exit 0
-        fi
-
   changes:
     name: Get changes
     runs-on: ubuntu-20.04
-    needs:
-    - get-version
     outputs:
       matrix: "{\"container\": ${{ steps.reduce.outputs.containers }} }"
     steps:
     - name: Checkout
       uses: actions/checkout@v2.4.0
+      with:
+        token: ${{ secrets.CR_PAT }}
+        fetch-depth: 0
+
     - uses: dorny/paths-filter@v2
       id: filter
       with:
@@ -74,12 +55,22 @@ jobs:
   build:
     name: Build Docker
     runs-on: ubuntu-20.04
+    continue-on-error: false
+
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      actions: write
+      checks: write
+ 
     needs:
     - changes
-    - get-version
     strategy:
-      matrix: ${{ fromJson(needs.changes.outputs.matrix) }}
+      max-parallel: 8
       fail-fast: false
+      matrix: ${{ fromJson(needs.changes.outputs.matrix) }}
+
     if: "!contains(github.event.head_commit.message, '[ci-skip]')"
     steps:
     - name: Checkout
@@ -95,40 +86,56 @@ jobs:
         else
            CATEGORY="base"
         fi
+
         echo ::set-output name=category::${CATEGORY}
-           VERSION=$(cat ./${CATEGORY}/${{ matrix.container }}/VERSION)
+           VERSION=$(jq -r '.newversion' < ./${CATEGORY}/${{ matrix.container }}/release.json)
         echo ::set-output name=version::${VERSION}
-           PLATFORM=$(cat ./${CATEGORY}/${{ matrix.container }}/PLATFORM)
         echo ::set-output name=platform::${PLATFORM}
-           CREATED=$(date +'%Y-%m-%dT%H:%M:%SZ')
+           CREATED="$(date +%Y-%m-%d)"
+
+
+        echo ::set-output name=shashort::$(echo ${GITHUB_SHA} | cut -c1-8)
         echo ::set-output name=created::${CREATED}
-        echo ::set-output name=source::dockserver.io
+        echo ::set-output name=source::${{ env.SOURCE }}
         echo ::set-output name=platformout::${{ env.PLATFORM }}
         echo ::set-output name=linc::${{ env.LICENSE }}
         echo ::set-output name=owndocker::${{ env.CODE_OWNED }}
 
-        if [ "${{github.event_name}}" == "pull_request" ]; then
+        if [ "${{ github.event_name }}" == "pull_request" ]; then
            echo ::set-output name=push::false
-           echo ::set-output name=cache_from::"type=local,src=/tmp/.buildx-cache"
-           echo ::set-output name=cache_to::""
         else
            echo ::set-output name=push::true
-           echo ::set-output name=cache_from::"type=local,src=/tmp/.buildx-cache"
-           echo ::set-output name=cache_to::"type=local,dest=/tmp/.buildx-cache,mode=max"
         fi
+        echo ::set-output name=cache_from::"type=local,src=/tmp/.buildx-cache"
+        echo ::set-output name=cache_to::"type=local,dest=/tmp/.buildx-cache-new,mode=max"
 
     - name: Set up QEMU
+      if: ${{ github.event_name != 'pull_request' }}
       uses: docker/setup-qemu-action@v1.2.0
       with:
         platforms: ${{ steps.prep.outputs.platformout }}
 
-    - name: Login to GHCR
-      uses: docker/login-action@v1.10.0
-      if: github.event_name != 'pull_request'
+    - name: Install cosign
+      if: ${{ github.event_name != 'pull_request' }}
+      uses: sigstore/cosign-installer@51f8e5c6fce54e46006ae97d73b2b6315f518752
+      with:
+        cosign-release: 'v1.5.1'
+
+    - name: Login in Registry || major
+      if: ${{ github.event_name != 'pull_request' }}
+      uses: docker/login-action@v1.12.0
       with:
         registry: ${{ secrets.DOCKER_REGISTRY }}
         username: ${{ github.actor }}
         password: ${{ secrets.CR_PAT }}
+
+    - name: Login in Registry || mirror
+      uses: docker/login-action@v1.12.0
+      if: github.event_name != 'pull_request'
+      with:
+        registry: ${{ secrets.OWN_REGISTRY }}
+        username: ${{ secrets.QR_LOGIN }}
+        password: ${{ secrets.CR_QUAI }}
 
     - name: Set up Docker Buildx
       id: buildx
@@ -150,18 +157,31 @@ jobs:
         restore-keys: |
           ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
 
+    - name: Extract Docker metadata
+      id: meta
+      uses: docker/metadata-action@e5622373a38e60fb6d795a4421e56882f2d7a681
+      with:
+        images: ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}
+
     - name: Build and Push Image
-      uses: docker/build-push-action@v2.7.0
+      if: ${{ steps.prep.outputs.version != '' }}
+      id: build-and-push
+      uses: docker/build-push-action@v2.9.0
       with:
         build-args: VERSION=${{ steps.prep.outputs.version }}
         context: .
         platforms: ${{ steps.prep.outputs.platformout }}
         file: ./${{ steps.prep.outputs.category }}/${{ matrix.container }}/Dockerfile
         push: ${{ steps.prep.outputs.push }}
-        pull: ${{ steps.prep.outputs.push }}
         tags: |
           ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:latest
+          ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:${{ steps.prep.outputs.shashort }}
+          ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:${{ steps.prep.outputs.created }}
           ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:v${{ steps.prep.outputs.version }}
+          ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:latest
+          ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:${{ steps.prep.outputs.shashort }}
+          ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:${{ steps.prep.outputs.created }}
+          ${{ secrets.OWN_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}:v${{ steps.prep.outputs.version }}
         cache-from: ${{ steps.prep.outputs.cache_from }}
         cache-to: ${{ steps.prep.outputs.cache_to }}
         labels: |
@@ -177,6 +197,87 @@ jobs:
           org.opencontainers.image.platform=${{ steps.prep.outputs.platformout }}
           org.opencontainers.image.license=${{ steps.prep.outputs.linc }}
           org.opencontainers.image.owner=${{ steps.prep.outputs.owndocker }}
+          org.opencontainers.image.shaid=${{ steps.prep.outputs.shashort }}
+
+    - name: Move cache 
+      run: |
+        rm -rf /tmp/.buildx-cache
+        mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
     - name: Image digest
       run: echo ${{ steps.docker_build.outputs.digest }}
+
+    - name: Sign the digest image
+      if: ${{ steps.prep.outputs.version != '' }}
+      env:
+        COSIGN_EXPERIMENTAL: "true"
+      shell: bash
+      run: |
+        echo ${{ steps.docker_build.outputs.digest }}
+        cosign sign ${{ secrets.DOCKER_REGISTRY }}/${{ github.repository_owner }}/${{ matrix.container }}@${{ steps.build-and-push.outputs.digest }}
+
+    - name: Send notification
+      if: ${{ steps.prep.outputs.version != '' }}
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_IMAGES }}
+        VERSION: ${{ steps.prep.outputs.version }}
+        SHA8: ${{ steps.prep.outputs.shashort }}
+        CATEGORY: ${{ steps.prep.outputs.category }}
+        COLOR: 3066993
+      shell: bash
+      run: |
+        if [[ -f "./images/${{ matrix.container }}.png" ]]; then
+           curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/${{ matrix.container }}.png" > image.png
+        else
+           curl -fsSL --retry 5 "https://raw.githubusercontent.com/dockserver/container/master/images/image.png" > image.png
+        fi
+        export DOCKER_CLI_EXPERIMENTAL=enabled
+        json='{
+          "username": "Docker Image Update",
+          "avatar_url": "https://raw.githubusercontent.com/dockserver/container/master/images/Logo.png",
+          "embeds": [
+            {
+            "author": {
+              "name": "'${{ github.repository_owner }}'"
+            },
+            "title": "'${{ matrix.container }}'",
+            "url": "https://github.com/orgs/'${{ github.repository_owner }}'/packages/container/package/'${{ matrix.container }}'",
+            "color": '${COLOR}',
+            "fields": [
+              {
+                "name": "Container Info",
+                "value": "We published a new container image '${{ matrix.container }}'"
+              },
+              {
+                "name": "Version",
+                "value": "new Version public : `'${VERSION}'` with `'${SHA8}'`"
+              },
+              {
+                "name": "Docker Tags : '${{ secrets.DOCKER_REGISTRY }}'",
+                "value": "`'${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest`\nor\n`'${{ secrets.DOCKER_REGISTRY }}'/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION:----}'`"
+              },
+              {
+                "name": "Docker Tags : Dockserver Registry",
+                "value": "`docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':latest`\nor\n`docker.dockserver.io/'${{ github.repository_owner }}'/'${{ matrix.container }}':v'${VERSION}'`"
+              },
+              {
+                "name": "Comment ID",
+                "value": "GitHub Comment ID : (https://github.com/'${{ github.repository }}'/commit/'${SHA8}')"
+              },
+              {
+                "name": "Thanks!",
+                "value": "Thanks! to all Contributors"
+              }
+            ],
+            "footer": {
+              "text": "Powered by GitHub Actions",
+              "icon_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png"
+             },
+             "timestamp": "'$(date -u +'%FT%T.%3NZ')'",
+             "image": {
+               "url": "attachment://image.png"
+             }
+           }
+          ]
+        }'
+        curl -fsSL --retry 5 -H "Content-Type: multipart/form-data" -F "file=@image.png" -F "payload_json=${json}" "${DISCORD_WEBHOOK}" > /dev/null

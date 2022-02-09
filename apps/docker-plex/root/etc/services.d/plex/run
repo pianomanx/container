@@ -1,9 +1,16 @@
 #!/usr/bin/with-contenv bash
+while true; do
+   if mountpoint -q "/mnt/unionfs"; then
+      break
+   else
+     sleep 5
+   fi
+done
 
 echo "Starting Plex Media Server."
 export PLEX_MEDIA_SERVER_INFO_MODEL=$(uname -m)
 export PLEX_MEDIA_SERVER_INFO_PLATFORM_VERSION=$(uname -r)
 
 exec \
-	s6-setuidgid abc \
-	/usr/lib/plexmediaserver/Plex\ Media\ Server
+   s6-setuidgid abc \
+   /usr/lib/plexmediaserver/Plex\ Media\ Server

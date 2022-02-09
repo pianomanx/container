@@ -1,0 +1,11 @@
+{
+   "appname": "docker-gdsa",
+   "apppic": "./images/docker-gdsa.png",
+   "appfolder": "./apps/docker-gdsa",
+   "newversion": "372.0.0",
+   "baseimage": "null",
+   "packages": "null",
+   "description": "Docker container for Google Cloud ServiceKeys",
+   "body": "Upgrading docker-gdsa to 372.0.0",
+   "user": "github-actions[bot]"
+}

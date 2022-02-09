@@ -14,30 +14,25 @@ ENV NVIDIA_DRIVER_CAPABILITIES="compute,video,utility" \
     PLEX_MEDIA_SERVER_INFO_VENDOR="Docker" \
     PLEX_MEDIA_SERVER_INFO_DEVICE="Docker Container (dockserver.io)"
 
-
 # hadolint ignore=DL3008,DL3015,SC2039,SC2086
 RUN \
   case "${TARGETPLATFORM}" in \
     'linux/amd64') \
         export ARCH='amd64'; \
-        export EXTRA_INSTALL_ARG='beignet-opencl-icd i965-va-driver ocl-icd-libopencl1'; \
+        export INSTALL_ARG='beignet-opencl-icd i965-va-driver gpg-agent libmfx1 ocl-icd-libopencl1'; \
+        export INSTALL_INTEL='intel-opencl-icd intel-level-zero-gpu level-zero intel-media-va-driver-non-free'; \
     ;; \
     'linux/arm64') \
         export ARCH='arm64'; \
-        export EXTRA_INSTALL_ARG=''; \
+        export INSTALL_ARG=''; \
+        export INSTALL_INTEL=''; \
         unset NVIDIA_DRIVER_CAPABILITIES; \
     ;; \
   esac \
   && \
   apt-get -qq update \
   && \
-  apt-get -qq install -y \
-    aria2 \
-    jq \
-    unrar \
-    unzip \
-    uuid-runtime \
-    ${EXTRA_INSTALL_ARG} \
+  apt-get -qq install -y wget curl aria2 jq unrar unzip uuid-runtime ${INSTALL_ARG} \
   && \
   case "${ARCH}" in \
     'amd64') \
@@ -48,11 +43,17 @@ RUN \
       for i in ${COMP_RT_URLS}; do \
         i=$(echo ${i} | tr -d '\r'); \
         echo "**** downloading ${i} ****"; \
-        curl -o "/opencl-intel/$(basename ${i})" \
-          -L "${i}"; \
+        curl -o "/opencl-intel/$(basename ${i})" -L "${i}"; \
       done \
       && dpkg -i /opencl-intel/*.deb \
       && rm -rf /opencl-intel \
+      && apt-get install -qq gpg-agent wget software-properties-common -y \
+      && wget -qO - https://repositories.intel.com/graphics/intel-graphics.key | apt-key add - \
+      && apt-add-repository 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main' \
+      && apt-get -qq update \
+      && apt-get -qq install -y ${INSTALL_INTEL} \
+      && apt-add-repository -r 'deb [arch=amd64] https://repositories.intel.com/graphics/ubuntu focal main' \
+      && apt-get -qq update \
     ;; \
   esac \
   && \
@@ -62,10 +63,9 @@ RUN \
   && \
   dpkg -i --force-confold /tmp/plex.deb \
   && \
-  apt-get remove -y aria2 jq \
+  apt-get remove -yqq aria2 jq software-properties-common gpg-agent \
   && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-  && apt-get autoremove -y \
-  && apt-get clean \
+  && apt-get autoremove -yqq && apt-get clean -yqq \
   && \
   rm -rf \
     /etc/default/plexmediaserver \

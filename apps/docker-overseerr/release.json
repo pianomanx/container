@@ -1,0 +1,11 @@
+{
+   "appname": "docker-overseerr",
+   "apppic": "./images/docker-overseerr.png",
+   "appfolder": "./apps/docker-overseerr",
+   "newversion": "1.28.0",
+   "baseimage": "null",
+   "packages": "null",
+   "description": "Request management and media discovery tool for the Plex ecosystem",
+   "body": "Upgrading docker-overseerr to 1.28.0",
+   "user": "github-actions[bot]"
+}

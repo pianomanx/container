@@ -5,10 +5,9 @@ openssl
 icu-libs
 ca-certificates
 libxml2-dev
-tar
-unzip
 shadow
 bc
+tar
 findutils
 coreutils
 logrotate
@@ -22,8 +21,9 @@ nginx-mod-http-brotli
 tzdata
 musl
 wget
-dos2unix
+rclone
 jq
+s6-ipcserver
 php8
 php8-dev
 php8-bcmath
@@ -31,6 +31,7 @@ php8-intl
 php8-fpm
 php8-json
 php8-openssl
+php8-opcache
 php8-curl
 php8-zlib
 php8-xml

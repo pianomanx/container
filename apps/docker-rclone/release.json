@@ -1,0 +1,11 @@
+{
+   "appname": "docker-rclone",
+   "apppic": "./images/docker-rclone.png",
+   "appfolder": "./apps/docker-rclone",
+   "newversion": "1.57.0",
+   "baseimage": "",
+   "packages": "",
+   "description": "",
+   "body": "Upgrading docker-rclone to 1.57.0",
+   "user": "github-actions[bot]"
+}

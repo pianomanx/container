@@ -4,23 +4,19 @@
 # Docker owned dockserver           #
 # Docker Maintainer dockserver      #
 #####################################
-ARG VERSION
+FROM alpine:3.15
 
-FROM rclone/rclone:${VERSION}
-
-LABEL maintainer=dockserver
-LABEL org.opencontainers.image.source https://github.com/dockserver/docker-rclone/
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 
 RUN \
-    echo "**** install build packages ****" && \
+    echo "**** update build ****" && \
     apk --quiet --no-cache --no-progress update && \
-    apk --quiet --no-cache --no-progress upgrade
-RUN \
+    apk --quiet --no-cache --no-progress upgrade && \
     echo "**** install build packages ****" && \
-    apk --quiet --no-cache --no-progress add bash musl && \
+    apk --quiet --no-cache --no-progress add bash musl shadow && \
     apk del --quiet --clean-protected --no-progress && \
     rm -f /var/cache/apk/*
-
 
 COPY ./apps/docker-rclone/root/ /
 

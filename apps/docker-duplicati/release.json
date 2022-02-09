@@ -1,0 +1,11 @@
+{
+   "appname": "docker-duplicati",
+   "apppic": "./images/docker-duplicati.png",
+   "appfolder": "./apps/docker-duplicati",
+   "newversion": "2.0.6.100",
+   "baseimage": "null",
+   "packages": "null",
+   "description": "Store securely encrypted backups in the cloud!",
+   "body": "Upgrading docker-duplicati to 2.0.6.100",
+   "user": "github-actions[bot]"
+}

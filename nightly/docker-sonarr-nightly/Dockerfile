@@ -1,33 +1,26 @@
-FROM ghcr.io/linuxserver/baseimage-mono:LTS
+FROM ghcr.io/linuxserver/baseimage-alpine:3.15
 
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 ARG VERSION
-ARG DEBIAN_FRONTEND="noninteractive"
+ARG BRANCH="develop"
 ENV XDG_CONFIG_HOME="/config/xdg"
-ENV SONARR_BRANCH="develop"
 
-RUN \
-  echo "**** install packages ****" && \
-  apt-get update -yqq && \
-  apt-get install -yqq \
-    jq && \
-  echo "**** install sonarr ****" && \
-    mkdir -p /app/sonarr/bin && \
-  SONARR_VERSION=$(curl -sX GET http://services.sonarr.tv/v1/releases | jq -r ".[] | select(.branch==\"$SONARR_BRANCH\") | .version") && \
-  curl -o \
-    /tmp/sonarr.tar.gz -L \
-    "https://download.sonarr.tv/v3/${SONARR_BRANCH}/${SONARR_VERSION}/Sonarr.${SONARR_BRANCH}.${SONARR_VERSION}.linux.tar.gz" && \
-  tar xf \
-    /tmp/sonarr.tar.gz -C \
-    /app/sonarr/bin --strip-components=1 && \
-  echo "UpdateMethod=docker\nBranch=${SONARR_BRANCH}\nPackageVersion=${VERSION}\nPackageAuthor=[dockserver.io](https://dockserver.io)" > /app/sonarr/package_info && \
-     rm -rf /app/sonarr/bin/Sonarr.Update && \
-  echo "**** cleanup ****" && \
-    apt-get clean -yqq && \
-    rm -rf \
-      /tmp/* \
-      /var/tmp/*
+RUN  \
+    echo "**** install packages ****" && \
+       apk add --no-cache jq openssl curl tar sqlite-libs && \
+       apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main tinyxml2 && \
+       apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community libmediainfo && \
+       apk add --no-cache mono --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing && \
+    echo "**** install sonarr ****" && \
+       mkdir -p /app/sonarr/bin && \
+       SVERSION=$(curl -sX GET http://services.sonarr.tv/v1/releases | jq -r ".[] | select(.branch==\"$BRANCH\") | .version") && \
+       curl -fsSL "https://download.sonarr.tv/v3/${BRANCH}/${SVERSION}/Sonarr.${BRANCH}.${SVERSION}.linux.tar.gz" | tar xzf - -C /app/sonarr/bin --strip-components=1 && \
+    echo -e "UpdateMethod=docker\nBranch=${BRANCH}\nPackageVersion=${SVERSION}\nPackageAuthor=[dockserver.io](https://dockserver.io)" > /app/sonarr/package_info && \
+    echo "**** cleanup ****" && \
+       rm -rf /app/sonarr/bin/Sonarr.Update
 
-COPY ./apps/docker-sonarr/root/ /
+COPY ./nightly/docker-sonarr-nightly/root/ /
 
 EXPOSE 8989
 VOLUME /config

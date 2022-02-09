@@ -16,8 +16,10 @@ function log() {
     echo "[Mount] ${1}"
 }
 umask 022
-vfsrefresh="/app/vfs/vfsrefresh.sh"
-sleep 2
-log "-> Starting vfs refresh auto mode <-"
-exec $vfsrefresh
-#<EOF>#
+
+chown -cR abc:abc /app /system/*
+chmod -cR 755 /app /system/*
+log "-> Starting vfs <-"
+exec /app/mount/vfsrefresh.sh
+
+#EOF#

@@ -1,0 +1,11 @@
+{
+   "appname": "docker-deluge",
+   "apppic": "./images/docker-deluge.png",
+   "appfolder": "./apps/docker-deluge",
+   "newversion": "2.0.5-0",
+   "baseimage": "null",
+   "packages": "null",
+   "description": "Deluge BitTorrent client - Git mirror, PRs only",
+   "body": "Upgrading docker-deluge to 2.0.5-0",
+   "user": "github-actions[bot]"
+}
