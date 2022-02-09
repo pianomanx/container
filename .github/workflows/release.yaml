@@ -91,10 +91,9 @@ jobs:
            VERSION=$(jq -r '.newversion' < ./${CATEGORY}/${{ matrix.container }}/release.json)
         echo ::set-output name=version::${VERSION}
         echo ::set-output name=platform::${PLATFORM}
-           CREATED=$(jq -r '.builddate' < ./${CATEGORY}/${{ matrix.container }}/release.json)
-        if [[ "${CREATED}" == "" ]]; then
            CREATED="$(date +%Y-%m-%d)"
-        fi
+
+
         echo ::set-output name=shashort::$(echo ${GITHUB_SHA} | cut -c1-8)
         echo ::set-output name=created::${CREATED}
         echo ::set-output name=source::${{ env.SOURCE }}
